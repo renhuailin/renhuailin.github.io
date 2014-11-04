@@ -5,8 +5,8 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 02 Nov 2014 23:18:23 +0800</pubDate>
-    <lastBuildDate>Sun, 02 Nov 2014 23:18:23 +0800</lastBuildDate>
+    <pubDate>Tue, 04 Nov 2014 23:11:04 +0800</pubDate>
+    <lastBuildDate>Tue, 04 Nov 2014 23:11:04 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -15,15 +15,15 @@
 我用的jekyll theme 是&lt;a href=&quot;https://github.com/st4ple/solid-jekyll&quot;&gt;solid jekyll&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 02 Nov 2014 18:50:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/wordpress/photoshop/my-first-blog-with-jekyll</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/wordpress/photoshop/my-first-blog-with-jekyll</guid>
+        <link>http://yourdomain.com/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll</guid>
         
         
         <category>blog</category>
         
-        <category>wordpress</category>
+        <category>java</category>
         
-        <category>photoshop</category>
+        <category>其他</category>
         
       </item>
     

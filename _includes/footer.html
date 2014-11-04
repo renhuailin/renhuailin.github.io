@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4">
-                <h4>About</h4>
+                <h4>About me</h4>
                 <div class="hline-w"></div>
                 <p>{{ site.about }}</p>
             </div>
@@ -11,16 +11,16 @@
                 <div class="hline-w"></div>
                 <p>
                     {% for network in site.social %}
-                        <a href="{{ network.url }}" class="btn-social btn-outline"><i class="fa fa-{{ network.title }}"></i></a>
+                        <a href="{{ network.url }}" target="_blank" class="btn-social btn-outline"><i class="fa fa-{{ network.title }}"></i></a>
                     {% endfor %}
                 </p>
             </div>
             <div class="col-lg-4">
-                <h4>Our Bunker</h4>
+                <h4>Links</h4>
                 <div class="hline-w"></div>
                 <p>
-                    {% for line in site.address.first.lines %}
-                        {{ line }} <br>
+                    {% for link in site.friendlinks %}
+                        <a href="{{ link.url }}" target="_blank"> {{ link.title }} </a>
                     {% endfor %}
                 </p>
             </div>

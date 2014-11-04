@@ -4,9 +4,9 @@ title: "我的第一篇博客"
 date: 2014-11-02 10:50:00
 author: 任怀林
 categories: 
-- blog 
-- Wordpress
-- Photoshop
+- blog
+- Java 
+- 其他
 thumb: thumb01.jpg
 ---
 

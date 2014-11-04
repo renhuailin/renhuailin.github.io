@@ -26,16 +26,16 @@ colors:  #in hex code if not noted else
 
 # Social networks usernames. Many more available: google-plus, flickr, linkedin, etc). Shown in footer.
 social:
-  - title: dribbble
-    url:
+  - title: weibo
+    url: http://www.weibo.com/xiaopaozi
   - title: facebook
-    url:
+    url: https://www.facebook.com/renhuailin
   - title: twitter
-    url: 
-  - title: instagram
-    url: 
-  - title: tumblr
-    url: 
+    url: https://twitter.com/xiaopaozi
+#  - title: instagram
+#    url: 
+#  - title: tumblr
+#    url: 
     
 # Postal address (add as many lines as necessary). Shown in footer and on Contact page.
 address:
@@ -82,11 +82,14 @@ members:
     position: Marketing
     text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
     img: team04.jpg
-    social:
-      - title: envelope #use for email address
-        url: mailto:name@domain.com
-      - title: twitter
-        url: http://twitter.com/handle
+# friend links
+friendlinks:
+  - title: 张利海
+    url: http://www.zhanglihai.com
+#  - title: facebook
+#    url: https://www.facebook.com/renhuailin
+#  - title: twitter
+#    url: https://twitter.com/xiaopaozi
     
 # Clients information. Shown on Home and About pages.
 clients:
@@ -100,7 +103,8 @@ clients:
     img: client04.png
     
 # Short text about your company. Shown in footer on every page and also separately on Home and Contact page.
-about: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
+about: "我是一名程序员，我喜欢编程，学过几门语言，最喜欢java和ruby，目前主要靠java混饭吃。同时我也是一名佛教徒，虽然我现在还没有皈依。"
+
 
 # Testimonial content. Shown on Home and About page. 
 testimonial:
