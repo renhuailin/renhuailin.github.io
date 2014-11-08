@@ -5,9 +5,53 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 04 Nov 2014 23:11:04 +0800</pubDate>
-    <lastBuildDate>Tue, 04 Nov 2014 23:11:04 +0800</lastBuildDate>
+    <pubDate>Sat, 08 Nov 2014 23:32:20 +0800</pubDate>
+    <lastBuildDate>Sat, 08 Nov 2014 23:32:20 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Blog: Java 反编译器</title>
+        <description>&lt;p&gt;前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;procyon&quot;&gt;procyon&lt;/h1&gt;
+&lt;p&gt;项目地址：&lt;a href=&quot;https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler&quot;&gt;https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 反编译单个类&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;java -jar decompiler.jar java.lang.String
+
+&lt;span class=&quot;c&quot;&gt;# 反编译myJar.jar里的所有类，并把结果保存在outdir这个目录里&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;java -jar decompiler.jar -jar myJar.jar -o outdir&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;cfr&quot;&gt;CFR&lt;/h1&gt;
+&lt;p&gt;这是另外一个反编译器，procyon的wiki里有提到过它。&lt;/p&gt;
+
+&lt;p&gt;主页：&lt;a href=&quot;http://www.benf.org/other/cfr/&quot;&gt;http://www.benf.org/other/cfr/&lt;/a&gt;    &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 反编译单个类&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;java -jar cfr_0_87.jar /home/harley/Test.class toString
+
+&lt;span class=&quot;c&quot;&gt;# 反编译myJar.jar里的所有类，并把结果保存在/home/harley/java这个目录里&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;java -jar cfr_0_87.jar /home/harley/myJar.jar --outputdir /home/harley/java&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;好吧，这不算是一个好文章，只是我用来做备忘的，：）。&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 08 Nov 2014 00:00:00 +0800</pubDate>
+        <link>http://yourdomain.com/blog/java/08-java-decompilers</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/java/08-java-decompilers</guid>
+        
+        <category>java</category>
+        
+        <category>decomplier</category>
+        
+        
+        <category>blog</category>
+        
+        <category>java</category>
+        
+      </item>
     
       <item>
         <title>Blog: 我的第一篇博客</title>
@@ -24,23 +68,6 @@
         <category>java</category>
         
         <category>其他</category>
-        
-      </item>
-    
-      <item>
-        <title>Project: YOUR PROJECT NAME</title>
-        <description>&lt;h4 id=&quot;your-project-name&quot;&gt;YOUR PROJECT NAME&lt;/h4&gt;
-&lt;p&gt;Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.&lt;/p&gt;
-
-&lt;h4 id=&quot;our-proposal&quot;&gt;Our Proposal&lt;/h4&gt;
-&lt;p&gt;It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 26 Apr 2014 00:54:46 +0800</pubDate>
-        <link>http://yourdomain.com/project/your-project-name</link>
-        <guid isPermaLink="true">http://yourdomain.com/project/your-project-name</guid>
-        
-        
-        <category>project</category>
         
       </item>
     
