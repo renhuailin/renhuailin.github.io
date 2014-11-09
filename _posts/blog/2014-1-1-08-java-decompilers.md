@@ -18,7 +18,7 @@ thumb: thumb01.jpg
 # procyon
 项目地址：[https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)
 
-{% highlight shell %}
+{% highlight sh %}
 # 反编译单个类
 $ java -jar decompiler.jar java.lang.String
 
@@ -32,7 +32,7 @@ $ java -jar decompiler.jar -jar myJar.jar -o outdir
 
 主页：[http://www.benf.org/other/cfr/](http://www.benf.org/other/cfr/)    
 
-{% highlight shell %}
+{% highlight sh %}
 # 反编译单个类
 $ java -jar cfr_0_87.jar /home/harley/Test.class toString
 

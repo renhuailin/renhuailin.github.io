@@ -81,22 +81,22 @@
 <h1 id="procyon">procyon</h1>
 <p>项目地址：<a href="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler</a></p>
 
-<div class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c"># 反编译单个类</span>
-<span class="gp">$ </span>java -jar decompiler.jar java.lang.String
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 反编译单个类</span>
+<span class="nv">$ </span>java -jar decompiler.jar java.lang.String
 
 <span class="c"># 反编译myJar.jar里的所有类，并把结果保存在outdir这个目录里</span>
-<span class="gp">$ </span>java -jar decompiler.jar -jar myJar.jar -o outdir</code></pre></div>
+<span class="nv">$ </span>java -jar decompiler.jar -jar myJar.jar -o outdir</code></pre></div>
 
 <h1 id="cfr">CFR</h1>
 <p>这是另外一个反编译器，procyon的wiki里有提到过它。</p>
 
 <p>主页：<a href="http://www.benf.org/other/cfr/">http://www.benf.org/other/cfr/</a>    </p>
 
-<div class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c"># 反编译单个类</span>
-<span class="gp">$ </span>java -jar cfr_0_87.jar /home/harley/Test.class toString
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 反编译单个类</span>
+<span class="nv">$ </span>java -jar cfr_0_87.jar /home/harley/Test.class toString
 
 <span class="c"># 反编译myJar.jar里的所有类，并把结果保存在/home/harley/java这个目录里</span>
-<span class="gp">$ </span>java -jar cfr_0_87.jar /home/harley/myJar.jar --outputdir /home/harley/java</code></pre></div>
+<span class="nv">$ </span>java -jar cfr_0_87.jar /home/harley/myJar.jar --outputdir /home/harley/java</code></pre></div>
 
 <p>好吧，这不算是一个好文章，只是我用来做备忘的，：）。</p>
 
