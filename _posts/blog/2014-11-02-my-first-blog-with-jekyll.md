@@ -5,10 +5,28 @@ date: 2014-11-02 10:50:00
 author: 任怀林
 categories: 
 - blog
-- Java 
-- 其他
+- other
 thumb: thumb01.jpg
 ---
 
-这是我的博客    
+我的博客是用[jekyll](http://jekyllrb.com/)搭建的。
+
+```
+$ jekyll serve
+```
+
+然后浏览 http://localhost:4000
+
+方法高亮使用：[pygments](http://pygments.org/),它支持的语法列表：[http://pygments.org/docs/lexers/](http://pygments.org/docs/lexers/)  
+
 我用的jekyll theme 是[solid jekyll](https://github.com/st4ple/solid-jekyll)
+
+参考：
+[搭建一个免费的，无限流量的Blog----github Pages和Jekyll入门](http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html)
+
+
+
+
+
+
+

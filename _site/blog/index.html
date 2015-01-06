@@ -72,33 +72,70 @@
             
                 <! -- Blog Post -->
 				<!-- 
-                <a href="/blog/java/08-java-decompilers">
+                <a href="/blog/other/vm-communicate-with-my-laptop">
                     <img class="img-responsive" src="/assets/img/blog/">
                 </a> 
 				-->   
-                <a href="/blog/java/08-java-decompilers"><h3 class="ctitle">Java 反编译器</h3></a>
-                <p><csmall>Nov 8, 2014. | By: 任怀林</csmall></p>
-                <p>前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。</p>
+                <a href="/blog/other/vm-communicate-with-my-laptop"><h3 class="ctitle">从宿主机访问VirtualBox里的虚机</h3></a>
+                <p><csmall>Jan 6, 2015. | By: 任怀林</csmall></p>
+                <p>我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。</p>
+
+<p><code>
+# ifconfig wlan0:0 192.168.234.249/24
+</code></p>
+
+<p>回到银丰后，把这个配置删除掉：   <br />
+<code>
+# ifconfig wlan0:0 192.168.234.249 down
+</code></p>
 
 
-                <p><a href="/blog/java/08-java-decompilers">[Read More]</a></p>
+                <p><a href="/blog/other/vm-communicate-with-my-laptop">[Read More]</a></p>
                 <div class="hline"></div>
 
                 <div class="spacing"></div>
             
                 <! -- Blog Post -->
 				<!-- 
-                <a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll">
+                <a href="/blog/java/java-decompilers">
                     <img class="img-responsive" src="/assets/img/blog/">
                 </a> 
 				-->   
-                <a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
+                <a href="/blog/java/java-decompilers"><h3 class="ctitle">Java 反编译器</h3></a>
+                <p><csmall>Nov 8, 2014. | By: 任怀林</csmall></p>
+                <p>前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。</p>
+
+
+                <p><a href="/blog/java/java-decompilers">[Read More]</a></p>
+                <div class="hline"></div>
+
+                <div class="spacing"></div>
+            
+                <! -- Blog Post -->
+				<!-- 
+                <a href="/blog/other/my-first-blog-with-jekyll">
+                    <img class="img-responsive" src="/assets/img/blog/">
+                </a> 
+				-->   
+                <a href="/blog/other/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
                 <p><csmall>Nov 2, 2014. | By: 任怀林</csmall></p>
-                <p>这是我的博客  <br />
-我用的jekyll theme 是<a href="https://github.com/st4ple/solid-jekyll">solid jekyll</a></p>
+                <p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
+
+<p><code>
+$ jekyll serve
+</code></p>
+
+<p>然后浏览 http://localhost:4000</p>
+
+<p>方法高亮使用：<a href="http://pygments.org/">pygments</a>,它支持的语法列表：<a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a>  </p>
+
+<p>我用的jekyll theme 是<a href="https://github.com/st4ple/solid-jekyll">solid jekyll</a></p>
+
+<p>参考：
+<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog—-github Pages和Jekyll入门</a></p>
 
 
-                <p><a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll">[Read More]</a></p>
+                <p><a href="/blog/other/my-first-blog-with-jekyll">[Read More]</a></p>
                 <div class="hline"></div>
 
                 <div class="spacing"></div>
@@ -119,12 +156,12 @@
     <div class="hline"></div>
     
         <p>
-            <a href="/category/#java"><i class="fa fa-angle-right"></i> Java</a>
+            <a href="/category/#other"><i class="fa fa-angle-right"></i> Other</a>
             <span class="badge badge-theme pull-right">2</span>
         </p>
     
         <p>
-            <a href="/category/#其他"><i class="fa fa-angle-right"></i> 其他</a>
+            <a href="/category/#java"><i class="fa fa-angle-right"></i> Java</a>
             <span class="badge badge-theme pull-right">1</span>
         </p>
     
@@ -136,14 +173,20 @@
         <ul class="popular-posts">
              
                 <li>
-                    <a href="/blog/java/08-java-decompilers"><img src="/assets/img/blog/thumbs/thumb01.jpg" alt="Popular Post"></a>
-                    <p><a href="/blog/java/08-java-decompilers">Java 反编译器</a></p>
+                    <a href="/blog/other/vm-communicate-with-my-laptop"><img src="/assets/img/blog/thumbs/thumb01.jpg" alt="Popular Post"></a>
+                    <p><a href="/blog/other/vm-communicate-with-my-laptop">从宿主机访问VirtualBox里的虚机</a></p>
+                <em>Posted on 06 Jan 2015</em>
+            </li>
+             
+                <li>
+                    <a href="/blog/java/java-decompilers"><img src="/assets/img/blog/thumbs/thumb01.jpg" alt="Popular Post"></a>
+                    <p><a href="/blog/java/java-decompilers">Java 反编译器</a></p>
                 <em>Posted on 08 Nov 2014</em>
             </li>
              
                 <li>
-                    <a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll"><img src="/assets/img/blog/thumbs/thumb01.jpg" alt="Popular Post"></a>
-                    <p><a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll">我的第一篇博客</a></p>
+                    <a href="/blog/other/my-first-blog-with-jekyll"><img src="/assets/img/blog/thumbs/thumb01.jpg" alt="Popular Post"></a>
+                    <p><a href="/blog/other/my-first-blog-with-jekyll">我的第一篇博客</a></p>
                 <em>Posted on 02 Nov 2014</em>
             </li>
              
@@ -155,9 +198,9 @@
     <div class="hline"></div>
     <p>
     
-            <a class="btn btn-theme" href="/category/#java" role="button">Java (2)</a>	         
+            <a class="btn btn-theme" href="/category/#other" role="button">Other (2)</a>	         
         
-            <a class="btn btn-theme" href="/category/#其他" role="button">其他 (1)</a>	         
+            <a class="btn btn-theme" href="/category/#java" role="button">Java (1)</a>	         
         
     </p>
 	

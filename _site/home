@@ -111,11 +111,11 @@
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_06.jpg" alt="">
+                    <img src="/assets/img/project/portfolio_05.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_06.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_05.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->		
@@ -150,11 +150,11 @@
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_05.jpg" alt="">
+                    <img src="/assets/img/project/portfolio_01.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_05.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_01.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->		
@@ -163,11 +163,11 @@
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_01.jpg" alt="">
+                    <img src="/assets/img/project/portfolio_06.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_01.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_06.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->		
@@ -263,9 +263,11 @@
             <h4>Latest Posts</h4>
             <div class="hline"></div>
              
-                <p><a href="/blog/java/08-java-decompilers">Java 反编译器.</a></p>
+                <p><a href="/blog/other/vm-communicate-with-my-laptop">从宿主机访问VirtualBox里的虚机.</a></p>
              
-                <p><a href="/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll">我的第一篇博客.</a></p>
+                <p><a href="/blog/java/java-decompilers">Java 反编译器.</a></p>
+             
+                <p><a href="/blog/other/my-first-blog-with-jekyll">我的第一篇博客.</a></p>
              
         </div>
 

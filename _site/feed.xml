@@ -5,9 +5,33 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 09 Nov 2014 15:12:00 +0800</pubDate>
-    <lastBuildDate>Sun, 09 Nov 2014 15:12:00 +0800</lastBuildDate>
+    <pubDate>Tue, 06 Jan 2015 16:03:41 +0800</pubDate>
+    <lastBuildDate>Tue, 06 Jan 2015 16:03:41 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Blog: 从宿主机访问VirtualBox里的虚机</title>
+        <description>&lt;p&gt;我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+# ifconfig wlan0:0 192.168.234.249/24
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;回到银丰后，把这个配置删除掉：   &lt;br /&gt;
+&lt;code&gt;
+# ifconfig wlan0:0 192.168.234.249 down
+&lt;/code&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 06 Jan 2015 22:30:00 +0800</pubDate>
+        <link>http://yourdomain.com/blog/other/vm-communicate-with-my-laptop</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/other/vm-communicate-with-my-laptop</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>other</category>
+        
+      </item>
     
       <item>
         <title>Blog: Java 反编译器</title>
@@ -39,8 +63,8 @@
 
 </description>
         <pubDate>Sat, 08 Nov 2014 00:00:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/java/08-java-decompilers</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/java/08-java-decompilers</guid>
+        <link>http://yourdomain.com/blog/java/java-decompilers</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/java/java-decompilers</guid>
         
         <category>java</category>
         
@@ -55,36 +79,30 @@
     
       <item>
         <title>Blog: 我的第一篇博客</title>
-        <description>&lt;p&gt;这是我的博客  &lt;br /&gt;
-我用的jekyll theme 是&lt;a href=&quot;https://github.com/st4ple/solid-jekyll&quot;&gt;solid jekyll&lt;/a&gt;&lt;/p&gt;
+        <description>&lt;p&gt;我的博客是用&lt;a href=&quot;http://jekyllrb.com/&quot;&gt;jekyll&lt;/a&gt;搭建的。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+$ jekyll serve
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;然后浏览 http://localhost:4000&lt;/p&gt;
+
+&lt;p&gt;方法高亮使用：&lt;a href=&quot;http://pygments.org/&quot;&gt;pygments&lt;/a&gt;,它支持的语法列表：&lt;a href=&quot;http://pygments.org/docs/lexers/&quot;&gt;http://pygments.org/docs/lexers/&lt;/a&gt;  &lt;/p&gt;
+
+&lt;p&gt;我用的jekyll theme 是&lt;a href=&quot;https://github.com/st4ple/solid-jekyll&quot;&gt;solid jekyll&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;参考：
+&lt;a href=&quot;http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html&quot;&gt;搭建一个免费的，无限流量的Blog—-github Pages和Jekyll入门&lt;/a&gt;&lt;/p&gt;
+
 </description>
         <pubDate>Sun, 02 Nov 2014 18:50:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/java/%E5%85%B6%E4%BB%96/my-first-blog-with-jekyll</guid>
+        <link>http://yourdomain.com/blog/other/my-first-blog-with-jekyll</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/other/my-first-blog-with-jekyll</guid>
         
         
         <category>blog</category>
         
-        <category>java</category>
-        
-        <category>其他</category>
-        
-      </item>
-    
-      <item>
-        <title>Project: YOUR PROJECT NAME</title>
-        <description>&lt;h4 id=&quot;your-project-name&quot;&gt;YOUR PROJECT NAME&lt;/h4&gt;
-&lt;p&gt;Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.&lt;/p&gt;
-
-&lt;h4 id=&quot;our-proposal&quot;&gt;Our Proposal&lt;/h4&gt;
-&lt;p&gt;It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 26 Apr 2014 00:54:46 +0800</pubDate>
-        <link>http://yourdomain.com/project/your-project-name</link>
-        <guid isPermaLink="true">http://yourdomain.com/project/your-project-name</guid>
-        
-        
-        <category>project</category>
+        <category>other</category>
         
       </item>
     
