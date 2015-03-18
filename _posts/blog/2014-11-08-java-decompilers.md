@@ -9,7 +9,7 @@ categories:
 tags:
 - java
 - decomplier
-thumb: thumb01.jpg
+thumb: java.png
 ---
 前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。
 
