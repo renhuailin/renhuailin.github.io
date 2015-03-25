@@ -155,26 +155,26 @@ ifconfig br-ex 192.168.234.205</code></pre></div>
 
 <p>/etc/network/interfaces  </p>
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#The primary network interface</span>
-auto eth0
-iface eth0 inet static
-address 192.168.234.203
-netmask 255.255.255.0
-gateway 192.168.234.1
+<div class="highlight"><pre><code class="language-aconf" data-lang="aconf"><span class="c"># This file describes the network interfaces available on your system                                                                       </span>
+<span class="c"># and how to activate them. For more information, see interfaces(5).                                                                        </span>
 
-<span class="c">#management interface</span>
-auto eth0:1
-iface eth0:1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-gateway 10.0.0.1
+<span class="c"># The loopback network interface</span>
+<span class="nb">auto</span> lo
+<span class="nb">iface</span> lo inet loopback
 
+<span class="c"># The primary network interface</span>
+<span class="nb">auto</span> eth0
+<span class="c">#iface eth0 inet dhcp</span>
+<span class="nb">iface</span> eth0 inet static
+<span class="nb">address</span> <span class="m">192.168.234.202</span>
+<span class="nb">netmask</span> <span class="m">255.255.255.0</span>
+<span class="nb">gateway</span> <span class="m">192.168.234.1</span>
 
-<span class="c">#Instance tunnels interface.</span>
-auto eth0:2
-iface eth0:2 inet static
-address 10.0.1.21
-netmask 255.255.255.0</code></pre></div>
+<span class="c"># OpenStack management interface.</span>
+<span class="nb">iface</span> eth0:1 inet static
+<span class="nb">address</span> <span class="m">10.0.0.11</span>
+<span class="nb">netmask</span> <span class="m">255.255.255.0</span>
+<span class="nb">gateway</span> <span class="m">10.0.0.1</span></code></pre></div>
 
 <p>/etc/hosts   </p>
 
@@ -190,26 +190,26 @@ netmask 255.255.255.0</code></pre></div>
 <h2 id="network-node">2.2 网络节点 network node</h2>
 <p>/etc/network/interfaces    </p>
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#The primary network interface</span>
-auto eth0
-iface eth0 inet static
-address 192.168.234.203
-netmask 255.255.255.0
-gateway 192.168.234.1
+<div class="highlight"><pre><code class="language-aconf" data-lang="aconf"><span class="c">#The primary network interface</span>
+<span class="nb">auto</span> eth0
+<span class="nb">iface</span> eth0 inet static
+<span class="nb">address</span> <span class="m">192.168.234.205</span>
+<span class="nb">netmask</span> <span class="m">255.255.255.0</span>
+<span class="nb">gateway</span> <span class="m">192.168.234.1</span>
 
 <span class="c">#management interface</span>
-auto eth1:1
-iface eth0:1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-gateway 10.0.0.1
+<span class="nb">auto</span> eth1:1
+<span class="nb">iface</span> eth0:1 inet static
+<span class="nb">address</span> <span class="m">10.0.0.21</span>
+<span class="nb">netmask</span> <span class="m">255.255.255.0</span>
+<span class="nb">gateway</span> <span class="m">10.0.0.1</span>
 
 
 <span class="c">#Instance tunnels interface.</span>
-auto eth1:2
-iface eth0:2 inet static
-address 10.0.1.21
-netmask 255.255.255.0</code></pre></div>
+<span class="nb">auto</span> eth1:2
+<span class="nb">iface</span> eth0:2 inet static
+<span class="nb">address</span> <span class="m">10.0.1.21</span>
+<span class="nb">netmask</span> <span class="m">255.255.255.0</span></code></pre></div>
 
 <p>/etc/hosts  </p>
 
@@ -380,6 +380,23 @@ character-set-server <span class="o">=</span> utf8</code></pre></div>
 <p>RabbitMQ在安装时创建了一个用户<code>guest</code>,我们就用这个用户了，只是把他的密码修改为<code>openstack</code></p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># rabbitmqctl change_password guest openstack</span></code></pre></div>
+
+<p>For RabbitMQ version 3.3.0 or newer, you must enable remote access for the guest account.</p>
+
+<p>Check the RabbitMQ version:</p>
+
+<h1 id="rabbitmqctl-status--grep-rabbit">rabbitmqctl status | grep rabbit</h1>
+<p>Status of node ‘rabbit@controller’ …
+ {running_applications,[{rabbit,”RabbitMQ”,”3.4.2”},
+If necessary, edit the /etc/rabbitmq/rabbitmq.config file and configure loopback_users to reference an empty list:</p>
+
+<p>[{rabbit, [{loopback_users, []}]}].
+[Note]	Note
+Contents of the original file might vary depending on the source of the RabbitMQ package. In some cases, you might need to create this file.</p>
+
+<p>Restart the message broker service:</p>
+
+<h1 id="service-rabbitmq-server-restart">service rabbitmq-server restart</h1>
 
 <h1 id="openstack-openstack-identity-service">5 安装OpenStack的认证服务 OpenStack Identity service</h1>
 
@@ -1904,9 +1921,243 @@ Set gateway <span class="k">for</span> router demo-router</code></pre></div>
 
 <p>在浏览器里输入：http://controller/horizon，来访问Horizon。</p>
 
-<h1 id="section-45">10 安装过程中遇到的问题</h1>
+<h1 id="telemetry">10 安装Telemetry</h1>
 
-<h2 id="section-46">10.1 服务状态不对</h2>
+<p>Telemetry的组件信息请参考官方文档</p>
+
+<h2 id="section-45">10. 1 安装配置控制节点</h2>
+
+<h3 id="section-46">10.1.1 配置先决条件</h3>
+
+<p>１　安装　MongoDB</p>
+
+<div class="highlight"><pre><code class="language-aconf" data-lang="aconf"><span class="c"># apt-get install mongodb-server mongodb-clients python-pymongo</span></code></pre></div>
+
+<p>２　编辑 /etc/mongodb.conf file 完成下列操作：  </p>
+
+<div class="highlight"><pre><code class="language-aconf" data-lang="aconf"><span class="nb">bind_ip</span> = <span class="m">10.0.0.11</span>
+<span class="nb">smallfiles</span> = true</code></pre></div>
+
+<p>执行命令</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service mongodb stop</span>
+<span class="c"># rm /var/lib/mongodb/journal/prealloc.*</span>
+<span class="c"># service mongodb start</span></code></pre></div>
+
+<p>３　创建　ceilometer　数据库</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># mongo --host controller --eval &#39;</span>
+  <span class="nv">db</span> <span class="o">=</span> db.getSiblingDB<span class="o">(</span><span class="s2">&quot;ceilometer&quot;</span><span class="o">)</span><span class="p">;</span>
+  db.addUser<span class="o">({</span>user: <span class="s2">&quot;ceilometer&quot;</span>,
+  <span class="nb">pwd</span>: <span class="s2">&quot;openstack&quot;</span>,
+  roles: <span class="o">[</span> <span class="s2">&quot;readWrite&quot;</span>, <span class="s2">&quot;dbAdmin&quot;</span> <span class="o">]})</span><span class="err">&#39;</span>
+  
+MongoDB shell version: 2.4.9
+connecting to: controller:27017/test
+<span class="o">{</span>
+        <span class="s2">&quot;user&quot;</span> : <span class="s2">&quot;ceilometer&quot;</span>,
+        <span class="s2">&quot;pwd&quot;</span> : <span class="s2">&quot;347ed5cbd578cb16ce413fe1d085ce2f&quot;</span>,
+        <span class="s2">&quot;roles&quot;</span> : <span class="o">[</span>
+                <span class="s2">&quot;readWrite&quot;</span>,
+                <span class="s2">&quot;dbAdmin&quot;</span>
+        <span class="o">]</span>,
+        <span class="s2">&quot;_id&quot;</span> : ObjectId<span class="o">(</span><span class="s2">&quot;550a3f247f38cb43ba640fd7&quot;</span><span class="o">)</span>
+<span class="o">}</span></code></pre></div>
+
+<p>4 切换到管理员身份</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></div>
+
+<p>５　
+创建　ceilometer　用户</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone user-create --name ceilometer --pass openstack
++----------+----------------------------------+
+<span class="p">|</span> Property <span class="p">|</span>              Value               <span class="p">|</span>
++----------+----------------------------------+
+<span class="p">|</span>  email   <span class="p">|</span>                                  <span class="p">|</span>
+<span class="p">|</span> enabled  <span class="p">|</span>               True               <span class="p">|</span>
+<span class="p">|</span>    id    <span class="p">|</span> d839485477e44aa8baabbefd19829392 <span class="p">|</span>
+<span class="p">|</span>   name   <span class="p">|</span>            ceilometer            <span class="p">|</span>
+<span class="p">|</span> username <span class="p">|</span>            ceilometer            <span class="p">|</span>
++----------+----------------------------------+</code></pre></div>
+
+<p>为　ceilometer　用户添加admin角色:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone user-role-add --user ceilometer --tenant service --role admin</code></pre></div>
+
+<p>创建 ceilometer 服务实体:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone service-create --name ceilometer --type metering <span class="se">\</span>
+  --description <span class="s2">&quot;Telemetry&quot;</span>
++-------------+----------------------------------+                                                                                          
+<span class="p">|</span>   Property  <span class="p">|</span>              Value               <span class="p">|</span>                                                                                          
++-------------+----------------------------------+                                                                                          
+<span class="p">|</span> description <span class="p">|</span>            Telemetry             <span class="p">|</span>                                                                                          
+<span class="p">|</span>   enabled   <span class="p">|</span>               True               <span class="p">|</span>                                                                                          
+<span class="p">|</span>      id     <span class="p">|</span> 92a5e6518c1d4b238f66c1358d472196 <span class="p">|</span>                                                                                          
+<span class="p">|</span>     name    <span class="p">|</span>            ceilometer            <span class="p">|</span>                                                                                          
+<span class="p">|</span>     <span class="nb">type</span>    <span class="p">|</span>             metering             <span class="p">|</span>                                                                                          
++-------------+----------------------------------+</code></pre></div>
+
+<p>创建　Telemetry　API　endpoints</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$　</span>keystone endpoint-create <span class="se">\</span>
+  --service-id <span class="k">$(</span>keystone service-list <span class="p">|</span> awk <span class="s1">&#39;/ metering / {print $2}&#39;</span><span class="k">)</span> <span class="se">\</span>
+  --publicurl http://controller:8777 <span class="se">\</span>
+  --internalurl http://controller:8777 <span class="se">\</span>
+  --adminurl http://controller:8777 <span class="se">\</span>
+  --region regionOne
+
++-------------+----------------------------------+                                                                                          
+<span class="p">|</span>   Property  <span class="p">|</span>              Value               <span class="p">|</span>                                                                                          
++-------------+----------------------------------+                                                                                          
+<span class="p">|</span>   adminurl  <span class="p">|</span>      http://controller:8777      <span class="p">|</span>                                                                                          
+<span class="p">|</span>      id     <span class="p">|</span> f513c95f58a54d028c67db8e9d8e1e20 <span class="p">|</span>                                                                                          
+<span class="p">|</span> internalurl <span class="p">|</span>      http://controller:8777      <span class="p">|</span>                                                                                          
+<span class="p">|</span>  publicurl  <span class="p">|</span>      http://controller:8777      <span class="p">|</span>                                                                                          
+<span class="p">|</span>    region   <span class="p">|</span>            regionOne             <span class="p">|</span>
+<span class="p">|</span>  service_id <span class="p">|</span> 92a5e6518c1d4b238f66c1358d472196 <span class="p">|</span>
++-------------+----------------------------------+</code></pre></div>
+
+<h3 id="section-47">10.1.2 配置先决条件</h3>
+
+<p>1 安装包</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install ceilometer-api ceilometer-collector ceilometer-agent-central \</span>
+  ceilometer-agent-notification ceilometer-alarm-evaluator ceilometer-alarm-notifier <span class="se">\</span>
+  python-ceilometerclient</code></pre></div>
+
+<p>2 生成一个随机密码</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># openssl rand -hex 10</span>
+177e8037fc8c7916e329</code></pre></div>
+
+<p>３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： </p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
+<span class="err">...</span>
+<span class="na">rpc_backend</span> <span class="o">=</span> <span class="s">rabbit</span>
+<span class="na">rabbit_host</span> <span class="o">=</span> <span class="s">controller</span>
+<span class="na">rabbit_password</span> <span class="o">=</span> <span class="s">openstack</span>
+<span class="err">...</span>
+<span class="na">auth_strategy</span> <span class="o">=</span> <span class="s">keystone</span>
+<span class="na">verbose</span> <span class="o">=</span> <span class="s">True</span>
+
+<span class="k">[keystone_authtoken]</span>
+<span class="c1">#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.</span>
+<span class="na">auth_uri</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">identity_uri</span> <span class="o">=</span> <span class="s">http://controller:35357</span>
+<span class="na">admin_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">admin_user</span> <span class="o">=</span> <span class="s">ceilometer</span>
+<span class="na">admin_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="k">[database]</span>
+<span class="err">...</span>
+<span class="na">connection</span> <span class="o">=</span> <span class="s">mongodb://ceilometer:openstack@controller:27017/ceilometer</span>
+
+<span class="k">[service_credentials]</span>
+<span class="err">...</span>
+<span class="na">os_auth_url</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">os_username</span> <span class="o">=</span> <span class="s">ceilometer</span>
+<span class="na">os_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">os_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="k">[publisher]</span>
+<span class="err">...</span>
+<span class="na">metering_secret</span> <span class="o">=</span> <span class="s">METERING_SECRET</span></code></pre></div>
+
+<p>把METERING_SECRET替换成我们上一步创建的<code>177e8037fc8c7916e329</code></p>
+
+<p>4 完成安装</p>
+
+<p>重启服务</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service ceilometer-agent-central restart</span>
+<span class="c"># service ceilometer-agent-notification restart</span>
+<span class="c"># service ceilometer-api restart</span>
+<span class="c"># service ceilometer-collector restart</span>
+<span class="c"># service ceilometer-alarm-evaluator restart</span>
+<span class="c"># service ceilometer-alarm-notifier restart</span></code></pre></div>
+
+<h2 id="section-48">10.2 安装配置计算节点</h2>
+
+<p>Telemetry 使用通知和代理的组合来收集计算节点的计费信息，请在每个计算节点上执行下列操作．</p>
+
+<h3 id="agent">10.2.1 安装配置Agent</h3>
+<p>1 </p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install ceilometer-agent-compute</span></code></pre></div>
+
+<p>2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： </p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
+<span class="err">...</span>
+<span class="na">rabbit_host</span> <span class="o">=</span> <span class="s">controller</span>
+<span class="na">rabbit_password</span> <span class="o">=</span> <span class="s">openstack</span>
+<span class="na">verbose</span> <span class="o">=</span> <span class="s">True</span>
+
+<span class="k">[publisher]</span>
+<span class="err">...</span>
+<span class="na">metering_secret</span> <span class="o">=</span> <span class="s">METERING_SECRET</span>
+
+<span class="k">[keystone_authtoken]</span>
+<span class="c1">#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.</span>
+<span class="na">auth_uri</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">identity_uri</span> <span class="o">=</span> <span class="s">http://controller:35357</span>
+<span class="na">admin_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">admin_user</span> <span class="o">=</span> <span class="s">ceilometer</span>
+<span class="na">admin_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="k">[service_credentials]</span>
+<span class="err">...</span>
+<span class="na">os_auth_url</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">os_username</span> <span class="o">=</span> <span class="s">ceilometer</span>
+<span class="na">os_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">os_password</span> <span class="o">=</span> <span class="s">openstack</span>
+<span class="na">os_endpoint_type</span> <span class="o">=</span> <span class="s">internalURL</span>
+<span class="na">os_region_name</span> <span class="o">=</span> <span class="s">regionOne</span></code></pre></div>
+
+<p>把METERING_SECRET替换成我们上一步创建的<code>177e8037fc8c7916e329</code></p>
+
+<h3 id="section-49">10.2.2 安装配置通知</h3>
+
+<p>Edit the /etc/nova/nova.conf file and configure notifications in the [DEFAULT] section:</p>
+
+<p>编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知: </p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
+<span class="na">instance_usage_audit</span> <span class="o">=</span> <span class="s">True</span>
+<span class="na">instance_usage_audit_period</span> <span class="o">=</span> <span class="s">hour</span>
+<span class="na">notify_on_state_change</span> <span class="o">=</span> <span class="s">vm_and_task_state</span>
+<span class="na">notification_driver</span> <span class="o">=</span> <span class="s">messagingv2</span></code></pre></div>
+
+<h3 id="section-50">10.2.3 完成安装</h3>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service ceilometer-agent-compute restart</span>
+<span class="c"># service nova-compute restart</span></code></pre></div>
+
+<h2 id="section-51">10.2 安装配置映像服务</h2>
+
+<p>请在控制节点上运行下面的命令</p>
+
+<p>编辑文件 <code>/etc/glance/glance-api.conf</code> 和 <code>/etc/glance/glance-registry.conf</code> 完成下面所提的操作:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">[</span>DEFAULT<span class="o">]</span>
+...
+<span class="nv">notification_driver</span> <span class="o">=</span> messagingv2
+<span class="nv">rpc_backend</span> <span class="o">=</span> rabbit
+<span class="nv">rabbit_host</span> <span class="o">=</span> controller
+<span class="nv">rabbit_password</span> <span class="o">=</span> openstack</code></pre></div>
+
+<p>重启服务</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service glance-registry restart</span>
+<span class="c"># service glance-api restart</span></code></pre></div>
+
+<h1 id="section-52">11 安装过程中遇到的问题</h1>
+
+<h2 id="section-53">11.1 服务状态不对</h2>
 <p>安装的时候没有把控制节点的hostname改成controller，改完后发现有状态为<code>down</code>的服务</p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">root@localhost:~# nova service-list
@@ -1980,7 +2231,7 @@ root@localhost:~# neutron agent-list
 <span class="p">|</span> fbfc1f77-bee0-413f-a38d-eff804cc573f <span class="p">|</span> Open vSwitch agent <span class="p">|</span> network  <span class="p">|</span> :-<span class="o">)</span>   <span class="p">|</span> True           <span class="p">|</span> neutron-openvswitch-agent <span class="p">|</span>
 +--------------------------------------+--------------------+----------+-------+----------------+---------------------------+</code></pre></div>
 
-<h2 id="section-47">10.2 启动实例时报错</h2>
+<h2 id="section-54">11.2 启动实例时报错</h2>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">Build of instance 84c2c847-bcc7-4fad-8e81-4430b156cc46 aborted: Failed to allocate the network<span class="o">(</span>s<span class="o">)</span>, not rescheduling.</code></pre></div>
 
@@ -2004,9 +2255,11 @@ root@localhost:~# neutron agent-list
 
 <p>仔细查看计算节点上的/etc/neutron/plugins/ml2/ml2_conf.ini 时发现里面有这个<code>bridge_mappings = external:br-ex</code>选项，官方安装文档里没有提这个选项，禁用它试试。</p>
 
-<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="na">bridge_mappings</span> <span class="o">=</span> <span class="s">external:br-ex</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="c1">#bridge_mappings = external:br-ex</span></code></pre></div>
 
-<p>还是报Failed to allocate the network(s), not rescheduling。</p>
+<p>嗯，不报上面的错误了。</p>
+
+<p>不过云主机还是启动不起来，还是报Failed to allocate the network(s), not rescheduling。</p>
 
 <p>查看计算节点compute1上的/var/log/nova/nova-compute.log发现这个错误</p>
 
@@ -2020,6 +2273,577 @@ root@localhost:~# neutron agent-list
 <span class="err">vif_plugging_timeout:</span> <span class="err">0</span></code></pre></div>
 
 <p>实例终于启动起来了。</p>
+
+<p>在我启动控制节点后，</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># nova service-list</span>
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+
+<span class="p">|</span> Id <span class="p">|</span> Binary           <span class="p">|</span> Host       <span class="p">|</span> Zone     <span class="p">|</span> Status  <span class="p">|</span> State <span class="p">|</span> Updated_at                 <span class="p">|</span> Disabled Reason <span class="p">|</span>
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+
+<span class="p">|</span> <span class="m">6</span>  <span class="p">|</span> nova-compute     <span class="p">|</span> compute1   <span class="p">|</span> nova     <span class="p">|</span> enabled <span class="p">|</span> down  <span class="p">|</span> 2015-03-18T09:33:33.000000 <span class="p">|</span> -               <span class="p">|</span>
+<span class="p">|</span> <span class="m">7</span>  <span class="p">|</span> nova-cert        <span class="p">|</span> controller <span class="p">|</span> internal <span class="p">|</span> enabled <span class="p">|</span> down  <span class="p">|</span> 2015-03-18T09:33:26.000000 <span class="p">|</span> -               <span class="p">|</span>
+<span class="p">|</span> <span class="m">8</span>  <span class="p">|</span> nova-scheduler   <span class="p">|</span> controller <span class="p">|</span> internal <span class="p">|</span> enabled <span class="p">|</span> down  <span class="p">|</span> 2015-03-18T09:33:28.000000 <span class="p">|</span> -               <span class="p">|</span>
+<span class="p">|</span> <span class="m">9</span>  <span class="p">|</span> nova-consoleauth <span class="p">|</span> controller <span class="p">|</span> internal <span class="p">|</span> enabled <span class="p">|</span> down  <span class="p">|</span> 2015-03-18T09:33:28.000000 <span class="p">|</span> -               <span class="p">|</span>
+<span class="p">|</span> <span class="m">10</span> <span class="p">|</span> nova-conductor   <span class="p">|</span> controller <span class="p">|</span> internal <span class="p">|</span> enabled <span class="p">|</span> down  <span class="p">|</span> 2015-03-18T09:33:28.000000 <span class="p">|</span> -               <span class="p">|</span>
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+</code></pre></div>
+
+<p>这几个服务的日志报的都是这个错误：</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">AMQP server controller:5672 closed the connection. Check login credentials: Socket closed</code></pre></div>
+
+<p>我傻乎乎的重启了N遍服务，还怀疑是iptables的问题。其它错误里说得挺清楚的：Check login credentials。不过我真没想到重启会让guest的密码失效。重新设置一下这个密码就OK了。</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">rabbitmqctl change_password guest openstack</code></pre></div>
+
+<ul>
+  <li>如何设置ceilometer的轮询间隔</li>
+</ul>
+
+<p><a href="https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/">https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/</a></p>
+
+<h2 id="section-55">启动实例的</h2>
+
+<p>apache的错误日志显示：</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200854 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span> Internal Server Error: /horizon/project/instances/launch
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200922 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span> Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200931 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/core/handlers/base.py&quot;</span>, line 112, in get_response
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200939 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">response</span> <span class="o">=</span> wrapped_callback<span class="o">(</span>request, *callback_args, **callback_kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200945 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&quot;</span>, line 36, in dec
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200952 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> view_func<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200958 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&quot;</span>, line 52, in dec
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200964 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> view_func<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200970 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&quot;</span>, line 36, in dec
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200977 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> view_func<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200983 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&quot;</span>, line 84, in dec
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200989 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> view_func<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.200995 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&quot;</span>, line 69, in view
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201002 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> self.dispatch<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201008 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&quot;</span>, line 87, in dispatch
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201014 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> handler<span class="o">(</span>request, *args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201020 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&quot;</span>, line 165, in post
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201027 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">context</span> <span class="o">=</span> self.get_context_data<span class="o">(</span>**kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201033 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&quot;</span>, line 89, in get_context_data
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201039 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">workflow</span> <span class="o">=</span> self.get_workflow<span class="o">()</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201045 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&quot;</span>, line 79, in get_workflow
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201051 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">entry_point</span><span class="o">=</span>entry_point<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201069 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/workflows/base.py&quot;</span>, line 648, in __init__
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201075 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">valid</span> <span class="o">=</span> step.action.is_valid<span class="o">()</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201081 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&quot;</span>, line 129, in is_valid
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201086 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> self.is_bound and not bool<span class="o">(</span>self.errors<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201092 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&quot;</span>, line 121, in errors
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201097 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     self.full_clean<span class="o">()</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201103 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&quot;</span>, line 274, in full_clean
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201108 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     self._clean_form<span class="o">()</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201113 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&quot;</span>, line 300, in _clean_form
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201119 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     self.cleaned_data <span class="o">=</span> self.clean<span class="o">()</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201124 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/dashboards/project/instances/workflows/create_instance.py&quot;</span>, line 167, in clean
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201131 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">usages</span> <span class="o">=</span> quotas.tenant_quota_usages<span class="o">(</span>self.request<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201136 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/horizon/utils/memoized.py&quot;</span>, line 90, in wrapped
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201142 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">value</span> <span class="o">=</span> cache<span class="o">[</span>key<span class="o">]</span> <span class="o">=</span> func<span class="o">(</span>*args, **kwargs<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201148 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&quot;</span>, line 224, in tenant_quota_usages
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201153 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">disabled_quotas</span><span class="o">=</span>disabled_quotas<span class="o">)</span>:
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201159 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&quot;</span>, line 165, in get_tenant_quota_data
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201165 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="nv">tenant_id</span><span class="o">=</span>tenant_id<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201171 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&quot;</span>, line 147, in _get_quota_data
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201177 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     quotasets.append<span class="o">(</span>getattr<span class="o">(</span>cinder, method_name<span class="o">)(</span>request, tenant_id<span class="o">))</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201182 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/api/cinder.py&quot;</span>, line 363, in tenant_quota_get
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201188 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> base.QuotaSet<span class="o">(</span>c_client.quotas.get<span class="o">(</span>tenant_id<span class="o">))</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201193 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/cinderclient/v1/quotas.py&quot;</span>, line 39, in get
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201199 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="s2">&quot;quota_set&quot;</span><span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201204 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/cinderclient/base.py&quot;</span>, line 151, in _get
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201209 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     <span class="k">return</span> self.resource_class<span class="o">(</span>self, body<span class="o">[</span>response_key<span class="o">]</span>, <span class="nv">loaded</span><span class="o">=</span>True<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201215 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&quot;</span>, line 429, in __init__
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201227 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     self._add_details<span class="o">(</span>info<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201233 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>   File <span class="s2">&quot;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&quot;</span>, line 450, in _add_details
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201238 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span>     setattr<span class="o">(</span>self, k, v<span class="o">)</span>
+<span class="o">[</span>Tue Mar <span class="m">24</span> 17:31:32.201244 2015<span class="o">]</span> <span class="o">[</span>:error<span class="o">]</span> <span class="o">[</span>pid 23314:tid 140209584568064<span class="o">]</span> UnicodeEncodeError: <span class="s1">&#39;ascii&#39;</span> codec can<span class="err">&#39;</span>t encode characters in position 10-11: ordinal not in range<span class="o">(</span>128<span class="o">)</span></code></pre></div>
+
+<p>在看了python对unicode的支持后，修改了源代码　　　
+“/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py”</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">),</span> <span class="n">v</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">))</span>
+<span class="c">#setattr(self, k, v)</span></code></pre></div>
+
+<p>可以了．</p>
+
+<h1 id="section-56">12 安装块存储设备</h1>
+
+<h2 id="section-57">12.1 安装配置控制节点</h2>
+
+<h3 id="section-58">12.1.1 安装准备</h3>
+<ol>
+  <li>配置数据库
+数据库安装在控制节点上。</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>mysql -u root -p</code></pre></div>
+
+<p>创建 cinder 数据库</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">cinder</span><span class="p">;</span>
+
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">cinder</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;cinder&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="err">\</span>
+  <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;openstack&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">cinder</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;cinder&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span> <span class="err">\</span>
+  <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;openstack&#39;</span><span class="p">;</span></code></pre></div>
+
+<ol>
+  <li>用切换到管理员身份</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></div>
+
+<ol>
+  <li>创建服务凭证</li>
+</ol>
+
+<p>创建 cinder 用户</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone user-create --name cinder --pass openstack
++----------+----------------------------------+
+<span class="p">|</span> Property <span class="p">|</span>              Value               <span class="p">|</span>
++----------+----------------------------------+
+<span class="p">|</span>  email   <span class="p">|</span>                                  <span class="p">|</span>
+<span class="p">|</span> enabled  <span class="p">|</span>               True               <span class="p">|</span>
+<span class="p">|</span>    id    <span class="p">|</span> fd7b1e90d1144b669d20040b9c334d88 <span class="p">|</span>
+<span class="p">|</span>   name   <span class="p">|</span>              cinder              <span class="p">|</span>
+<span class="p">|</span> username <span class="p">|</span>              cinder              <span class="p">|</span>
++----------+----------------------------------+</code></pre></div>
+
+<p>为 cinder 用户添加admin角色:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone user-role-add --user cinder --tenant service --role admin</code></pre></div>
+
+<p>创建 cinder 服务实体:</p>
+
+<p><strong>注意</strong> 
+块存储服务需要两个不同的实体以支持v1和v2版本的API．</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone service-create --name cinder --type volume <span class="se">\</span>
+  --description <span class="s2">&quot;OpenStack Block Storage&quot;</span>
++-------------+----------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>              Value               <span class="p">|</span>
++-------------+----------------------------------+
+<span class="p">|</span> description <span class="p">|</span>     OpenStack Block Storage      <span class="p">|</span>
+<span class="p">|</span>   enabled   <span class="p">|</span>               True               <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span> c6a863efddac421cbb6e1585ae0c026d <span class="p">|</span>
+<span class="p">|</span>     name    <span class="p">|</span>              cinder              <span class="p">|</span>
+<span class="p">|</span>     <span class="nb">type</span>    <span class="p">|</span>              volume              <span class="p">|</span>
++-------------+----------------------------------+
+
+<span class="nv">$ </span>keystone service-create --name cinderv2 --type volumev2 <span class="se">\</span>
+  --description <span class="s2">&quot;OpenStack Block Storage&quot;</span>
++-------------+----------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>              Value               <span class="p">|</span>
++-------------+----------------------------------+
+<span class="p">|</span> description <span class="p">|</span>     OpenStack Block Storage      <span class="p">|</span>
+<span class="p">|</span>   enabled   <span class="p">|</span>               True               <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span> 61c641af06544f8eb74a99f4c30b65ee <span class="p">|</span>
+<span class="p">|</span>     name    <span class="p">|</span>             cinderv2             <span class="p">|</span>
+<span class="p">|</span>     <span class="nb">type</span>    <span class="p">|</span>             volumev2             <span class="p">|</span>
++-------------+----------------------------------+</code></pre></div>
+
+<p>创建块存储服务 API 端点:</p>
+
+<p>当然也是两个</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone endpoint-create <span class="se">\</span>
+  --service-id <span class="k">$(</span>keystone service-list <span class="p">|</span> awk <span class="s1">&#39;/ volume / {print $2}&#39;</span><span class="k">)</span> <span class="se">\</span>
+  --publicurl http://controller:8776/v1/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --internalurl http://controller:8776/v1/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --adminurl http://controller:8776/v1/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --region regionOne
++-------------+-----------------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>                  Value                  <span class="p">|</span>
++-------------+-----------------------------------------+
+<span class="p">|</span>   adminurl  <span class="p">|</span> http://controller:8776/v1/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span>     1dadfd1345034f5bbec0a37fbb362e9c    <span class="p">|</span>
+<span class="p">|</span> internalurl <span class="p">|</span> http://controller:8776/v1/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>  publicurl  <span class="p">|</span> http://controller:8776/v1/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>    region   <span class="p">|</span>                regionOne                <span class="p">|</span>
+<span class="p">|</span>  service_id <span class="p">|</span>     c6a863efddac421cbb6e1585ae0c026d    <span class="p">|</span>
++-------------+-----------------------------------------+
+
+
+<span class="nv">$ </span>keystone endpoint-create <span class="se">\</span>
+  --service-id <span class="k">$(</span>keystone service-list <span class="p">|</span> awk <span class="s1">&#39;/ volumev2 / {print $2}&#39;</span><span class="k">)</span> <span class="se">\</span>
+  --publicurl http://controller:8776/v2/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --internalurl http://controller:8776/v2/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --adminurl http://controller:8776/v2/%<span class="se">\(</span>tenant_id<span class="se">\)</span>s <span class="se">\</span>
+  --region regionOne
++-------------+-----------------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>                  Value                  <span class="p">|</span>
++-------------+-----------------------------------------+
+<span class="p">|</span>   adminurl  <span class="p">|</span> http://controller:8776/v2/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span>     8e40819ec3174b52a0d553d5fdec5a98    <span class="p">|</span>
+<span class="p">|</span> internalurl <span class="p">|</span> http://controller:8776/v2/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>  publicurl  <span class="p">|</span> http://controller:8776/v2/%<span class="o">(</span>tenant_id<span class="o">)</span>s <span class="p">|</span>
+<span class="p">|</span>    region   <span class="p">|</span>                regionOne                <span class="p">|</span>
+<span class="p">|</span>  service_id <span class="p">|</span>     61c641af06544f8eb74a99f4c30b65ee    <span class="p">|</span>
++-------------+-----------------------------------------+</code></pre></div>
+
+<h3 id="section-59">12.1.2 安装配置存储控制组件</h3>
+
+<p>1 安装包</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install cinder-api cinder-scheduler python-cinderclient</span></code></pre></div>
+
+<p>2　编辑 /etc/cinder/cinder.conf 完成下列操作： </p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[database]</span>
+<span class="err">...</span>
+<span class="na">connection</span> <span class="o">=</span> <span class="s">mysql://cinder:openstack@controller/cinder</span>
+
+<span class="k">[DEFAULT]</span>
+<span class="err">...</span>
+<span class="na">rpc_backend</span> <span class="o">=</span> <span class="s">rabbit</span>
+<span class="na">rabbit_host</span> <span class="o">=</span> <span class="s">controller</span>
+<span class="na">rabbit_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="na">my_ip</span> <span class="o">=</span> <span class="s">10.0.0.11</span>
+
+<span class="na">verbose</span> <span class="o">=</span> <span class="s">True</span>
+
+<span class="err">...</span>
+<span class="na">auth_strategy</span> <span class="o">=</span> <span class="s">keystone</span>
+ 
+<span class="k">[keystone_authtoken]</span>
+<span class="err">...</span>
+<span class="c1">#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.</span>
+
+<span class="na">auth_uri</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">identity_uri</span> <span class="o">=</span> <span class="s">http://controller:35357</span>
+<span class="na">admin_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">admin_user</span> <span class="o">=</span> <span class="s">cinder</span>
+<span class="na">admin_password</span> <span class="o">=</span> <span class="s">openstack</span></code></pre></div>
+
+<p>3 组装数据库</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># su -s /bin/sh -c &quot;cinder-manage db sync&quot; cinder</span></code></pre></div>
+
+<h3 id="section-60">12.1.3 完成安装</h3>
+
+<p>重启服务</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service cinder-scheduler restart</span>
+<span class="c"># service cinder-api restart</span></code></pre></div>
+
+<p>删除没用的sqlite文件.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># rm -f /var/lib/cinder/cinder.sqlite</span></code></pre></div>
+
+<h2 id="section-61">12.2 安装配置一个存储节点</h2>
+
+<h3 id="to-configure-prerequisites">12.2.1 To configure prerequisites</h3>
+
+<p>需要一台新的虚拟机，当然你要配置安装Ubuntu Cloud的keyring和仓库，配置时间同步，请参考 <strong>基础环境</strong> 那一节</p>
+
+<p>设置hostname为<code>block1</code></p>
+
+<p>配置管理IP</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># The primary network interface</span>
+auto eth0
+iface eth0 inet static
+address 192.168.234.206
+netmask 255.255.255.0
+gateway 192.168.234.1
+
+<span class="c"># management interface</span>
+auto eth0:1
+iface eth0:1 inet static
+address 10.0.0.41
+netmask 255.255.255.0</code></pre></div>
+
+<p>配置 /etc/hosts 加入下面内容</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># block1</span>
+10.0.0.41       block1</code></pre></div>
+
+<p>其它的三个节点的hosts文件里也要加入这一行．</p>
+
+<p>安装lvm包</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># aptitude install lvm2 -y</span></code></pre></div>
+
+<p>我为这个存储节点添加了一块新的虚拟硬盘，可以用fdisk查看一下</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># fdisk -l</span>
+Disk /dev/xvda: 10.7 GB, <span class="m">10737418240</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">1305</span> cylinders, total <span class="m">20971520</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x000db5b8
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvda1            <span class="m">2048</span>      <span class="m">499711</span>      <span class="m">248832</span>   <span class="m">83</span>  Linux
+/dev/xvda2          <span class="m">501758</span>    <span class="m">20969471</span>    <span class="m">10233857</span>    <span class="m">5</span>  Extended
+/dev/xvda5          <span class="m">501760</span>    <span class="m">20969471</span>    <span class="m">10233856</span>   8e  Linux LVM
+
+Disk /dev/xvdb: 21.5 GB, <span class="m">21474836480</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">2610</span> cylinders, total <span class="m">41943040</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x00000000
+
+Disk /dev/xvdb doesn<span class="s1">&#39;t contain a valid partition table</span>
+
+<span class="s1">Disk /dev/mapper/ubuntu1404server--vg-root: 9944 MB, 9944694784 bytes</span>
+<span class="s1">255 heads, 63 sectors/track, 1209 cylinders, total 19423232 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0x00000000</span>
+
+<span class="s1">Disk /dev/mapper/ubuntu1404server--vg-root doesn&#39;</span>t contain a valid partition table
+
+Disk /dev/mapper/ubuntu1404server--vg-swap_1: <span class="m">532</span> MB, <span class="m">532676608</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">64</span> cylinders, total <span class="m">1040384</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn<span class="err">&#39;</span>t contain a valid partition table</code></pre></div>
+
+<p>可以看到新加的disk没有分区，我们来把它分成lvm的分区,具体请参考<a href="/blog/other/config-lvm/">我的这篇blog</a>.
+分区完成后我们再看看分区表</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># fdisk -l</span>
+
+Disk /dev/xvda: 10.7 GB, <span class="m">10737418240</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">1305</span> cylinders, total <span class="m">20971520</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x000db5b8
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvda1            <span class="m">2048</span>      <span class="m">499711</span>      <span class="m">248832</span>   <span class="m">83</span>  Linux
+/dev/xvda2          <span class="m">501758</span>    <span class="m">20969471</span>    <span class="m">10233857</span>    <span class="m">5</span>  Extended
+/dev/xvda5          <span class="m">501760</span>    <span class="m">20969471</span>    <span class="m">10233856</span>   8e  Linux LVM
+
+Disk /dev/xvdb: 21.5 GB, <span class="m">21474836480</span> bytes
+<span class="m">213</span> heads, <span class="m">34</span> sectors/track, <span class="m">5791</span> cylinders, total <span class="m">41943040</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x38c87633
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvdb1            <span class="m">2048</span>    <span class="m">41943039</span>    <span class="m">20970496</span>   8e  Linux LVM
+
+Disk /dev/mapper/ubuntu1404server--vg-root: <span class="m">9944</span> MB, <span class="m">9944694784</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">1209</span> cylinders, total <span class="m">19423232</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain a valid partition table</span>
+
+<span class="s1">Disk /dev/mapper/ubuntu1404server--vg-swap_1: 532 MB, 532676608 bytes</span>
+<span class="s1">255 heads, 63 sectors/track, 64 cylinders, total 1040384 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0x00000000</span>
+
+<span class="s1">Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn&#39;</span>t contain a valid partition table</code></pre></div>
+
+<p>/dev/xvdb1 已经是lvm的了,用它创建一个物理卷.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># pvcreate /dev/xvdb1</span>
+  Physical volume <span class="s2">&quot;/dev/xvdb1&quot;</span> successfully created</code></pre></div>
+
+<p>这样我们就创建了一个物理卷，名叫<code>/dev/xvdb1</code>,跟它的设备名是一样的．</p>
+
+<p>创建一个卷组(Volume Group),这个物理加到这个卷组中．</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># vgcreate cinder-volumes /dev/xvdb1</span>
+  Volume group <span class="s2">&quot;cinder-volumes&quot;</span> successfully created</code></pre></div>
+
+<p><code>cinder-volumes</code>是cinder默认使用的卷组，如果你的卷组不叫这个也没关系，可以在cinder.conf中修改．
+创建完卷组就OK了，创建逻辑卷的工作就交给OpenStack了．</p>
+
+<p>有一项非常重要的工作要做．
+默认的lvm卷扫描工具会扫描 <code>/dev</code>目录来查看包含逻辑卷的设备，如果tenant创建了一个lvm的卷的话，那存储节点上的lvm会发现并缓存他们，会导致存储节点和tenant的主机都有问题．所以我们要限制lvm只扫描包含”cinder-volumes”的设备</p>
+
+<p>编辑　 /etc/lvm/lvm.conf</p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="err">devices</span> <span class="err">{</span>
+<span class="err">...</span>
+<span class="na">filter</span> <span class="o">=</span> <span class="s">[ &quot;a/xvda/&quot;,&quot;a/xvdb/&quot;, &quot;r/.*/&quot;]</span></code></pre></div>
+
+<p>我为什么会把”a/xvda/”这个加到过滤器里，是因为我的节点的操作系统ubuntu是装在lvm上的，所以我必须允许lvm扫描这个设备.
+你可以使用<code>vgs -vvvv</code>来测试你的过滤器．</p>
+
+<p>如果你的计算节点也使用了lvm，你也要同时设置扫描过滤器．</p>
+
+<h3 id="section-62">12.2.2 安装包</h3>
+
+<p>１　</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install cinder-volume python-mysqldb</span></code></pre></div>
+
+<p>编辑　/etc/cinder/cinder.conf　完成下列操作：</p>
+
+<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
+<span class="err">...</span>
+<span class="na">rpc_backend</span> <span class="o">=</span> <span class="s">rabbit</span>
+<span class="na">rabbit_host</span> <span class="o">=</span> <span class="s">controller</span>
+<span class="na">rabbit_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="na">my_ip</span> <span class="o">=</span> <span class="s">10.0.0.41</span>
+<span class="na">glance_host</span> <span class="o">=</span> <span class="s">controller</span>
+<span class="na">verbose</span> <span class="o">=</span> <span class="s">True</span>
+<span class="na">auth_strategy</span> <span class="o">=</span> <span class="s">keystone</span>
+ 
+<span class="k">[keystone_authtoken]</span>
+<span class="err">...</span>
+<span class="na">auth_uri</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
+<span class="na">identity_uri</span> <span class="o">=</span> <span class="s">http://controller:35357</span>
+<span class="na">admin_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
+<span class="na">admin_user</span> <span class="o">=</span> <span class="s">cinder</span>
+<span class="na">admin_password</span> <span class="o">=</span> <span class="s">openstack</span>
+
+<span class="k">[database]</span>
+<span class="err">...</span>
+<span class="na">connection</span> <span class="o">=</span> <span class="s">mysql://cinder:openstack@controller/cinder</span></code></pre></div>
+
+<h3 id="section-63">12.2.3 完成安装</h3>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service tgt restart</span>
+<span class="c"># service cinder-volume restart</span>
+<span class="c"># rm -f /var/lib/cinder/cinder.sqlite</span></code></pre></div>
+
+<h2 id="section-64">12.3 验证安装</h2>
+
+<p><strong>请在控制节点上运行下面的命令</strong></p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></div>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># cinder service-list                                                                                                      </span>
++------------------+------------+------+---------+-------+----------------------------+-----------------+                                   
+<span class="p">|</span>      Binary      <span class="p">|</span>    Host    <span class="p">|</span> Zone <span class="p">|</span>  Status <span class="p">|</span> State <span class="p">|</span>         Updated_at         <span class="p">|</span> Disabled Reason <span class="p">|</span>                                   
++------------------+------------+------+---------+-------+----------------------------+-----------------+                                   
+<span class="p">|</span> cinder-scheduler <span class="p">|</span> controller <span class="p">|</span> nova <span class="p">|</span> enabled <span class="p">|</span>   up  <span class="p">|</span> 2015-03-20T03:46:57.000000 <span class="p">|</span>       None      <span class="p">|</span>
+<span class="p">|</span>  cinder-volume   <span class="p">|</span>   block1   <span class="p">|</span> nova <span class="p">|</span> enabled <span class="p">|</span>   up  <span class="p">|</span> 2015-03-20T03:46:53.000000 <span class="p">|</span>       None      <span class="p">|</span>
++------------------+------------+------+---------+-------+----------------------------+-----------------+</code></pre></div>
+
+<p>切换成demo租户</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">source </span>demo-openrc.sh</code></pre></div>
+
+<p>创建一个卷</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>cinder create --display-name demo-volume1 1</code></pre></div>
+
+<p>查看这个新建的卷</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>cinder list</code></pre></div>
+
+<h1 id="ec2api">13 启用EC2兼容API</h1>
+
+<p><strong>请在控制节点上运行下面的命令</strong></p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></div>
+
+<p>１　创建EC2的服务</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">＃　keystone service-create --name<span class="o">=</span>ec2 <span class="se">\</span>
+                        --type<span class="o">=</span>ec2 <span class="se">\</span>
+                        --description<span class="o">=</span><span class="s2">&quot;EC2 Compatibility Layer&quot;</span>
+
++-------------+----------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>              Value               <span class="p">|</span>
++-------------+----------------------------------+
+<span class="p">|</span> description <span class="p">|</span>     EC2 Compatibility Layer      <span class="p">|</span>
+<span class="p">|</span>   enabled   <span class="p">|</span>               True               <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span> a18a1b887b484ed6a1130174ccb8eb5f <span class="p">|</span>
+<span class="p">|</span>     name    <span class="p">|</span>               ec2                <span class="p">|</span>
+<span class="p">|</span>     <span class="nb">type</span>    <span class="p">|</span>               ec2                <span class="p">|</span>
++-------------+----------------------------------+</code></pre></div>
+
+<p>２　创建EC2 API端点</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># keystone endpoint-create --region regionOne --service-id  $(keystone service-list | awk &#39;/ ec2 / {print $2}&#39;) \</span>
+        --publicurl <span class="s2">&quot;http://$CONTROLLER_PUBLIC_ADDRESS:8773/services/Cloud&quot;</span> <span class="se">\</span>
+        --adminurl <span class="s2">&quot;http://$CONTROLLER_ADMIN_ADDRESS:8773/services/Admin&quot;</span> <span class="se">\</span>
+        --internalurl <span class="s2">&quot;http://$CONTROLLER_INTERNAL_ADDRESS:8773/services/Cloud&quot;</span>
++-------------+--------------------------------------------+
+<span class="p">|</span>   Property  <span class="p">|</span>                   Value                    <span class="p">|</span>
++-------------+--------------------------------------------+
+<span class="p">|</span>   adminurl  <span class="p">|</span>   http://controller:8773/services/Admin    <span class="p">|</span>
+<span class="p">|</span>      id     <span class="p">|</span>      b903c22bab8d412b96ff6839f5131f24      <span class="p">|</span>
+<span class="p">|</span> internalurl <span class="p">|</span>   http://controller:8773/services/Cloud    <span class="p">|</span>
+<span class="p">|</span>  publicurl  <span class="p">|</span> http://192.168.234.202:8773/services/Cloud <span class="p">|</span>
+<span class="p">|</span>    region   <span class="p">|</span>                 RegionOne                  <span class="p">|</span>
+<span class="p">|</span>  service_id <span class="p">|</span>      a18a1b887b484ed6a1130174ccb8eb5f      <span class="p">|</span>
++-------------+--------------------------------------------+</code></pre></div>
+
+<p>$EC2_SERVICE就是上一条命令创建的<code>a18a1b887b484ed6a1130174ccb8eb5f</code>   <br />
+本文中$CONTROLLER_PUBLIC_ADDRESS为：192.168.234.202,$CONTROLLER_ADMIN_ADDRESS为:10.0.0.11</p>
+
+<p>重启服务</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service nova-cert restart</span>
+<span class="c"># service nova-api restart</span></code></pre></div>
+
+<p>３　验证安装</p>
+
+<p>首先要为用户生成AK(access key)和SK(secret key),我们来为demo这个用户来生成AK和SK．</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$　</span>keystone tenant-list
++----------------------------------+---------+---------+
+<span class="p">|</span>                id                <span class="p">|</span>   name  <span class="p">|</span> enabled <span class="p">|</span>
++----------------------------------+---------+---------+
+<span class="p">|</span> 357abecb4def441eb7a36e7cf5d173c4 <span class="p">|</span>  admin  <span class="p">|</span>   True  <span class="p">|</span>
+<span class="p">|</span> 6245a74d882e451c8d7663a46103b8b2 <span class="p">|</span>   demo  <span class="p">|</span>   True  <span class="p">|</span>
+<span class="p">|</span> 0357b13cb33941bda442094eda169625 <span class="p">|</span>   lxl   <span class="p">|</span>   True  <span class="p">|</span>
+<span class="p">|</span> ef36de18149b4c809c4b26b63b6dda37 <span class="p">|</span> service <span class="p">|</span>   True  <span class="p">|</span>
+<span class="p">|</span> 04015ed1fdb94efb80bab7916fbf1660 <span class="p">|</span>   zlq   <span class="p">|</span>   True  <span class="p">|</span>
++----------------------------------+---------+---------+
+
+<span class="nv">$　</span>keystone user-list
++----------------------------------+-----------------------------+---------+-----------------------------+
+<span class="p">|</span>                id                <span class="p">|</span>             name            <span class="p">|</span> enabled <span class="p">|</span>            email            <span class="p">|</span>
++----------------------------------+-----------------------------+---------+-----------------------------+
+<span class="p">|</span> c2ba205513e448098f0e0daf80f2f649 <span class="p">|</span>            admin            <span class="p">|</span>   True  <span class="p">|</span>      admin@example.com      <span class="p">|</span>
+<span class="p">|</span> d839485477e44aa8baabbefd19829392 <span class="p">|</span>          ceilometer         <span class="p">|</span>   True  <span class="p">|</span>                             <span class="p">|</span>
+<span class="p">|</span> fd7b1e90d1144b669d20040b9c334d88 <span class="p">|</span>            cinder           <span class="p">|</span>   True  <span class="p">|</span>                             <span class="p">|</span>
+<span class="p">|</span> 54a55d3f3c1f4797bb82d196e6c02ccd <span class="p">|</span>             demo            <span class="p">|</span>   True  <span class="p">|</span>       demo@example.com      <span class="p">|</span>
+<span class="p">|</span> 924b65933a294f0bb5e26945689c2c38 <span class="p">|</span>            glance           <span class="p">|</span>   True  <span class="p">|</span>                             <span class="p">|</span>
+<span class="p">|</span> 0c138994a2304fe5b38eb2a709d6e3fd <span class="p">|</span> liqiang.zhang@ecloud.com.cn <span class="p">|</span>   True  <span class="p">|</span> liqiang.zhang@ecloud.com.cn <span class="p">|</span>
+<span class="p">|</span> f0d885f2c2e9498189b61ebb28475f35 <span class="p">|</span>             lxl             <span class="p">|</span>   True  <span class="p">|</span>      xiaoreqing@126.com     <span class="p">|</span>
+<span class="p">|</span> d9ea6a6733934f139a42dfad12f1009a <span class="p">|</span>           neutron           <span class="p">|</span>   True  <span class="p">|</span>                             <span class="p">|</span>
+<span class="p">|</span> 952eae64d8124b06812a5bb595f3690f <span class="p">|</span>             nova            <span class="p">|</span>   True  <span class="p">|</span>                             <span class="p">|</span>
++----------------------------------+-----------------------------+---------+-----------------------------+
+
+
+<span class="nv">$ </span>keystone ec2-credentials-create --tenant-id<span class="o">=</span>357abecb4def441eb7a36e7cf5d173c4 --user-id<span class="o">=</span>c2ba205513e448098f0e0daf80f2f649
++-----------+----------------------------------+
+<span class="p">|</span>  Property <span class="p">|</span>              Value               <span class="p">|</span>
++-----------+----------------------------------+
+<span class="p">|</span>   access  <span class="p">|</span> 6ccf7c40bebe4984964e1ada23680941 <span class="p">|</span>
+<span class="p">|</span>   secret  <span class="p">|</span> 6cdaaa769e3c4fb58aeac0de49b01658 <span class="p">|</span>
+<span class="p">|</span> tenant_id <span class="p">|</span> 357abecb4def441eb7a36e7cf5d173c4 <span class="p">|</span>
+<span class="p">|</span>  trust_id <span class="p">|</span>                                  <span class="p">|</span>
+<span class="p">|</span>  user_id  <span class="p">|</span> c2ba205513e448098f0e0daf80f2f649 <span class="p">|</span>
++-----------+----------------------------------+</code></pre></div>
+
+<p>把下面的变量加入admin-openrc.sh</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nb">export </span><span class="nv">EC2_ACCESS_KEY</span><span class="o">=</span>6ccf7c40bebe4984964e1ada23680941
+<span class="nb">export </span><span class="nv">EC2_SECRET_KEY</span><span class="o">=</span>6cdaaa769e3c4fb58aeac0de49b01658
+<span class="nb">export </span><span class="nv">EC2_URL</span><span class="o">=</span>http://controller:8773/services/Cloud</code></pre></div>
+
+<p>参考：　
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
 
 
                 <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">[Read More]</a></p>
@@ -2035,10 +2859,10 @@ root@localhost:~# neutron agent-list
 				-->   
                 <a href="/blog/other/config-lvm"><h3 class="ctitle">配置LVM</h3></a>
                 <p><csmall>Jan 30, 2015. | By: 任怀林</csmall></p>
-                <p>为虚拟机新加一块disk，用fdisk把它分成lvm的分区。</p>
+                <p>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。</p>
 
-<p>root@localhost:~# fdisk /dev/xvdb 
-Command (m for help): m
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">root@localhost:~# fdisk /dev/xvdb 
+Command <span class="o">(</span>m <span class="k">for</span> <span class="nb">help</span><span class="o">)</span>: m
 Command action
    a   toggle a bootable flag
    b   edit bsd disklabel
@@ -2051,164 +2875,178 @@ Command action
    p   print the partition table
    q   quit without saving changes
    s   create a new empty Sun disklabel
-   t   change a partition’s system id
+   t   change a partition<span class="err">&#39;</span>s system id
    u   change display/entry units
    v   verify the partition table
-   w   write table to disk and exit
-   x   extra functionality (experts only)</p>
+   w   write table to disk and <span class="nb">exit</span>
+<span class="nb">   </span>x   extra functionality <span class="o">(</span>experts only<span class="o">)</span></code></pre></div>
 
-<h1 id="section">显示当前的分区表</h1>
-<p>Command (m for help): p </p>
+<p>2 显示当前的分区表</p>
 
-<p>Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">Command <span class="o">(</span>m <span class="k">for</span> <span class="nb">help</span><span class="o">)</span>: p 
 
-<pre><code>Device Boot      Start         End      Blocks   Id  System
-</code></pre>
-
-<h1 id="section-1">创建一个新的分区</h1>
-<p>Command (m for help): n
-Partition type:
-   p   primary (0 primary, 0 extended, 4 free)
-   e   extended
-Select (default p): 
-Using default response p
-Partition number (1-4, default 1): 
-Using default value 1
-First sector (2048-209715199, default 2048): 
-Using default value 2048</p>
-
-<h1 id="section-2">这里把整个盘分成了一个区</h1>
-<p>Last sector, +sectors or +size{K,M,G} (2048-209715199, default 209715199): 
-Using default value 209715199</p>
-
-<h1 id="lvm">把分区类型转成lvm</h1>
-<p>Command (m for help): t
-Selected partition 1
-#如果不记得分区的类型的代码了，可以用L命令显示分区类型列表
-Hex code (type L to list codes): L</p>
-
-<p>0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris      <br />
- 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec (FAT-
- 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec (FAT-
- 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
- 4  FAT16 &lt;32M      40  Venix 80286     85  Linux extended  c7  Syrinx       <br />
- 5  Extended        41  PPC PReP Boot   86  NTFS volume set da  Non-FS data  <br />
- 6  FAT16           42  SFS             87  NTFS volume set db  CP/M / CTOS / .
- 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility <br />
- 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt       <br />
- 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access   <br />
- a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O      <br />
- b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor    <br />
- c  W95 FAT32 (LBA) 52  CP/M            a0  IBM Thinkpad hi eb  BeOS fs      <br />
- e  W95 FAT16 (LBA) 53  OnTrack DM6 Aux a5  FreeBSD         ee  GPT          <br />
- f  W95 Ext’d (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/
-10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b
-11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor    <br />
-12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor    <br />
-14  Hidden FAT16 &lt;3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary<br />
-16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS  <br />
-17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
-18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto
-1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep      <br />
-1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT          <br />
-1e  Hidden W95 FAT1 80  Old Minix    <br />
-Hex code (type L to list codes): 8e
-Changed system type of partition 1 to 8e (Linux LVM)</p>
-
-<h1 id="section-3">再看一下</h1>
-<p>Command (m for help): p</p>
-
-<p>Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e</p>
-
-<pre><code>Device Boot      Start         End      Blocks   Id  System /dev/xvdb1            2048   209715199   104856576   8e  Linux LVM
-</code></pre>
-
-<h1 id="section-4">写入分区信息</h1>
-<p>Command (m for help): w
-The partition table has been altered!</p>
-
-<p>Calling ioctl() to re-read partition table.
-Syncing disks.</p>
-
-<h1 id="section-5">重新加载分区信息</h1>
-<p>root@localhost:~# partprobe 
-root@localhost:~# fdisk -l</p>
-
-<p>Disk /dev/xvda: 32.2 GB, 32212254720 bytes
-255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00020a62</p>
-
-<pre><code>Device Boot      Start         End      Blocks   Id  System /dev/xvda1            2048      499711      248832   83  Linux /dev/xvda2          501758    62912511    31205377    5  Extended /dev/xvda5          501760    62912511    31205376   8e  Linux LVM
-</code></pre>
-
-<p>Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-43 heads, 44 sectors/track, 110843 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk /dev/xvdb: 107.4 GB, <span class="m">107374182400</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">13054</span> cylinders, total <span class="m">209715200</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
 Disk identifier: 0xdd2fff2e
-#这是我们刚创建的lvm分区
-    Device Boot      Start         End      Blocks   Id  System
-/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM</p>
 
-<p>Disk /dev/mapper/localhost–vg-root: 30.6 GB, 30614224896 bytes
-255 heads, 63 sectors/track, 3721 cylinders, total 59793408 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000</p>
+    Device Boot      Start         End      Blocks   Id  System</code></pre></div>
 
-<p>Disk /dev/mapper/localhost–vg-root doesn’t contain a valid partition table</p>
+<h1 id="section">创建一个新的分区</h1>
 
-<p>Disk /dev/mapper/localhost–vg-swap_1: 1337 MB, 1337982976 bytes
-255 heads, 63 sectors/track, 162 cylinders, total 2613248 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">Command <span class="o">(</span>m <span class="k">for</span> <span class="nb">help</span><span class="o">)</span>: n
+Partition <span class="nb">type</span>:
+   p   primary <span class="o">(</span><span class="m">0</span> primary, <span class="m">0</span> extended, <span class="m">4</span> free<span class="o">)</span>
+   e   extended
 
-<p>Disk /dev/mapper/localhost–vg-swap_1 doesn’t contain a valid partition table</p>
+<span class="c">#创建一个主分区</span>
+Select <span class="o">(</span>default p<span class="o">)</span>: 
+Using default response p
 
-<h1 id="lvmpv">创建一个lvm物理卷pv</h1>
-<p>root@localhost:~# pvcreate /dev/xvdb1
-  Physical volume “/dev/xvdb1” successfully created</p>
+<span class="c">#按提示来，用默认值</span>
+Partition number <span class="o">(</span>1-4, default 1<span class="o">)</span>: 
+Using default value 1
 
-<p>root@localhost:~# pvscan
-  PV /dev/xvda5   VG localhost-vg    lvm2 [29.76 GiB / 0    free]
-  PV /dev/xvdb1                      lvm2 [100.00 GiB]
-  Total: 2 [129.76 GiB] / in use: 1 [29.76 GiB] / in no VG: 1 [100.00 GiB]</p>
+<span class="c">#按提示来，用默认值</span>
+First sector <span class="o">(</span>2048-209715199, default 2048<span class="o">)</span>: 
+Using default value 2048
 
-<h1 id="ubuntulvmvg">因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。</h1>
-<p>root@localhost:~# vgscan
-  Reading all physical volumes.  This may take a while…
-  Found volume group “localhost-vg” using metadata type lvm2</p>
+<span class="c">#这里把整个盘分成了一个区</span>
+Last sector, +sectors or +size<span class="o">{</span>K,M,G<span class="o">}</span> <span class="o">(</span>2048-209715199, default 209715199<span class="o">)</span>: 
+Using default value 209715199
 
-<h1 id="pvvg">把新建的pv添加到vg里吧</h1>
-<p>root@localhost:~# vgextend localhost-vg /dev/xvdb1
-  Volume group “localhost-vg” successfully extended
-#看一下vg的详情</p>
 
-<p>root@localhost:~# vgdisplay 
-  — Volume group —
+<span class="c"># 把分区类型转成lvm</span>
+Command <span class="o">(</span>m <span class="k">for</span> <span class="nb">help</span><span class="o">)</span>: t
+Selected partition 1
+
+<span class="c">#如果不记得分区的类型的代码了，可以用L命令显示分区类型列表</span>
+Hex code <span class="o">(</span><span class="nb">type </span>L to list codes<span class="o">)</span>: L
+
+ <span class="m">0</span>  Empty           <span class="m">24</span>  NEC DOS         <span class="m">81</span>  Minix / old Lin bf  Solaris        
+ <span class="m">1</span>  FAT12           <span class="m">27</span>  Hidden NTFS Win <span class="m">82</span>  Linux swap / So c1  DRDOS/sec <span class="o">(</span>FAT-
+ <span class="m">2</span>  XENIX root      <span class="m">39</span>  Plan <span class="m">9</span>          <span class="m">83</span>  Linux           c4  DRDOS/sec <span class="o">(</span>FAT-
+ <span class="m">3</span>  XENIX usr       3c  PartitionMagic  <span class="m">84</span>  OS/2 hidden C:  c6  DRDOS/sec <span class="o">(</span>FAT-
+ <span class="m">4</span>  FAT16 &lt;32M      <span class="m">40</span>  Venix <span class="m">80286</span>     <span class="m">85</span>  Linux extended  c7  Syrinx         
+ <span class="m">5</span>  Extended        <span class="m">41</span>  PPC PReP Boot   <span class="m">86</span>  NTFS volume <span class="nb">set </span>da  Non-FS data    
+ <span class="m">6</span>  FAT16           <span class="m">42</span>  SFS             <span class="m">87</span>  NTFS volume <span class="nb">set </span>db  CP/M / CTOS / .
+ <span class="m">7</span>  HPFS/NTFS/exFAT 4d  QNX4.x          <span class="m">88</span>  Linux plaintext de  Dell Utility   
+ <span class="m">8</span>  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt         
+ <span class="m">9</span>  AIX bootable    4f  QNX4.x 3rd part <span class="m">93</span>  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag <span class="m">50</span>  OnTrack DM      <span class="m">94</span>  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       <span class="m">51</span>  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 <span class="o">(</span>LBA<span class="o">)</span> <span class="m">52</span>  CP/M            a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 <span class="o">(</span>LBA<span class="o">)</span> <span class="m">53</span>  OnTrack DM6 Aux a5  FreeBSD         ee  GPT            
+ f  W95 Ext<span class="s1">&#39;d (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/</span>
+<span class="s1">10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b</span>
+<span class="s1">11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor      </span>
+<span class="s1">12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor      </span>
+<span class="s1">14  Hidden FAT16 &lt;3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary  </span>
+<span class="s1">16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS    </span>
+<span class="s1">17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE </span>
+<span class="s1">18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto</span>
+<span class="s1">1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep        </span>
+<span class="s1">1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT            </span>
+<span class="s1">1e  Hidden W95 FAT1 80  Old Minix      </span>
+<span class="s1">Hex code (type L to list codes): 8e</span>
+<span class="s1">Changed system type of partition 1 to 8e (Linux LVM)</span>
+
+<span class="s1">#再看一下</span>
+<span class="s1">Command (m for help): p</span>
+
+<span class="s1">Disk /dev/xvdb: 107.4 GB, 107374182400 bytes</span>
+<span class="s1">255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0xdd2fff2e</span>
+
+<span class="s1">    Device Boot      Start         End      Blocks   Id  System</span>
+<span class="s1">/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM</span>
+
+<span class="s1">#写入分区信息</span>
+<span class="s1">Command (m for help): w</span>
+<span class="s1">The partition table has been altered!</span>
+
+<span class="s1">Calling ioctl() to re-read partition table.</span>
+<span class="s1">Syncing disks.</span>
+
+<span class="s1">#重新加载分区信息</span>
+<span class="s1">root@localhost:~# partprobe </span>
+<span class="s1">root@localhost:~# fdisk -l</span>
+
+<span class="s1">Disk /dev/xvda: 32.2 GB, 32212254720 bytes</span>
+<span class="s1">255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0x00020a62</span>
+
+<span class="s1">    Device Boot      Start         End      Blocks   Id  System</span>
+<span class="s1">/dev/xvda1            2048      499711      248832   83  Linux</span>
+<span class="s1">/dev/xvda2          501758    62912511    31205377    5  Extended</span>
+<span class="s1">/dev/xvda5          501760    62912511    31205376   8e  Linux LVM</span>
+
+<span class="s1">Disk /dev/xvdb: 107.4 GB, 107374182400 bytes</span>
+<span class="s1">43 heads, 44 sectors/track, 110843 cylinders, total 209715200 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0xdd2fff2e</span>
+<span class="s1">#这是我们刚创建的lvm分区</span>
+<span class="s1">    Device Boot      Start         End      Blocks   Id  System</span>
+<span class="s1">/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM</span>
+
+<span class="s1">Disk /dev/mapper/localhost--vg-root: 30.6 GB, 30614224896 bytes</span>
+<span class="s1">255 heads, 63 sectors/track, 3721 cylinders, total 59793408 sectors</span>
+<span class="s1">Units = sectors of 1 * 512 = 512 bytes</span>
+<span class="s1">Sector size (logical/physical): 512 bytes / 512 bytes</span>
+<span class="s1">I/O size (minimum/optimal): 512 bytes / 512 bytes</span>
+<span class="s1">Disk identifier: 0x00000000</span>
+
+<span class="s1">Disk /dev/mapper/localhost--vg-root doesn&#39;</span>t contain a valid partition table
+
+Disk /dev/mapper/localhost--vg-swap_1: <span class="m">1337</span> MB, <span class="m">1337982976</span> bytes
+<span class="m">255</span> heads, <span class="m">63</span> sectors/track, <span class="m">162</span> cylinders, total <span class="m">2613248</span> sectors
+<span class="nv">Units</span> <span class="o">=</span> sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/localhost--vg-swap_1 doesn<span class="err">&#39;</span>t contain a valid partition table
+
+<span class="c">#创建一个lvm物理卷pv</span>
+root@localhost:~# pvcreate /dev/xvdb1
+  Physical volume <span class="s2">&quot;/dev/xvdb1&quot;</span> successfully created
+  
+root@localhost:~# pvscan
+  PV /dev/xvda5   VG localhost-vg    lvm2 <span class="o">[</span>29.76 GiB / <span class="m">0</span>    free<span class="o">]</span>
+  PV /dev/xvdb1                      lvm2 <span class="o">[</span>100.00 GiB<span class="o">]</span>
+  Total: <span class="m">2</span> <span class="o">[</span>129.76 GiB<span class="o">]</span> / in use: <span class="m">1</span> <span class="o">[</span>29.76 GiB<span class="o">]</span> / in no VG: <span class="m">1</span> <span class="o">[</span>100.00 GiB<span class="o">]</span>
+  
+  
+  
+<span class="c">#因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。</span>
+root@localhost:~# vgscan
+  Reading all physical volumes.  This may take a <span class="k">while</span>...
+  Found volume group <span class="s2">&quot;localhost-vg&quot;</span> using metadata <span class="nb">type </span>lvm2
+  
+
+<span class="c">#把新建的pv添加到vg里吧</span>
+root@localhost:~# vgextend localhost-vg /dev/xvdb1
+  Volume group <span class="s2">&quot;localhost-vg&quot;</span> successfully extended
+<span class="c">#看一下vg的详情</span>
+
+root@localhost:~# vgdisplay 
+  --- Volume group ---
   VG Name               localhost-vg
-  System ID           <br />
+  System ID             
   Format                lvm2
   Metadata Areas        2
   Metadata Sequence No  4
-  VG Access             read/write
+  VG Access             <span class="nb">read</span>/write
   VG Status             resizable
   MAX LV                0
   Cur LV                2
@@ -2219,60 +3057,61 @@ Disk identifier: 0x00000000</p>
   VG Size               129.75 GiB
   PE Size               4.00 MiB
   Total PE              33217
-  Alloc PE / Size       7618 / 29.76 GiB
-  Free  PE / Size       25599 / 100.00 GiB  &lt;= 这个信息很重要，我们在扩大lv时要用到
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF</p>
+  Alloc PE / Size       <span class="m">7618</span> / 29.76 GiB
+  Free  PE / Size       <span class="m">25599</span> / 100.00 GiB  &lt;<span class="o">=</span> 这个信息很重要，我们在扩大lv时要用到
+  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
 
-<h1 id="lv">看看系统里的逻辑卷lv吧</h1>
-<p>root@localhost:~# lvdisplay 
-  — Logical volume —
+<span class="c">#看看系统里的逻辑卷lv吧</span>
+root@localhost:~# lvdisplay 
+  --- Logical volume ---
   LV Path                /dev/localhost-vg/root
   LV Name                root
   VG Name                localhost-vg
   LV UUID                YfzzNm-ozhH-k2r2-KucH-p2he-CcVj-SCpuAr
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
+  LV Write Access        <span class="nb">read</span>/write
+  LV Creation host, <span class="nb">time </span>localhost, 2015-01-26 16:36:55 +0800
   LV Status              available
-  # open                 1
-  LV Size                28.51 GiB  &lt;= 大小还没变
+  <span class="c"># open                 1</span>
+  LV Size                28.51 GiB  &lt;<span class="o">=</span> 大小还没变
   Current LE             7299
   Segments               1
   Allocation             inherit
   Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:0</p>
-
-<p>— Logical volume —
+  - currently <span class="nb">set </span>to     256
+  Block device           252:0
+   
+  --- Logical volume ---
   LV Path                /dev/localhost-vg/swap_1
   LV Name                swap_1
   VG Name                localhost-vg
   LV UUID                6Kid6V-tQ1B-TT43-g7at-Ha1d-yR3X-DomZA7
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
+  LV Write Access        <span class="nb">read</span>/write
+  LV Creation host, <span class="nb">time </span>localhost, 2015-01-26 16:36:55 +0800
   LV Status              available
-  # open                 2
+  <span class="c"># open                 2</span>
   LV Size                1.25 GiB
   Current LE             319
   Segments               1
   Allocation             inherit
   Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:1</p>
+  - currently <span class="nb">set </span>to     256
+  Block device           252:1
 
-<h1 id="lvvgdisplayfree--pe--size-------25599--10000-gib-lv">扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.</h1>
-<p>root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
+<span class="c">#扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.</span>
+root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
   Extending logical volume root to 128.51 GiB
-  Logical volume root successfully resized</p>
-
-<h1 id="vgfree-pe0">再看看vg,会发现Free PE数量为0了。</h1>
-<p>root@localhost:~# vgdisplay
-  — Volume group —
+  Logical volume root successfully resized
+  
+  
+<span class="c">#再看看vg,会发现Free PE数量为0了。</span>
+root@localhost:~# vgdisplay
+  --- Volume group ---
   VG Name               localhost-vg
-  System ID           <br />
+  System ID             
   Format                lvm2
   Metadata Areas        2
   Metadata Sequence No  5
-  VG Access             read/write
+  VG Access             <span class="nb">read</span>/write
   VG Status             resizable
   MAX LV                0
   Cur LV                2
@@ -2283,41 +3122,42 @@ Disk identifier: 0x00000000</p>
   VG Size               129.75 GiB
   PE Size               4.00 MiB
   Total PE              33217
-  Alloc PE / Size       33217 / 129.75 GiB
-  Free  PE / Size       0 / 0 <br />
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF</p>
+  Alloc PE / Size       <span class="m">33217</span> / 129.75 GiB
+  Free  PE / Size       <span class="m">0</span> / <span class="m">0</span>   
+  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
 
-<h1 id="df">df一下看看。</h1>
-<p>root@localhost:~# df -h
+
+<span class="c">#df一下看看。</span>
+root@localhost:~# df -h
 Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost–vg-root   28G  1.3G   26G   5% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
+/dev/mapper/localhost--vg-root   28G  1.3G   26G   5% /
+none                            4.0K     <span class="m">0</span>  4.0K   0% /sys/fs/cgroup
 udev                            4.8G  4.0K  4.8G   1% /dev
 tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot</p>
+none                            5.0M     <span class="m">0</span>  5.0M   0% /run/lock
+none                            4.8G     <span class="m">0</span>  4.8G   0% /run/shm
+none                            100M     <span class="m">0</span>  100M   0% /run/user
+/dev/xvda1                      236M   37M  187M  17% /boot
 
-<h1 id="whatlv">What!为什么这里的容量还不对？因为你只是调整了lv的大小，它上面的文件系统还不知道呢。</h1>
-<p>#好吧，我们来把lv的容量扩到文件系统里吧。<br />
-root@localhost:~# resize2fs /dev/mapper/localhost–vg-root 
-resize2fs 1.42.9 (4-Feb-2014)
-Filesystem at /dev/mapper/localhost–vg-root is mounted on /; on-line resizing required
-old_desc_blocks = 2, new_desc_blocks = 9
-The filesystem on /dev/mapper/localhost–vg-root is now 33687552 blocks long.</p>
+<span class="c">#What!为什么这里的容量还不对？因为你只是调整了lv的大小，它上面的文件系统还不知道呢。</span>
+<span class="c">#好吧，我们来把lv的容量扩到文件系统里吧。  </span>
+root@localhost:~# resize2fs /dev/mapper/localhost--vg-root 
+resize2fs 1.42.9 <span class="o">(</span>4-Feb-2014<span class="o">)</span>
+Filesystem at /dev/mapper/localhost--vg-root is mounted on /<span class="p">;</span> on-line resizing required
+<span class="nv">old_desc_blocks</span> <span class="o">=</span> 2, <span class="nv">new_desc_blocks</span> <span class="o">=</span> 9
+The filesystem on /dev/mapper/localhost--vg-root is now <span class="m">33687552</span> blocks long.
 
-<h1 id="ok">再看看吧，OK!</h1>
-<p>root@localhost:~# df -h
+<span class="c">#再看看吧，OK!</span>
+root@localhost:~# df -h
 Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost–vg-root  127G  1.3G  120G   2% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
+/dev/mapper/localhost--vg-root  127G  1.3G  120G   2% /
+none                            4.0K     <span class="m">0</span>  4.0K   0% /sys/fs/cgroup
 udev                            4.8G  4.0K  4.8G   1% /dev
 tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot</p>
+none                            5.0M     <span class="m">0</span>  5.0M   0% /run/lock
+none                            4.8G     <span class="m">0</span>  4.8G   0% /run/shm
+none                            100M     <span class="m">0</span>  100M   0% /run/user
+/dev/xvda1                      236M   37M  187M  17% /boot</code></pre></div>
 
 
                 <p><a href="/blog/other/config-lvm">[Read More]</a></p>

@@ -10,8 +10,9 @@ thumb: linux.png
 ---
 
 
-为虚拟机新加一块disk，用fdisk把它分成lvm的分区。
+1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。
 
+{% highlight sh %}
 root@localhost:~# fdisk /dev/xvdb 
 Command (m for help): m
 Command action
@@ -31,8 +32,11 @@ Command action
    v   verify the partition table
    w   write table to disk and exit
    x   extra functionality (experts only)
+{% endhighlight %}
+
    
-#显示当前的分区表
+2 显示当前的分区表
+{% highlight sh %}
 Command (m for help): p 
 
 Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
@@ -43,17 +47,27 @@ I/O size (minimum/optimal): 512 bytes / 512 bytes
 Disk identifier: 0xdd2fff2e
 
     Device Boot      Start         End      Blocks   Id  System
+{% endhighlight %}
+
 
 
 #创建一个新的分区
+
+{% highlight sh %}
 Command (m for help): n
 Partition type:
    p   primary (0 primary, 0 extended, 4 free)
    e   extended
+
+#创建一个主分区
 Select (default p): 
 Using default response p
+
+#按提示来，用默认值
 Partition number (1-4, default 1): 
 Using default value 1
+
+#按提示来，用默认值
 First sector (2048-209715199, default 2048): 
 Using default value 2048
 
@@ -61,9 +75,11 @@ Using default value 2048
 Last sector, +sectors or +size{K,M,G} (2048-209715199, default 209715199): 
 Using default value 209715199
 
+
 # 把分区类型转成lvm
 Command (m for help): t
 Selected partition 1
+
 #如果不记得分区的类型的代码了，可以用L命令显示分区类型列表
 Hex code (type L to list codes): L
 
@@ -300,4 +316,4 @@ none                            5.0M     0  5.0M   0% /run/lock
 none                            4.8G     0  4.8G   0% /run/shm
 none                            100M     0  100M   0% /run/user
 /dev/xvda1                      236M   37M  187M  17% /boot
-
+{% endhighlight %}

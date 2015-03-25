@@ -5,8 +5,8 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 18 Mar 2015 17:21:21 +0800</pubDate>
-    <lastBuildDate>Wed, 18 Mar 2015 17:21:21 +0800</lastBuildDate>
+    <pubDate>Wed, 25 Mar 2015 15:55:03 +0800</pubDate>
+    <lastBuildDate>Wed, 25 Mar 2015 15:55:03 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -87,26 +87,26 @@ ifconfig br-ex 192.168.234.205&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;/etc/network/interfaces  &lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;#The primary network interface&lt;/span&gt;
-auto eth0
-iface eth0 inet static
-address 192.168.234.203
-netmask 255.255.255.0
-gateway 192.168.234.1
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-aconf&quot; data-lang=&quot;aconf&quot;&gt;&lt;span class=&quot;c&quot;&gt;# This file describes the network interfaces available on your system                                                                       &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# and how to activate them. For more information, see interfaces(5).                                                                        &lt;/span&gt;
 
-&lt;span class=&quot;c&quot;&gt;#management interface&lt;/span&gt;
-auto eth0:1
-iface eth0:1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-gateway 10.0.0.1
+&lt;span class=&quot;c&quot;&gt;# The loopback network interface&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;auto&lt;/span&gt; lo
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; lo inet loopback
 
+&lt;span class=&quot;c&quot;&gt;# The primary network interface&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;auto&lt;/span&gt; eth0
+&lt;span class=&quot;c&quot;&gt;#iface eth0 inet dhcp&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; eth0 inet static
+&lt;span class=&quot;nb&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;192.168.234.202&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;netmask&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;255.255.255.0&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;gateway&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;192.168.234.1&lt;/span&gt;
 
-&lt;span class=&quot;c&quot;&gt;#Instance tunnels interface.&lt;/span&gt;
-auto eth0:2
-iface eth0:2 inet static
-address 10.0.1.21
-netmask 255.255.255.0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;c&quot;&gt;# OpenStack management interface.&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; eth0:1 inet static
+&lt;span class=&quot;nb&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10.0.0.11&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;netmask&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;255.255.255.0&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;gateway&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10.0.0.1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;/etc/hosts   &lt;/p&gt;
 
@@ -122,26 +122,26 @@ netmask 255.255.255.0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h2 id=&quot;network-node&quot;&gt;2.2 网络节点 network node&lt;/h2&gt;
 &lt;p&gt;/etc/network/interfaces    &lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;#The primary network interface&lt;/span&gt;
-auto eth0
-iface eth0 inet static
-address 192.168.234.203
-netmask 255.255.255.0
-gateway 192.168.234.1
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-aconf&quot; data-lang=&quot;aconf&quot;&gt;&lt;span class=&quot;c&quot;&gt;#The primary network interface&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;auto&lt;/span&gt; eth0
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; eth0 inet static
+&lt;span class=&quot;nb&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;192.168.234.205&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;netmask&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;255.255.255.0&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;gateway&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;192.168.234.1&lt;/span&gt;
 
 &lt;span class=&quot;c&quot;&gt;#management interface&lt;/span&gt;
-auto eth1:1
-iface eth0:1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-gateway 10.0.0.1
+&lt;span class=&quot;nb&quot;&gt;auto&lt;/span&gt; eth1:1
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; eth0:1 inet static
+&lt;span class=&quot;nb&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10.0.0.21&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;netmask&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;255.255.255.0&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;gateway&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10.0.0.1&lt;/span&gt;
 
 
 &lt;span class=&quot;c&quot;&gt;#Instance tunnels interface.&lt;/span&gt;
-auto eth1:2
-iface eth0:2 inet static
-address 10.0.1.21
-netmask 255.255.255.0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;nb&quot;&gt;auto&lt;/span&gt; eth1:2
+&lt;span class=&quot;nb&quot;&gt;iface&lt;/span&gt; eth0:2 inet static
+&lt;span class=&quot;nb&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10.0.1.21&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;netmask&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;255.255.255.0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;/etc/hosts  &lt;/p&gt;
 
@@ -312,6 +312,23 @@ character-set-server &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; utf8&lt;/cod
 &lt;p&gt;RabbitMQ在安装时创建了一个用户&lt;code&gt;guest&lt;/code&gt;,我们就用这个用户了，只是把他的密码修改为&lt;code&gt;openstack&lt;/code&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# rabbitmqctl change_password guest openstack&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For RabbitMQ version 3.3.0 or newer, you must enable remote access for the guest account.&lt;/p&gt;
+
+&lt;p&gt;Check the RabbitMQ version:&lt;/p&gt;
+
+&lt;h1 id=&quot;rabbitmqctl-status--grep-rabbit&quot;&gt;rabbitmqctl status | grep rabbit&lt;/h1&gt;
+&lt;p&gt;Status of node ‘rabbit@controller’ …
+ {running_applications,[{rabbit,”RabbitMQ”,”3.4.2”},
+If necessary, edit the /etc/rabbitmq/rabbitmq.config file and configure loopback_users to reference an empty list:&lt;/p&gt;
+
+&lt;p&gt;[{rabbit, [{loopback_users, []}]}].
+[Note]	Note
+Contents of the original file might vary depending on the source of the RabbitMQ package. In some cases, you might need to create this file.&lt;/p&gt;
+
+&lt;p&gt;Restart the message broker service:&lt;/p&gt;
+
+&lt;h1 id=&quot;service-rabbitmq-server-restart&quot;&gt;service rabbitmq-server restart&lt;/h1&gt;
 
 &lt;h1 id=&quot;openstack-openstack-identity-service&quot;&gt;5 安装OpenStack的认证服务 OpenStack Identity service&lt;/h1&gt;
 
@@ -1836,9 +1853,243 @@ Set gateway &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; router demo-router&
 
 &lt;p&gt;在浏览器里输入：http://controller/horizon，来访问Horizon。&lt;/p&gt;
 
-&lt;h1 id=&quot;section-45&quot;&gt;10 安装过程中遇到的问题&lt;/h1&gt;
+&lt;h1 id=&quot;telemetry&quot;&gt;10 安装Telemetry&lt;/h1&gt;
 
-&lt;h2 id=&quot;section-46&quot;&gt;10.1 服务状态不对&lt;/h2&gt;
+&lt;p&gt;Telemetry的组件信息请参考官方文档&lt;/p&gt;
+
+&lt;h2 id=&quot;section-45&quot;&gt;10. 1 安装配置控制节点&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-46&quot;&gt;10.1.1 配置先决条件&lt;/h3&gt;
+
+&lt;p&gt;１　安装　MongoDB&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-aconf&quot; data-lang=&quot;aconf&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install mongodb-server mongodb-clients python-pymongo&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;２　编辑 /etc/mongodb.conf file 完成下列操作：  &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-aconf&quot; data-lang=&quot;aconf&quot;&gt;&lt;span class=&quot;nb&quot;&gt;bind_ip&lt;/span&gt; = &lt;span class=&quot;m&quot;&gt;10.0.0.11&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;smallfiles&lt;/span&gt; = true&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;执行命令&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service mongodb stop&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# rm /var/lib/mongodb/journal/prealloc.*&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service mongodb start&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;３　创建　ceilometer　数据库&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# mongo --host controller --eval &amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; db.getSiblingDB&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;ceilometer&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  db.addUser&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;user: &lt;span class=&quot;s2&quot;&gt;&amp;quot;ceilometer&amp;quot;&lt;/span&gt;,
+  &lt;span class=&quot;nb&quot;&gt;pwd&lt;/span&gt;: &lt;span class=&quot;s2&quot;&gt;&amp;quot;openstack&amp;quot;&lt;/span&gt;,
+  roles: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;readWrite&amp;quot;&lt;/span&gt;, &lt;span class=&quot;s2&quot;&gt;&amp;quot;dbAdmin&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]})&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;
+  
+MongoDB shell version: 2.4.9
+connecting to: controller:27017/test
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;user&amp;quot;&lt;/span&gt; : &lt;span class=&quot;s2&quot;&gt;&amp;quot;ceilometer&amp;quot;&lt;/span&gt;,
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;pwd&amp;quot;&lt;/span&gt; : &lt;span class=&quot;s2&quot;&gt;&amp;quot;347ed5cbd578cb16ce413fe1d085ce2f&amp;quot;&lt;/span&gt;,
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;roles&amp;quot;&lt;/span&gt; : &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+                &lt;span class=&quot;s2&quot;&gt;&amp;quot;readWrite&amp;quot;&lt;/span&gt;,
+                &lt;span class=&quot;s2&quot;&gt;&amp;quot;dbAdmin&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;,
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;_id&amp;quot;&lt;/span&gt; : ObjectId&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;550a3f247f38cb43ba640fd7&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;4 切换到管理员身份&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;admin-openrc.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;５　
+创建　ceilometer　用户&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone user-create --name ceilometer --pass openstack
++----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Property &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  email   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    id    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; d839485477e44aa8baabbefd19829392 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   name   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            ceilometer            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; username &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            ceilometer            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;为　ceilometer　用户添加admin角色:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone user-role-add --user ceilometer --tenant service --role admin&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建 ceilometer 服务实体:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone service-create --name ceilometer --type metering &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --description &lt;span class=&quot;s2&quot;&gt;&amp;quot;Telemetry&amp;quot;&lt;/span&gt;
++-------------+----------------------------------+                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
++-------------+----------------------------------+                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; description &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            Telemetry             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   enabled   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 92a5e6518c1d4b238f66c1358d472196 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     name    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            ceilometer            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             metering             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
++-------------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建　Telemetry　API　endpoints&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$　&lt;/span&gt;keystone endpoint-create &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --service-id &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;keystone service-list &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; awk &lt;span class=&quot;s1&quot;&gt;&amp;#39;/ metering / {print $2}&amp;#39;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --publicurl http://controller:8777 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --internalurl http://controller:8777 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --adminurl http://controller:8777 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --region regionOne
+
++-------------+----------------------------------+                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
++-------------+----------------------------------+                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   adminurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      http://controller:8777      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; f513c95f58a54d028c67db8e9d8e1e20 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internalurl &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      http://controller:8777      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  publicurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      http://controller:8777      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                                          
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    region   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            regionOne             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  service_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 92a5e6518c1d4b238f66c1358d472196 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-47&quot;&gt;10.1.2 配置先决条件&lt;/h3&gt;
+
+&lt;p&gt;1 安装包&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install ceilometer-api ceilometer-collector ceilometer-agent-central \&lt;/span&gt;
+  ceilometer-agent-notification ceilometer-alarm-evaluator ceilometer-alarm-notifier &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  python-ceilometerclient&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;2 生成一个随机密码&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# openssl rand -hex 10&lt;/span&gt;
+177e8037fc8c7916e329&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rpc_backend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;rabbit&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;identity_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:35357&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ceilometer&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[database]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mongodb://ceilometer:openstack@controller:27017/ceilometer&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[service_credentials]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_auth_url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_username&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ceilometer&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[publisher]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;metering_secret&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;METERING_SECRET&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;把METERING_SECRET替换成我们上一步创建的&lt;code&gt;177e8037fc8c7916e329&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;4 完成安装&lt;/p&gt;
+
+&lt;p&gt;重启服务&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service ceilometer-agent-central restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service ceilometer-agent-notification restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service ceilometer-api restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service ceilometer-collector restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service ceilometer-alarm-evaluator restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service ceilometer-alarm-notifier restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-48&quot;&gt;10.2 安装配置计算节点&lt;/h2&gt;
+
+&lt;p&gt;Telemetry 使用通知和代理的组合来收集计算节点的计费信息，请在每个计算节点上执行下列操作．&lt;/p&gt;
+
+&lt;h3 id=&quot;agent&quot;&gt;10.2.1 安装配置Agent&lt;/h3&gt;
+&lt;p&gt;1 &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install ceilometer-agent-compute&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[publisher]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;metering_secret&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;METERING_SECRET&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;identity_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:35357&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ceilometer&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[service_credentials]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_auth_url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_username&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ceilometer&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_endpoint_type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;internalURL&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;os_region_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;regionOne&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;把METERING_SECRET替换成我们上一步创建的&lt;code&gt;177e8037fc8c7916e329&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-49&quot;&gt;10.2.2 安装配置通知&lt;/h3&gt;
+
+&lt;p&gt;Edit the /etc/nova/nova.conf file and configure notifications in the [DEFAULT] section:&lt;/p&gt;
+
+&lt;p&gt;编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知: &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;instance_usage_audit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;instance_usage_audit_period&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hour&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;notify_on_state_change&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;vm_and_task_state&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;notification_driver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;messagingv2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-50&quot;&gt;10.2.3 完成安装&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service ceilometer-agent-compute restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service nova-compute restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-51&quot;&gt;10.2 安装配置映像服务&lt;/h2&gt;
+
+&lt;p&gt;请在控制节点上运行下面的命令&lt;/p&gt;
+
+&lt;p&gt;编辑文件 &lt;code&gt;/etc/glance/glance-api.conf&lt;/code&gt; 和 &lt;code&gt;/etc/glance/glance-registry.conf&lt;/code&gt; 完成下面所提的操作:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;DEFAULT&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+...
+&lt;span class=&quot;nv&quot;&gt;notification_driver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; messagingv2
+&lt;span class=&quot;nv&quot;&gt;rpc_backend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; rabbit
+&lt;span class=&quot;nv&quot;&gt;rabbit_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; controller
+&lt;span class=&quot;nv&quot;&gt;rabbit_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; openstack&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重启服务&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service glance-registry restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service glance-api restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;section-52&quot;&gt;11 安装过程中遇到的问题&lt;/h1&gt;
+
+&lt;h2 id=&quot;section-53&quot;&gt;11.1 服务状态不对&lt;/h2&gt;
 &lt;p&gt;安装的时候没有把控制节点的hostname改成controller，改完后发现有状态为&lt;code&gt;down&lt;/code&gt;的服务&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;root@localhost:~# nova service-list
@@ -1912,7 +2163,7 @@ root@localhost:~# neutron agent-list
 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; fbfc1f77-bee0-413f-a38d-eff804cc573f &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Open vSwitch agent &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; network  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; :-&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; True           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; neutron-openvswitch-agent &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
 +--------------------------------------+--------------------+----------+-------+----------------+---------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;section-47&quot;&gt;10.2 启动实例时报错&lt;/h2&gt;
+&lt;h2 id=&quot;section-54&quot;&gt;11.2 启动实例时报错&lt;/h2&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;Build of instance 84c2c847-bcc7-4fad-8e81-4430b156cc46 aborted: Failed to allocate the network&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, not rescheduling.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -1936,9 +2187,11 @@ root@localhost:~# neutron agent-list
 
 &lt;p&gt;仔细查看计算节点上的/etc/neutron/plugins/ml2/ml2_conf.ini 时发现里面有这个&lt;code&gt;bridge_mappings = external:br-ex&lt;/code&gt;选项，官方安装文档里没有提这个选项，禁用它试试。&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;na&quot;&gt;bridge_mappings&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;external:br-ex&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#bridge_mappings = external:br-ex&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;还是报Failed to allocate the network(s), not rescheduling。&lt;/p&gt;
+&lt;p&gt;嗯，不报上面的错误了。&lt;/p&gt;
+
+&lt;p&gt;不过云主机还是启动不起来，还是报Failed to allocate the network(s), not rescheduling。&lt;/p&gt;
 
 &lt;p&gt;查看计算节点compute1上的/var/log/nova/nova-compute.log发现这个错误&lt;/p&gt;
 
@@ -1952,6 +2205,577 @@ root@localhost:~# neutron agent-list
 &lt;span class=&quot;err&quot;&gt;vif_plugging_timeout:&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;实例终于启动起来了。&lt;/p&gt;
+
+&lt;p&gt;在我启动控制节点后，&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# nova service-list&lt;/span&gt;
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Binary           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Host       &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Zone     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Status  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; State &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Updated_at                 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Disabled Reason &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova-compute     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; compute1   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; down  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-18T09:33:33.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova-cert        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; controller &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internal &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; down  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-18T09:33:26.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova-scheduler   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; controller &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internal &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; down  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-18T09:33:28.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova-consoleauth &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; controller &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internal &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; down  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-18T09:33:28.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova-conductor   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; controller &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internal &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; down  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-18T09:33:28.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----+------------------+------------+----------+---------+-------+----------------------------+-----------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这几个服务的日志报的都是这个错误：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;AMQP server controller:5672 closed the connection. Check login credentials: Socket closed&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我傻乎乎的重启了N遍服务，还怀疑是iptables的问题。其它错误里说得挺清楚的：Check login credentials。不过我真没想到重启会让guest的密码失效。重新设置一下这个密码就OK了。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;rabbitmqctl change_password guest openstack&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;如何设置ceilometer的轮询间隔&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/&quot;&gt;https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-55&quot;&gt;启动实例的&lt;/h2&gt;
+
+&lt;p&gt;apache的错误日志显示：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200854 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Internal Server Error: /horizon/project/instances/launch
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200922 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Traceback &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;most recent call last&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;:
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200931 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/core/handlers/base.py&amp;quot;&lt;/span&gt;, line 112, in get_response
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200939 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; wrapped_callback&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *callback_args, **callback_kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200945 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&amp;quot;&lt;/span&gt;, line 36, in dec
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200952 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; view_func&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200958 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&amp;quot;&lt;/span&gt;, line 52, in dec
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200964 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; view_func&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200970 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&amp;quot;&lt;/span&gt;, line 36, in dec
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200977 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; view_func&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200983 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/decorators.py&amp;quot;&lt;/span&gt;, line 84, in dec
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200989 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; view_func&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.200995 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&amp;quot;&lt;/span&gt;, line 69, in view
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201002 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; self.dispatch&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201008 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&amp;quot;&lt;/span&gt;, line 87, in dispatch
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201014 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; handler&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request, *args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201020 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&amp;quot;&lt;/span&gt;, line 165, in post
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201027 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; self.get_context_data&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;**kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201033 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&amp;quot;&lt;/span&gt;, line 89, in get_context_data
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201039 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;workflow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; self.get_workflow&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201045 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&amp;quot;&lt;/span&gt;, line 79, in get_workflow
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201051 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;entry_point&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;entry_point&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201069 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/workflows/base.py&amp;quot;&lt;/span&gt;, line 648, in __init__
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201075 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;valid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; step.action.is_valid&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201081 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&amp;quot;&lt;/span&gt;, line 129, in is_valid
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201086 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; self.is_bound and not bool&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;self.errors&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201092 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&amp;quot;&lt;/span&gt;, line 121, in errors
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201097 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     self.full_clean&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201103 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&amp;quot;&lt;/span&gt;, line 274, in full_clean
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201108 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     self._clean_form&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201113 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/django/forms/forms.py&amp;quot;&lt;/span&gt;, line 300, in _clean_form
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201119 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     self.cleaned_data &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; self.clean&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201124 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/dashboards/project/instances/workflows/create_instance.py&amp;quot;&lt;/span&gt;, line 167, in clean
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201131 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;usages&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; quotas.tenant_quota_usages&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;self.request&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201136 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/horizon/utils/memoized.py&amp;quot;&lt;/span&gt;, line 90, in wrapped
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201142 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; cache&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;key&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; func&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;*args, **kwargs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201148 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&amp;quot;&lt;/span&gt;, line 224, in tenant_quota_usages
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201153 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;disabled_quotas&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;disabled_quotas&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;:
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201159 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&amp;quot;&lt;/span&gt;, line 165, in get_tenant_quota_data
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201165 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;tenant_id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201171 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&amp;quot;&lt;/span&gt;, line 147, in _get_quota_data
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201177 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     quotasets.append&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;getattr&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cinder, method_name&lt;span class=&quot;o&quot;&gt;)(&lt;/span&gt;request, tenant_id&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201182 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/api/cinder.py&amp;quot;&lt;/span&gt;, line 363, in tenant_quota_get
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201188 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; base.QuotaSet&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;c_client.quotas.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201193 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/cinderclient/v1/quotas.py&amp;quot;&lt;/span&gt;, line 39, in get
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201199 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;s2&quot;&gt;&amp;quot;quota_set&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201204 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/cinderclient/base.py&amp;quot;&lt;/span&gt;, line 151, in _get
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201209 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; self.resource_class&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;self, body&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;response_key&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;loaded&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;True&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201215 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&amp;quot;&lt;/span&gt;, line 429, in __init__
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201227 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     self._add_details&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201233 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   File &lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&amp;quot;&lt;/span&gt;, line 450, in _add_details
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201238 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     setattr&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;self, k, v&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Tue Mar &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt; 17:31:32.201244 2015&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:error&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid 23314:tid 140209584568064&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; UnicodeEncodeError: &lt;span class=&quot;s1&quot;&gt;&amp;#39;ascii&amp;#39;&lt;/span&gt; codec can&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;t encode characters in position 10-11: ordinal not in range&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;128&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在看了python对unicode的支持后，修改了源代码　　　
+“/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py”&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;setattr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;UTF-8&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;UTF-8&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#setattr(self, k, v)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可以了．&lt;/p&gt;
+
+&lt;h1 id=&quot;section-56&quot;&gt;12 安装块存储设备&lt;/h1&gt;
+
+&lt;h2 id=&quot;section-57&quot;&gt;12.1 安装配置控制节点&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-58&quot;&gt;12.1.1 安装准备&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;配置数据库
+数据库安装在控制节点上。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;mysql -u root -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建 cinder 数据库&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cinder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cinder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;cinder&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;openstack&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cinder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;cinder&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;%&amp;#39;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;openstack&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;用切换到管理员身份&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;admin-openrc.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;创建服务凭证&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;创建 cinder 用户&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone user-create --name cinder --pass openstack
++----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Property &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  email   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    id    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; fd7b1e90d1144b669d20040b9c334d88 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   name   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              cinder              &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; username &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              cinder              &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;为 cinder 用户添加admin角色:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone user-role-add --user cinder --tenant service --role admin&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建 cinder 服务实体:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt; 
+块存储服务需要两个不同的实体以支持v1和v2版本的API．&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone service-create --name cinder --type volume &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --description &lt;span class=&quot;s2&quot;&gt;&amp;quot;OpenStack Block Storage&amp;quot;&lt;/span&gt;
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; description &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     OpenStack Block Storage      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   enabled   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; c6a863efddac421cbb6e1585ae0c026d &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     name    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              cinder              &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              volume              &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone service-create --name cinderv2 --type volumev2 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --description &lt;span class=&quot;s2&quot;&gt;&amp;quot;OpenStack Block Storage&amp;quot;&lt;/span&gt;
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; description &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     OpenStack Block Storage      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   enabled   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 61c641af06544f8eb74a99f4c30b65ee &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     name    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             cinderv2             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             volumev2             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建块存储服务 API 端点:&lt;/p&gt;
+
+&lt;p&gt;当然也是两个&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone endpoint-create &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --service-id &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;keystone service-list &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; awk &lt;span class=&quot;s1&quot;&gt;&amp;#39;/ volume / {print $2}&amp;#39;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --publicurl http://controller:8776/v1/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --internalurl http://controller:8776/v1/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --adminurl http://controller:8776/v1/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --region regionOne
++-------------+-----------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                  Value                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+-----------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   adminurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v1/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     1dadfd1345034f5bbec0a37fbb362e9c    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internalurl &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v1/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  publicurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v1/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    region   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                regionOne                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  service_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     c6a863efddac421cbb6e1585ae0c026d    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+-----------------------------------------+
+
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone endpoint-create &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --service-id &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;keystone service-list &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; awk &lt;span class=&quot;s1&quot;&gt;&amp;#39;/ volumev2 / {print $2}&amp;#39;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --publicurl http://controller:8776/v2/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --internalurl http://controller:8776/v2/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --adminurl http://controller:8776/v2/%&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;tenant_id&lt;span class=&quot;se&quot;&gt;\)&lt;/span&gt;s &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --region regionOne
++-------------+-----------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                  Value                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+-----------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   adminurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v2/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     8e40819ec3174b52a0d553d5fdec5a98    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internalurl &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v2/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  publicurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://controller:8776/v2/%&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;tenant_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;s &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    region   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                regionOne                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  service_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     61c641af06544f8eb74a99f4c30b65ee    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+-----------------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-59&quot;&gt;12.1.2 安装配置存储控制组件&lt;/h3&gt;
+
+&lt;p&gt;1 安装包&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install cinder-api cinder-scheduler python-cinderclient&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;2　编辑 /etc/cinder/cinder.conf 完成下列操作： &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[database]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql://cinder:openstack@controller/cinder&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rpc_backend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;rabbit&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;my_ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;10.0.0.11&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
+ 
+&lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;auth_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;identity_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:35357&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cinder&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;3 组装数据库&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# su -s /bin/sh -c &amp;quot;cinder-manage db sync&amp;quot; cinder&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-60&quot;&gt;12.1.3 完成安装&lt;/h3&gt;
+
+&lt;p&gt;重启服务&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service cinder-scheduler restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service cinder-api restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;删除没用的sqlite文件.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# rm -f /var/lib/cinder/cinder.sqlite&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-61&quot;&gt;12.2 安装配置一个存储节点&lt;/h2&gt;
+
+&lt;h3 id=&quot;to-configure-prerequisites&quot;&gt;12.2.1 To configure prerequisites&lt;/h3&gt;
+
+&lt;p&gt;需要一台新的虚拟机，当然你要配置安装Ubuntu Cloud的keyring和仓库，配置时间同步，请参考 &lt;strong&gt;基础环境&lt;/strong&gt; 那一节&lt;/p&gt;
+
+&lt;p&gt;设置hostname为&lt;code&gt;block1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;配置管理IP&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# The primary network interface&lt;/span&gt;
+auto eth0
+iface eth0 inet static
+address 192.168.234.206
+netmask 255.255.255.0
+gateway 192.168.234.1
+
+&lt;span class=&quot;c&quot;&gt;# management interface&lt;/span&gt;
+auto eth0:1
+iface eth0:1 inet static
+address 10.0.0.41
+netmask 255.255.255.0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;配置 /etc/hosts 加入下面内容&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# block1&lt;/span&gt;
+10.0.0.41       block1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;其它的三个节点的hosts文件里也要加入这一行．&lt;/p&gt;
+
+&lt;p&gt;安装lvm包&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# aptitude install lvm2 -y&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我为这个存储节点添加了一块新的虚拟硬盘，可以用fdisk查看一下&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# fdisk -l&lt;/span&gt;
+Disk /dev/xvda: 10.7 GB, &lt;span class=&quot;m&quot;&gt;10737418240&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;1305&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;20971520&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x000db5b8
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvda1            &lt;span class=&quot;m&quot;&gt;2048&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;499711&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;248832&lt;/span&gt;   &lt;span class=&quot;m&quot;&gt;83&lt;/span&gt;  Linux
+/dev/xvda2          &lt;span class=&quot;m&quot;&gt;501758&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;20969471&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;10233857&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;  Extended
+/dev/xvda5          &lt;span class=&quot;m&quot;&gt;501760&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;20969471&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;10233856&lt;/span&gt;   8e  Linux LVM
+
+Disk /dev/xvdb: 21.5 GB, &lt;span class=&quot;m&quot;&gt;21474836480&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;2610&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;41943040&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x00000000
+
+Disk /dev/xvdb doesn&lt;span class=&quot;s1&quot;&gt;&amp;#39;t contain a valid partition table&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/ubuntu1404server--vg-root: 9944 MB, 9944694784 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;255 heads, 63 sectors/track, 1209 cylinders, total 19423232 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0x00000000&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/ubuntu1404server--vg-root doesn&amp;#39;&lt;/span&gt;t contain a valid partition table
+
+Disk /dev/mapper/ubuntu1404server--vg-swap_1: &lt;span class=&quot;m&quot;&gt;532&lt;/span&gt; MB, &lt;span class=&quot;m&quot;&gt;532676608&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;64&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;1040384&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;t contain a valid partition table&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可以看到新加的disk没有分区，我们来把它分成lvm的分区,具体请参考&lt;a href=&quot;/blog/other/config-lvm/&quot;&gt;我的这篇blog&lt;/a&gt;.
+分区完成后我们再看看分区表&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# fdisk -l&lt;/span&gt;
+
+Disk /dev/xvda: 10.7 GB, &lt;span class=&quot;m&quot;&gt;10737418240&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;1305&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;20971520&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x000db5b8
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvda1            &lt;span class=&quot;m&quot;&gt;2048&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;499711&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;248832&lt;/span&gt;   &lt;span class=&quot;m&quot;&gt;83&lt;/span&gt;  Linux
+/dev/xvda2          &lt;span class=&quot;m&quot;&gt;501758&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;20969471&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;10233857&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;  Extended
+/dev/xvda5          &lt;span class=&quot;m&quot;&gt;501760&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;20969471&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;10233856&lt;/span&gt;   8e  Linux LVM
+
+Disk /dev/xvdb: 21.5 GB, &lt;span class=&quot;m&quot;&gt;21474836480&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;213&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;34&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;5791&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;41943040&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x38c87633
+
+    Device Boot      Start         End      Blocks   Id  System
+/dev/xvdb1            &lt;span class=&quot;m&quot;&gt;2048&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;41943039&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;20970496&lt;/span&gt;   8e  Linux LVM
+
+Disk /dev/mapper/ubuntu1404server--vg-root: &lt;span class=&quot;m&quot;&gt;9944&lt;/span&gt; MB, &lt;span class=&quot;m&quot;&gt;9944694784&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;1209&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;19423232&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/ubuntu1404server--vg-root doesn&lt;span class=&quot;s1&quot;&gt;&amp;#39;t contain a valid partition table&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/ubuntu1404server--vg-swap_1: 532 MB, 532676608 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;255 heads, 63 sectors/track, 64 cylinders, total 1040384 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0x00000000&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn&amp;#39;&lt;/span&gt;t contain a valid partition table&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;/dev/xvdb1 已经是lvm的了,用它创建一个物理卷.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# pvcreate /dev/xvdb1&lt;/span&gt;
+  Physical volume &lt;span class=&quot;s2&quot;&gt;&amp;quot;/dev/xvdb1&amp;quot;&lt;/span&gt; successfully created&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这样我们就创建了一个物理卷，名叫&lt;code&gt;/dev/xvdb1&lt;/code&gt;,跟它的设备名是一样的．&lt;/p&gt;
+
+&lt;p&gt;创建一个卷组(Volume Group),这个物理加到这个卷组中．&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# vgcreate cinder-volumes /dev/xvdb1&lt;/span&gt;
+  Volume group &lt;span class=&quot;s2&quot;&gt;&amp;quot;cinder-volumes&amp;quot;&lt;/span&gt; successfully created&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;cinder-volumes&lt;/code&gt;是cinder默认使用的卷组，如果你的卷组不叫这个也没关系，可以在cinder.conf中修改．
+创建完卷组就OK了，创建逻辑卷的工作就交给OpenStack了．&lt;/p&gt;
+
+&lt;p&gt;有一项非常重要的工作要做．
+默认的lvm卷扫描工具会扫描 &lt;code&gt;/dev&lt;/code&gt;目录来查看包含逻辑卷的设备，如果tenant创建了一个lvm的卷的话，那存储节点上的lvm会发现并缓存他们，会导致存储节点和tenant的主机都有问题．所以我们要限制lvm只扫描包含”cinder-volumes”的设备&lt;/p&gt;
+
+&lt;p&gt;编辑　 /etc/lvm/lvm.conf&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;err&quot;&gt;devices&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;[ &amp;quot;a/xvda/&amp;quot;,&amp;quot;a/xvdb/&amp;quot;, &amp;quot;r/.*/&amp;quot;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我为什么会把”a/xvda/”这个加到过滤器里，是因为我的节点的操作系统ubuntu是装在lvm上的，所以我必须允许lvm扫描这个设备.
+你可以使用&lt;code&gt;vgs -vvvv&lt;/code&gt;来测试你的过滤器．&lt;/p&gt;
+
+&lt;p&gt;如果你的计算节点也使用了lvm，你也要同时设置扫描过滤器．&lt;/p&gt;
+
+&lt;h3 id=&quot;section-62&quot;&gt;12.2.2 安装包&lt;/h3&gt;
+
+&lt;p&gt;１　&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install cinder-volume python-mysqldb&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;编辑　/etc/cinder/cinder.conf　完成下列操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rpc_backend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;rabbit&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;rabbit_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;my_ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;10.0.0.41&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;glance_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
+ 
+&lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;auth_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;identity_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:35357&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cinder&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;admin_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;openstack&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;[database]&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql://cinder:openstack@controller/cinder&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-63&quot;&gt;12.2.3 完成安装&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service tgt restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service cinder-volume restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# rm -f /var/lib/cinder/cinder.sqlite&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-64&quot;&gt;12.3 验证安装&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;请在控制节点上运行下面的命令&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;admin-openrc.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# cinder service-list                                                                                                      &lt;/span&gt;
++------------------+------------+------+---------+-------+----------------------------+-----------------+                                   
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      Binary      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    Host    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Zone &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  Status &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; State &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;         Updated_at         &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Disabled Reason &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                   
++------------------+------------+------+---------+-------+----------------------------+-----------------+                                   
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; cinder-scheduler &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; controller &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   up  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-20T03:46:57.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;       None      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  cinder-volume   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   block1   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; nova &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   up  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 2015-03-20T03:46:53.000000 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;       None      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++------------------+------------+------+---------+-------+----------------------------+-----------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;切换成demo租户&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;demo-openrc.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建一个卷&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cinder create --display-name demo-volume1 1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;查看这个新建的卷&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cinder list&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;ec2api&quot;&gt;13 启用EC2兼容API&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;请在控制节点上运行下面的命令&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;admin-openrc.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;１　创建EC2的服务&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;＃　keystone service-create --name&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;ec2 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+                        --type&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;ec2 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+                        --description&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;EC2 Compatibility Layer&amp;quot;&lt;/span&gt;
+
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; description &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     EC2 Compatibility Layer      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   enabled   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               True               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; a18a1b887b484ed6a1130174ccb8eb5f &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     name    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               ec2                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               ec2                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;２　创建EC2 API端点&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# keystone endpoint-create --region regionOne --service-id  $(keystone service-list | awk &amp;#39;/ ec2 / {print $2}&amp;#39;) \&lt;/span&gt;
+        --publicurl &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://$CONTROLLER_PUBLIC_ADDRESS:8773/services/Cloud&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --adminurl &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://$CONTROLLER_ADMIN_ADDRESS:8773/services/Admin&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --internalurl &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://$CONTROLLER_INTERNAL_ADDRESS:8773/services/Cloud&amp;quot;&lt;/span&gt;
++-------------+--------------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   Property  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                   Value                    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+--------------------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   adminurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   http://controller:8773/services/Admin    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      id     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      b903c22bab8d412b96ff6839f5131f24      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; internalurl &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   http://controller:8773/services/Cloud    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  publicurl  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://192.168.234.202:8773/services/Cloud &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;    region   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                 RegionOne                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  service_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      a18a1b887b484ed6a1130174ccb8eb5f      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-------------+--------------------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;$EC2_SERVICE就是上一条命令创建的&lt;code&gt;a18a1b887b484ed6a1130174ccb8eb5f&lt;/code&gt;   &lt;br /&gt;
+本文中$CONTROLLER_PUBLIC_ADDRESS为：192.168.234.202,$CONTROLLER_ADMIN_ADDRESS为:10.0.0.11&lt;/p&gt;
+
+&lt;p&gt;重启服务&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service nova-cert restart&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service nova-api restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;３　验证安装&lt;/p&gt;
+
+&lt;p&gt;首先要为用户生成AK(access key)和SK(secret key),我们来为demo这个用户来生成AK和SK．&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$　&lt;/span&gt;keystone tenant-list
++----------------------------------+---------+---------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                id                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   name  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------------------------------+---------+---------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 357abecb4def441eb7a36e7cf5d173c4 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  admin  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 6245a74d882e451c8d7663a46103b8b2 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   demo  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 0357b13cb33941bda442094eda169625 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   lxl   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; ef36de18149b4c809c4b26b63b6dda37 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; service &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 04015ed1fdb94efb80bab7916fbf1660 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   zlq   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------------------------------+---------+---------+
+
+&lt;span class=&quot;nv&quot;&gt;$　&lt;/span&gt;keystone user-list
++----------------------------------+-----------------------------+---------+-----------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                id                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             name            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; enabled &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            email            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------------------------------+-----------------------------+---------+-----------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; c2ba205513e448098f0e0daf80f2f649 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            admin            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      admin@example.com      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; d839485477e44aa8baabbefd19829392 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;          ceilometer         &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; fd7b1e90d1144b669d20040b9c334d88 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            cinder           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 54a55d3f3c1f4797bb82d196e6c02ccd &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             demo            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;       demo@example.com      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 924b65933a294f0bb5e26945689c2c38 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;            glance           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 0c138994a2304fe5b38eb2a709d6e3fd &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; liqiang.zhang@ecloud.com.cn &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; liqiang.zhang@ecloud.com.cn &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; f0d885f2c2e9498189b61ebb28475f35 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             lxl             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      xiaoreqing@126.com     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; d9ea6a6733934f139a42dfad12f1009a &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;           neutron           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 952eae64d8124b06812a5bb595f3690f &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;             nova            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   True  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----------------------------------+-----------------------------+---------+-----------------------------+
+
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone ec2-credentials-create --tenant-id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;357abecb4def441eb7a36e7cf5d173c4 --user-id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;c2ba205513e448098f0e0daf80f2f649
++-----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  Property &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------+----------------------------------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   access  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 6ccf7c40bebe4984964e1ada23680941 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   secret  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 6cdaaa769e3c4fb58aeac0de49b01658 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; tenant_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 357abecb4def441eb7a36e7cf5d173c4 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  trust_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  user_id  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; c2ba205513e448098f0e0daf80f2f649 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------+----------------------------------+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;把下面的变量加入admin-openrc.sh&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;EC2_ACCESS_KEY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6ccf7c40bebe4984964e1ada23680941
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;EC2_SECRET_KEY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6cdaaa769e3c4fb58aeac0de49b01658
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;EC2_URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;http://controller:8773/services/Cloud&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;参考：　
+&lt;a href=&quot;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&quot;&gt;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&lt;/a&gt;    &lt;br /&gt;
+&lt;a href=&quot;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&quot;&gt;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Wed, 11 Mar 2015 20:30:00 +0800</pubDate>
@@ -1967,10 +2791,10 @@ root@localhost:~# neutron agent-list
     
       <item>
         <title>Blog: 配置LVM</title>
-        <description>&lt;p&gt;为虚拟机新加一块disk，用fdisk把它分成lvm的分区。&lt;/p&gt;
+        <description>&lt;p&gt;1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。&lt;/p&gt;
 
-&lt;p&gt;root@localhost:~# fdisk /dev/xvdb 
-Command (m for help): m
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;root@localhost:~# fdisk /dev/xvdb 
+Command &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;m &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: m
 Command action
    a   toggle a bootable flag
    b   edit bsd disklabel
@@ -1983,164 +2807,178 @@ Command action
    p   print the partition table
    q   quit without saving changes
    s   create a new empty Sun disklabel
-   t   change a partition’s system id
+   t   change a partition&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;s system id
    u   change display/entry units
    v   verify the partition table
-   w   write table to disk and exit
-   x   extra functionality (experts only)&lt;/p&gt;
+   w   write table to disk and &lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;   &lt;/span&gt;x   extra functionality &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;experts only&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h1 id=&quot;section&quot;&gt;显示当前的分区表&lt;/h1&gt;
-&lt;p&gt;Command (m for help): p &lt;/p&gt;
+&lt;p&gt;2 显示当前的分区表&lt;/p&gt;
 
-&lt;p&gt;Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;Command &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;m &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: p 
 
-&lt;pre&gt;&lt;code&gt;Device Boot      Start         End      Blocks   Id  System
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&quot;section-1&quot;&gt;创建一个新的分区&lt;/h1&gt;
-&lt;p&gt;Command (m for help): n
-Partition type:
-   p   primary (0 primary, 0 extended, 4 free)
-   e   extended
-Select (default p): 
-Using default response p
-Partition number (1-4, default 1): 
-Using default value 1
-First sector (2048-209715199, default 2048): 
-Using default value 2048&lt;/p&gt;
-
-&lt;h1 id=&quot;section-2&quot;&gt;这里把整个盘分成了一个区&lt;/h1&gt;
-&lt;p&gt;Last sector, +sectors or +size{K,M,G} (2048-209715199, default 209715199): 
-Using default value 209715199&lt;/p&gt;
-
-&lt;h1 id=&quot;lvm&quot;&gt;把分区类型转成lvm&lt;/h1&gt;
-&lt;p&gt;Command (m for help): t
-Selected partition 1
-#如果不记得分区的类型的代码了，可以用L命令显示分区类型列表
-Hex code (type L to list codes): L&lt;/p&gt;
-
-&lt;p&gt;0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris      &lt;br /&gt;
- 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec (FAT-
- 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec (FAT-
- 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
- 4  FAT16 &amp;lt;32M      40  Venix 80286     85  Linux extended  c7  Syrinx       &lt;br /&gt;
- 5  Extended        41  PPC PReP Boot   86  NTFS volume set da  Non-FS data  &lt;br /&gt;
- 6  FAT16           42  SFS             87  NTFS volume set db  CP/M / CTOS / .
- 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility &lt;br /&gt;
- 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt       &lt;br /&gt;
- 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access   &lt;br /&gt;
- a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O      &lt;br /&gt;
- b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor    &lt;br /&gt;
- c  W95 FAT32 (LBA) 52  CP/M            a0  IBM Thinkpad hi eb  BeOS fs      &lt;br /&gt;
- e  W95 FAT16 (LBA) 53  OnTrack DM6 Aux a5  FreeBSD         ee  GPT          &lt;br /&gt;
- f  W95 Ext’d (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/
-10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b
-11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor    &lt;br /&gt;
-12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor    &lt;br /&gt;
-14  Hidden FAT16 &amp;lt;3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary&lt;br /&gt;
-16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS  &lt;br /&gt;
-17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
-18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto
-1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep      &lt;br /&gt;
-1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT          &lt;br /&gt;
-1e  Hidden W95 FAT1 80  Old Minix    &lt;br /&gt;
-Hex code (type L to list codes): 8e
-Changed system type of partition 1 to 8e (Linux LVM)&lt;/p&gt;
-
-&lt;h1 id=&quot;section-3&quot;&gt;再看一下&lt;/h1&gt;
-&lt;p&gt;Command (m for help): p&lt;/p&gt;
-
-&lt;p&gt;Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Device Boot      Start         End      Blocks   Id  System /dev/xvdb1            2048   209715199   104856576   8e  Linux LVM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&quot;section-4&quot;&gt;写入分区信息&lt;/h1&gt;
-&lt;p&gt;Command (m for help): w
-The partition table has been altered!&lt;/p&gt;
-
-&lt;p&gt;Calling ioctl() to re-read partition table.
-Syncing disks.&lt;/p&gt;
-
-&lt;h1 id=&quot;section-5&quot;&gt;重新加载分区信息&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# partprobe 
-root@localhost:~# fdisk -l&lt;/p&gt;
-
-&lt;p&gt;Disk /dev/xvda: 32.2 GB, 32212254720 bytes
-255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00020a62&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Device Boot      Start         End      Blocks   Id  System /dev/xvda1            2048      499711      248832   83  Linux /dev/xvda2          501758    62912511    31205377    5  Extended /dev/xvda5          501760    62912511    31205376   8e  Linux LVM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-43 heads, 44 sectors/track, 110843 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk /dev/xvdb: 107.4 GB, &lt;span class=&quot;m&quot;&gt;107374182400&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;13054&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;209715200&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
 Disk identifier: 0xdd2fff2e
-#这是我们刚创建的lvm分区
-    Device Boot      Start         End      Blocks   Id  System
-/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM&lt;/p&gt;
 
-&lt;p&gt;Disk /dev/mapper/localhost–vg-root: 30.6 GB, 30614224896 bytes
-255 heads, 63 sectors/track, 3721 cylinders, total 59793408 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000&lt;/p&gt;
+    Device Boot      Start         End      Blocks   Id  System&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Disk /dev/mapper/localhost–vg-root doesn’t contain a valid partition table&lt;/p&gt;
+&lt;h1 id=&quot;section&quot;&gt;创建一个新的分区&lt;/h1&gt;
 
-&lt;p&gt;Disk /dev/mapper/localhost–vg-swap_1: 1337 MB, 1337982976 bytes
-255 heads, 63 sectors/track, 162 cylinders, total 2613248 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;Command &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;m &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: n
+Partition &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;:
+   p   primary &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; primary, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; extended, &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; free&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   e   extended
 
-&lt;p&gt;Disk /dev/mapper/localhost–vg-swap_1 doesn’t contain a valid partition table&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;#创建一个主分区&lt;/span&gt;
+Select &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default p&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: 
+Using default response p
 
-&lt;h1 id=&quot;lvmpv&quot;&gt;创建一个lvm物理卷pv&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# pvcreate /dev/xvdb1
-  Physical volume “/dev/xvdb1” successfully created&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;#按提示来，用默认值&lt;/span&gt;
+Partition number &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1-4, default 1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: 
+Using default value 1
 
-&lt;p&gt;root@localhost:~# pvscan
-  PV /dev/xvda5   VG localhost-vg    lvm2 [29.76 GiB / 0    free]
-  PV /dev/xvdb1                      lvm2 [100.00 GiB]
-  Total: 2 [129.76 GiB] / in use: 1 [29.76 GiB] / in no VG: 1 [100.00 GiB]&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;#按提示来，用默认值&lt;/span&gt;
+First sector &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2048-209715199, default 2048&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: 
+Using default value 2048
 
-&lt;h1 id=&quot;ubuntulvmvg&quot;&gt;因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# vgscan
-  Reading all physical volumes.  This may take a while…
-  Found volume group “localhost-vg” using metadata type lvm2&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;#这里把整个盘分成了一个区&lt;/span&gt;
+Last sector, +sectors or +size&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;K,M,G&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2048-209715199, default 209715199&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: 
+Using default value 209715199
 
-&lt;h1 id=&quot;pvvg&quot;&gt;把新建的pv添加到vg里吧&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# vgextend localhost-vg /dev/xvdb1
-  Volume group “localhost-vg” successfully extended
-#看一下vg的详情&lt;/p&gt;
 
-&lt;p&gt;root@localhost:~# vgdisplay 
-  — Volume group —
+&lt;span class=&quot;c&quot;&gt;# 把分区类型转成lvm&lt;/span&gt;
+Command &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;m &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: t
+Selected partition 1
+
+&lt;span class=&quot;c&quot;&gt;#如果不记得分区的类型的代码了，可以用L命令显示分区类型列表&lt;/span&gt;
+Hex code &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;L to list codes&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: L
+
+ &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  Empty           &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt;  NEC DOS         &lt;span class=&quot;m&quot;&gt;81&lt;/span&gt;  Minix / old Lin bf  Solaris        
+ &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;  FAT12           &lt;span class=&quot;m&quot;&gt;27&lt;/span&gt;  Hidden NTFS Win &lt;span class=&quot;m&quot;&gt;82&lt;/span&gt;  Linux swap / So c1  DRDOS/sec &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;FAT-
+ &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;  XENIX root      &lt;span class=&quot;m&quot;&gt;39&lt;/span&gt;  Plan &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt;          &lt;span class=&quot;m&quot;&gt;83&lt;/span&gt;  Linux           c4  DRDOS/sec &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;FAT-
+ &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;  XENIX usr       3c  PartitionMagic  &lt;span class=&quot;m&quot;&gt;84&lt;/span&gt;  OS/2 hidden C:  c6  DRDOS/sec &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;FAT-
+ &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;  FAT16 &amp;lt;32M      &lt;span class=&quot;m&quot;&gt;40&lt;/span&gt;  Venix &lt;span class=&quot;m&quot;&gt;80286&lt;/span&gt;     &lt;span class=&quot;m&quot;&gt;85&lt;/span&gt;  Linux extended  c7  Syrinx         
+ &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;  Extended        &lt;span class=&quot;m&quot;&gt;41&lt;/span&gt;  PPC PReP Boot   &lt;span class=&quot;m&quot;&gt;86&lt;/span&gt;  NTFS volume &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;da  Non-FS data    
+ &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt;  FAT16           &lt;span class=&quot;m&quot;&gt;42&lt;/span&gt;  SFS             &lt;span class=&quot;m&quot;&gt;87&lt;/span&gt;  NTFS volume &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;db  CP/M / CTOS / .
+ &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;  HPFS/NTFS/exFAT 4d  QNX4.x          &lt;span class=&quot;m&quot;&gt;88&lt;/span&gt;  Linux plaintext de  Dell Utility   
+ &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt         
+ &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt;  AIX bootable    4f  QNX4.x 3rd part &lt;span class=&quot;m&quot;&gt;93&lt;/span&gt;  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag &lt;span class=&quot;m&quot;&gt;50&lt;/span&gt;  OnTrack DM      &lt;span class=&quot;m&quot;&gt;94&lt;/span&gt;  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       &lt;span class=&quot;m&quot;&gt;51&lt;/span&gt;  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;LBA&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;52&lt;/span&gt;  CP/M            a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;LBA&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;53&lt;/span&gt;  OnTrack DM6 Aux a5  FreeBSD         ee  GPT            
+ f  W95 Ext&lt;span class=&quot;s1&quot;&gt;&amp;#39;d (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor      &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor      &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;14  Hidden FAT16 &amp;lt;3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary  &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS    &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep        &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT            &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;1e  Hidden W95 FAT1 80  Old Minix      &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Hex code (type L to list codes): 8e&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Changed system type of partition 1 to 8e (Linux LVM)&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;#再看一下&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Command (m for help): p&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/xvdb: 107.4 GB, 107374182400 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0xdd2fff2e&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;    Device Boot      Start         End      Blocks   Id  System&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;#写入分区信息&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Command (m for help): w&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;The partition table has been altered!&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Calling ioctl() to re-read partition table.&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Syncing disks.&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;#重新加载分区信息&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;root@localhost:~# partprobe &lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;root@localhost:~# fdisk -l&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/xvda: 32.2 GB, 32212254720 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0x00020a62&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;    Device Boot      Start         End      Blocks   Id  System&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;/dev/xvda1            2048      499711      248832   83  Linux&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;/dev/xvda2          501758    62912511    31205377    5  Extended&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;/dev/xvda5          501760    62912511    31205376   8e  Linux LVM&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/xvdb: 107.4 GB, 107374182400 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;43 heads, 44 sectors/track, 110843 cylinders, total 209715200 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0xdd2fff2e&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;#这是我们刚创建的lvm分区&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;    Device Boot      Start         End      Blocks   Id  System&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/localhost--vg-root: 30.6 GB, 30614224896 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;255 heads, 63 sectors/track, 3721 cylinders, total 59793408 sectors&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Units = sectors of 1 * 512 = 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Sector size (logical/physical): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;I/O size (minimum/optimal): 512 bytes / 512 bytes&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;Disk identifier: 0x00000000&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;Disk /dev/mapper/localhost--vg-root doesn&amp;#39;&lt;/span&gt;t contain a valid partition table
+
+Disk /dev/mapper/localhost--vg-swap_1: &lt;span class=&quot;m&quot;&gt;1337&lt;/span&gt; MB, &lt;span class=&quot;m&quot;&gt;1337982976&lt;/span&gt; bytes
+&lt;span class=&quot;m&quot;&gt;255&lt;/span&gt; heads, &lt;span class=&quot;m&quot;&gt;63&lt;/span&gt; sectors/track, &lt;span class=&quot;m&quot;&gt;162&lt;/span&gt; cylinders, total &lt;span class=&quot;m&quot;&gt;2613248&lt;/span&gt; sectors
+&lt;span class=&quot;nv&quot;&gt;Units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sectors of &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; * &lt;span class=&quot;nv&quot;&gt;512&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;logical/physical&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes / &lt;span class=&quot;m&quot;&gt;512&lt;/span&gt; bytes
+Disk identifier: 0x00000000
+
+Disk /dev/mapper/localhost--vg-swap_1 doesn&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;t contain a valid partition table
+
+&lt;span class=&quot;c&quot;&gt;#创建一个lvm物理卷pv&lt;/span&gt;
+root@localhost:~# pvcreate /dev/xvdb1
+  Physical volume &lt;span class=&quot;s2&quot;&gt;&amp;quot;/dev/xvdb1&amp;quot;&lt;/span&gt; successfully created
+  
+root@localhost:~# pvscan
+  PV /dev/xvda5   VG localhost-vg    lvm2 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;29.76 GiB / &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    free&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  PV /dev/xvdb1                      lvm2 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;100.00 GiB&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  Total: &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;129.76 GiB&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; / in use: &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;29.76 GiB&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; / in no VG: &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;100.00 GiB&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  
+  
+  
+&lt;span class=&quot;c&quot;&gt;#因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。&lt;/span&gt;
+root@localhost:~# vgscan
+  Reading all physical volumes.  This may take a &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;...
+  Found volume group &lt;span class=&quot;s2&quot;&gt;&amp;quot;localhost-vg&amp;quot;&lt;/span&gt; using metadata &lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;lvm2
+  
+
+&lt;span class=&quot;c&quot;&gt;#把新建的pv添加到vg里吧&lt;/span&gt;
+root@localhost:~# vgextend localhost-vg /dev/xvdb1
+  Volume group &lt;span class=&quot;s2&quot;&gt;&amp;quot;localhost-vg&amp;quot;&lt;/span&gt; successfully extended
+&lt;span class=&quot;c&quot;&gt;#看一下vg的详情&lt;/span&gt;
+
+root@localhost:~# vgdisplay 
+  --- Volume group ---
   VG Name               localhost-vg
-  System ID           &lt;br /&gt;
+  System ID             
   Format                lvm2
   Metadata Areas        2
   Metadata Sequence No  4
-  VG Access             read/write
+  VG Access             &lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;/write
   VG Status             resizable
   MAX LV                0
   Cur LV                2
@@ -2151,60 +2989,61 @@ Disk identifier: 0x00000000&lt;/p&gt;
   VG Size               129.75 GiB
   PE Size               4.00 MiB
   Total PE              33217
-  Alloc PE / Size       7618 / 29.76 GiB
-  Free  PE / Size       25599 / 100.00 GiB  &amp;lt;= 这个信息很重要，我们在扩大lv时要用到
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF&lt;/p&gt;
+  Alloc PE / Size       &lt;span class=&quot;m&quot;&gt;7618&lt;/span&gt; / 29.76 GiB
+  Free  PE / Size       &lt;span class=&quot;m&quot;&gt;25599&lt;/span&gt; / 100.00 GiB  &amp;lt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 这个信息很重要，我们在扩大lv时要用到
+  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
 
-&lt;h1 id=&quot;lv&quot;&gt;看看系统里的逻辑卷lv吧&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# lvdisplay 
-  — Logical volume —
+&lt;span class=&quot;c&quot;&gt;#看看系统里的逻辑卷lv吧&lt;/span&gt;
+root@localhost:~# lvdisplay 
+  --- Logical volume ---
   LV Path                /dev/localhost-vg/root
   LV Name                root
   VG Name                localhost-vg
   LV UUID                YfzzNm-ozhH-k2r2-KucH-p2he-CcVj-SCpuAr
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
+  LV Write Access        &lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;/write
+  LV Creation host, &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;localhost, 2015-01-26 16:36:55 +0800
   LV Status              available
-  # open                 1
-  LV Size                28.51 GiB  &amp;lt;= 大小还没变
+  &lt;span class=&quot;c&quot;&gt;# open                 1&lt;/span&gt;
+  LV Size                28.51 GiB  &amp;lt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 大小还没变
   Current LE             7299
   Segments               1
   Allocation             inherit
   Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:0&lt;/p&gt;
-
-&lt;p&gt;— Logical volume —
+  - currently &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;to     256
+  Block device           252:0
+   
+  --- Logical volume ---
   LV Path                /dev/localhost-vg/swap_1
   LV Name                swap_1
   VG Name                localhost-vg
   LV UUID                6Kid6V-tQ1B-TT43-g7at-Ha1d-yR3X-DomZA7
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
+  LV Write Access        &lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;/write
+  LV Creation host, &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;localhost, 2015-01-26 16:36:55 +0800
   LV Status              available
-  # open                 2
+  &lt;span class=&quot;c&quot;&gt;# open                 2&lt;/span&gt;
   LV Size                1.25 GiB
   Current LE             319
   Segments               1
   Allocation             inherit
   Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:1&lt;/p&gt;
+  - currently &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;to     256
+  Block device           252:1
 
-&lt;h1 id=&quot;lvvgdisplayfree--pe--size-------25599--10000-gib-lv&quot;&gt;扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
+&lt;span class=&quot;c&quot;&gt;#扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.&lt;/span&gt;
+root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
   Extending logical volume root to 128.51 GiB
-  Logical volume root successfully resized&lt;/p&gt;
-
-&lt;h1 id=&quot;vgfree-pe0&quot;&gt;再看看vg,会发现Free PE数量为0了。&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# vgdisplay
-  — Volume group —
+  Logical volume root successfully resized
+  
+  
+&lt;span class=&quot;c&quot;&gt;#再看看vg,会发现Free PE数量为0了。&lt;/span&gt;
+root@localhost:~# vgdisplay
+  --- Volume group ---
   VG Name               localhost-vg
-  System ID           &lt;br /&gt;
+  System ID             
   Format                lvm2
   Metadata Areas        2
   Metadata Sequence No  5
-  VG Access             read/write
+  VG Access             &lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;/write
   VG Status             resizable
   MAX LV                0
   Cur LV                2
@@ -2215,41 +3054,42 @@ Disk identifier: 0x00000000&lt;/p&gt;
   VG Size               129.75 GiB
   PE Size               4.00 MiB
   Total PE              33217
-  Alloc PE / Size       33217 / 129.75 GiB
-  Free  PE / Size       0 / 0 &lt;br /&gt;
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF&lt;/p&gt;
+  Alloc PE / Size       &lt;span class=&quot;m&quot;&gt;33217&lt;/span&gt; / 129.75 GiB
+  Free  PE / Size       &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; / &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;   
+  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
 
-&lt;h1 id=&quot;df&quot;&gt;df一下看看。&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# df -h
+
+&lt;span class=&quot;c&quot;&gt;#df一下看看。&lt;/span&gt;
+root@localhost:~# df -h
 Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost–vg-root   28G  1.3G   26G   5% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
+/dev/mapper/localhost--vg-root   28G  1.3G   26G   5% /
+none                            4.0K     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  4.0K   0% /sys/fs/cgroup
 udev                            4.8G  4.0K  4.8G   1% /dev
 tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot&lt;/p&gt;
+none                            5.0M     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  5.0M   0% /run/lock
+none                            4.8G     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  4.8G   0% /run/shm
+none                            100M     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  100M   0% /run/user
+/dev/xvda1                      236M   37M  187M  17% /boot
 
-&lt;h1 id=&quot;whatlv&quot;&gt;What!为什么这里的容量还不对？因为你只是调整了lv的大小，它上面的文件系统还不知道呢。&lt;/h1&gt;
-&lt;p&gt;#好吧，我们来把lv的容量扩到文件系统里吧。&lt;br /&gt;
-root@localhost:~# resize2fs /dev/mapper/localhost–vg-root 
-resize2fs 1.42.9 (4-Feb-2014)
-Filesystem at /dev/mapper/localhost–vg-root is mounted on /; on-line resizing required
-old_desc_blocks = 2, new_desc_blocks = 9
-The filesystem on /dev/mapper/localhost–vg-root is now 33687552 blocks long.&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;#What!为什么这里的容量还不对？因为你只是调整了lv的大小，它上面的文件系统还不知道呢。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#好吧，我们来把lv的容量扩到文件系统里吧。  &lt;/span&gt;
+root@localhost:~# resize2fs /dev/mapper/localhost--vg-root 
+resize2fs 1.42.9 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;4-Feb-2014&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+Filesystem at /dev/mapper/localhost--vg-root is mounted on /&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; on-line resizing required
+&lt;span class=&quot;nv&quot;&gt;old_desc_blocks&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2, &lt;span class=&quot;nv&quot;&gt;new_desc_blocks&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 9
+The filesystem on /dev/mapper/localhost--vg-root is now &lt;span class=&quot;m&quot;&gt;33687552&lt;/span&gt; blocks long.
 
-&lt;h1 id=&quot;ok&quot;&gt;再看看吧，OK!&lt;/h1&gt;
-&lt;p&gt;root@localhost:~# df -h
+&lt;span class=&quot;c&quot;&gt;#再看看吧，OK!&lt;/span&gt;
+root@localhost:~# df -h
 Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost–vg-root  127G  1.3G  120G   2% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
+/dev/mapper/localhost--vg-root  127G  1.3G  120G   2% /
+none                            4.0K     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  4.0K   0% /sys/fs/cgroup
 udev                            4.8G  4.0K  4.8G   1% /dev
 tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot&lt;/p&gt;
+none                            5.0M     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  5.0M   0% /run/lock
+none                            4.8G     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  4.8G   0% /run/shm
+none                            100M     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  100M   0% /run/user
+/dev/xvda1                      236M   37M  187M  17% /boot&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
         <pubDate>Fri, 30 Jan 2015 20:30:00 +0800</pubDate>
