@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 我的第一篇博客</title>
+    <title>念西堂 - 把Gitlab迁移到Docker容器里。</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -71,20 +71,139 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/other/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
-            <p><csmall>Nov 2, 2014. | By: 任怀林</csmall></p>
+            <a href="/blog/openstack/move-gitlab-to-docker-container"><h3 class="ctitle">把Gitlab迁移到Docker容器里。</h3></a>
+            <p><csmall>Apr 9, 2015. | By: 任怀林</csmall></p>
               
-            <p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ jekyll serve
+            <p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
+
+<h1>1 规划</h1>
+
+<p>规划：<br>
+一个容器运行gitlab<br>
+一个容器运行MySQL,然后 link到gitlab上。<br>
+一个容器运行Redis,然后 link到gitlab上。   </p>
+
+<h1>2 安装gitlab</h1>
+
+<p>我们先运行MySQL，</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo docker pull sameersbn/mysql:latest
 </code></pre></div>
-<p>然后浏览 http://localhost:4000</p>
+<p>在host主机上创建mysql的数据目录。   </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo mkdir -p /opt/mysql/data
+</code></pre></div>
+<p>启动MySQL容器。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo docker run --name mysql -d \
+    -v /opt/mysql/data:/var/lib/mysql \
+    sameersbn/mysql:latest
+</code></pre></div>
+<p>连接到MySQL上，修改授权信息   </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
+</code></pre></div>
+<p>创建数据库并授权。    </p>
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">`</span><span class="n">utf8</span><span class="o">`</span> <span class="k">COLLATE</span> <span class="o">`</span><span class="n">utf8_unicode_ci</span><span class="o">`</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
+<span class="k">ON</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;gitlab&#39;</span><span class="o">@</span><span class="s1">&#39;172.17.%.%&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;dbpassword&#39;</span><span class="p">;</span>
+<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
+</code></pre></div>
+<h1>3 配置redis</h1>
 
-<p>方法高亮使用：<a href="http://pygments.org/">pygments</a>,它支持的语法列表：<a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a>  </p>
+<p>Pull image     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker pull sameersbn/redis:latest
+</code></pre></div>
+<p>run redis<br>
+<code>sh
+$ sudo docker run --name=redis -d sameersbn/redis:latest
+</code></p>
 
-<p>我用的jekyll theme 是<a href="https://github.com/st4ple/solid-jekyll">solid jekyll</a></p>
+<h1>4 Gitlab</h1>
 
-<p>参考：
-<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog&mdash;-github Pages和Jekyll入门</a></p>
+<p>Pull 先把老版的imagepull回来     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
+</code></pre></div>
+<p>创建数据目录     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo mkdir -p /opt/gitlab/data
+</code></pre></div>
+<p>这个目录会映像到窗口的<code>/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
+
+<p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。      </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
+</code></pre></div>
+<p>运行gitlab容器    </p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:6.7.5</code></pre></div>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 从原来gitlab里导出备份</span>
+<span class="nv">$ </span><span class="nb">cd</span> /home/git/gitlab
+<span class="nv">$ </span>sudo -u git -H bundle <span class="nb">exec </span>rake gitlab:backup:create <span class="nv">RAILS_ENV</span><span class="o">=</span>production</code></pre></div>
+
+<p>导出的文件放在<code>/home/git/gitlab/tmp/backups</code>这个目录下。</p>
+
+<p>把这个文件 scp到 docker gitlab那台机器的<code>/opt/gitlab/data/backups</code></p>
+
+<p>登录到gitlab的container</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker <span class="nb">exec</span> -it gitlab bash</code></pre></div>
+
+<p>在容器里执行下面的命令  </p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">cd</span> /home/git/gitlab
+<span class="nv">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+<span class="nv">$ </span><span class="nb">exit</span></code></pre></div>
+
+<p>这个样数据就全部到新的gitlab上了。
+你会发现跟原来的一样。</p>
+
+<p>下面我们来升级gitlab到新版。</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker stop gitlab
+<span class="nv">$ </span>sudo docker rm gitlab
+
+<span class="nv">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
+  --link redis:redisio <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:latest</code></pre></div>
+
+<p>配置好以后，把它保存成一个镜像。</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker commit -m <span class="s2">&quot;update gitlab.yml ,change host,set timezone to BeiJing&quot;</span> -a <span class="s2">&quot;china-ops gitlab v7.9.4&quot;</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></div>
+
+<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
+后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
+hostname等是通过环境变量来控制的。</p>
+
+<p>用这个镜像来启动一个container</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -d  <span class="se">\</span>
+  -p 80:80  -p 8443:443 <span class="se">\</span>
+  --link mysql:mysql <span class="se">\</span>
+  --link redis:redisio <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_HOST=gitlab.china-ops.com&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_TIMEZONE=Beijing&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_GRAVATAR_ENABLED=false&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  china-ops/gitlab:7.9.4</code></pre></div>
+
+<p>默认的密码：<br>
+username: admin@local.host<br>
+password: 5iveL!fe    </p>
+
+<p>参考：　
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
+
+<p><a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
 
 
             <div class="spacing"></div>
