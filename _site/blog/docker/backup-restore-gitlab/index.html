@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+
+    <title>念西堂 - 升級gitlab到8.2.0</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/syntax.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <!--<link rel="stylesheet" href="/css/main.css">-->
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
+</head>
+
+
+    <body>
+        <!-- Fixed navbar -->
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">念西堂</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-right">
+      <ul class="nav navbar-nav">
+		  <!-- 
+        <li ><a href="/">首页</a></li>
+        <li ><a href="/blog/">BLOG</a></li>
+        <li ><a href="/portfolio/">PORTFOLIO</a></li>
+        <li ><a href="/about/">ABOUT</a></li>
+        <li ><a href="/contact/">CONTACT</a></li>
+			  -->
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+            <div class="container mtb">
+    <div class="row">
+        <! -- SINGLE POST -->
+        <div class="col-lg-8">
+            <! -- Blog Post  -->
+			<!--
+            <p><img class="img-responsive" src="/assets/img/blog/"></p>
+			-->
+            <a href="/blog/docker/backup-restore-gitlab"><h3 class="ctitle">升級gitlab到8.2.0</h3></a>
+            <p><csmall>Nov 25, 2015. | By: 任怀林</csmall></p>
+
+            <div id="main_content"><p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
+
+<h1>備份原來的gitlab</h1>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
+</code></pre></div>
+<p>到gitlab的data/backups目錄，把最近的備份copy出來。</p>
+
+<p>查看當前的版本，進入gitlab，在左側的菜單欄裏選help,可以看到當前版本。</p>
+
+<p>我現在的版本時7.9.4</p>
+
+<h1>pull gitlab 7.9.4 image from docker hub.</h1>
+
+<p>docker pull sameersbn/gitlab:7.9.4</p>
+
+<p>恢復備份：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">docker run --name gitlab --rm  -p 80:80  -p 8443:443   --link mysql:mysql   --link redis:redisio   -e &quot;DB_USER=gitlab&quot; -e &quot;DB_PASS=somepass&quot;   -e &quot;DB_NAME=gitlabhq_production&quot;   -e &quot;GITLAB_HOST=gitlab.china-ops.com&quot;   -e &quot;GITLAB_TIMEZONE=Beijing&quot;   -e &quot;GITLAB_GRAVATAR_ENABLED=false&quot;  -e &#39;GITLAB_BACKUPS=daily&#39; -e &quot;NGINX_MAX_UPLOAD_SIZE=100m&quot; -e &quot;UNICORN_TIMEOUT=120&quot; -e &quot;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&quot;  -v /opt/data/gitlab:/home/git/data   sameersbn/gitlab:7.9.4  app:rake gitlab:backup:restore BACKUP=1448510466
+</code></pre></div>
+<p>後面的那個數字一定要是你的備份的號。</p>
+
+<h1>pull gitlab 8.2.0 image from docker hub.</h1>
+
+<p>docker pull sameersbn/gitlab:8.2.0
+docker pull mysql:5.7
+docker pull sameersbn/redis:latest</p>
+
+<p>mkdir -p /opt/data/gitlab/data
+mkdir -p /opt/data/mysql</p>
+
+<p>$ docker run &ndash;name some-mysql -e MYSQL<em>ROOT</em>PASSWORD=my-secret-pw -d mysql:tag</p>
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">mysql</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">container_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mysql</span>
+  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mysql:5.7</span>
+  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">MYSQL_ROOT_PASSWORD=mysql</span>
+  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">/opt/data/mysql:/var/lib/mysql</span>
+<span class="l-Scalar-Plain">docker</span>
+</code></pre></div><div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">`</span><span class="n">utf8</span><span class="o">`</span> <span class="k">COLLATE</span> <span class="o">`</span><span class="n">utf8_unicode_ci</span><span class="o">`</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
+<span class="k">ON</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;gitlab&#39;</span><span class="o">@</span><span class="s1">&#39;172.17.%.%&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;dbpassword&#39;</span><span class="p">;</span>
+<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
+</code></pre></div>
+<p>pwgen -Bsv1 64</p>
+
+<p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">gitlab</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sameersbn/gitlab:8.2.0</span>
+  <span class="l-Scalar-Plain">container_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">gitlab</span>
+  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="s">&quot;80:80&quot;</span>
+    <span class="p-Indicator">-</span> <span class="s">&quot;8443:443&quot;</span>
+  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">DB_USER=gitlab</span>
+    <span class="p-Indicator">-</span> <span class="s">&quot;DB_PASS=1q2w3e4r&quot;</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">DB_NAME=gitlabhq_production</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">GITLAB_TIMEZONE=Beijing</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">GITLAB_GRAVATAR_ENABLED=false</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">GITLAB_BACKUPS=daily</span>
+    <span class="p-Indicator">-</span> <span class="s">&quot;NGINX_MAX_UPLOAD_SIZE=100m&quot;</span>
+    <span class="p-Indicator">-</span> <span class="s">&quot;UNICORN_TIMEOUT=120&quot;</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</span>
+  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">/opt/data/gitlab:/home/git/data</span>
+  <span class="l-Scalar-Plain">links</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">mysql:mysql</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">redis:redisio</span>
+<span class="l-Scalar-Plain">mysql</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">container_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mysql</span>
+  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mysql:5.7</span>
+  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">MYSQL_ROOT_PASSWORD=mysql</span>
+  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">/opt/data/mysql:/var/lib/mysql</span>
+
+<span class="l-Scalar-Plain">redis</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">container_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis</span>
+  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sameersbn/redis:latest</span>
+</code></pre></div>
+<h1>1 规划</h1>
+
+<p>规划：<br>
+一个容器运行gitlab<br>
+一个容器运行MySQL,然后 link到gitlab上。<br>
+一个容器运行Redis,然后 link到gitlab上。   </p>
+
+<h1>2 安装gitlab</h1>
+
+<p>我们先运行MySQL，</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo docker pull sameersbn/mysql:latest
+</code></pre></div>
+<p>在host主机上创建mysql的数据目录。   </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo mkdir -p /opt/mysql/data
+</code></pre></div>
+<p>启动MySQL容器。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo docker run --name mysql -d \
+    -v /opt/mysql/data:/var/lib/mysql \
+    sameersbn/mysql:latest
+</code></pre></div>
+<p>连接到MySQL上，修改授权信息   </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
+</code></pre></div>
+<p>创建数据库并授权。    </p>
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">`</span><span class="n">utf8</span><span class="o">`</span> <span class="k">COLLATE</span> <span class="o">`</span><span class="n">utf8_unicode_ci</span><span class="o">`</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
+<span class="k">ON</span> <span class="o">`</span><span class="n">gitlabhq_production</span><span class="o">`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;gitlab&#39;</span><span class="o">@</span><span class="s1">&#39;172.17.%.%&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;dbpassword&#39;</span><span class="p">;</span>
+<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
+</code></pre></div>
+<h1>3 配置redis</h1>
+
+<p>Pull image     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker pull sameersbn/redis:latest
+</code></pre></div>
+<p>run redis<br>
+<code>sh
+$ sudo docker run --name=redis -d sameersbn/redis:latest
+</code></p>
+
+<h1>4 Gitlab</h1>
+
+<p>Pull 先把老版的imagepull回来     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
+</code></pre></div>
+<p>创建数据目录     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo mkdir -p /opt/gitlab/data
+</code></pre></div>
+<p>这个目录会映像到窗口的<code>/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
+
+<p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。      </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
+</code></pre></div>
+<p>运行gitlab容器    </p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:6.7.5</code></pre></div>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 从原来gitlab里导出备份</span>
+<span class="nv">$ </span><span class="nb">cd</span> /home/git/gitlab
+<span class="nv">$ </span>sudo -u git -H bundle <span class="nb">exec </span>rake gitlab:backup:create <span class="nv">RAILS_ENV</span><span class="o">=</span>production</code></pre></div>
+
+<p>导出的文件放在<code>/home/git/gitlab/tmp/backups</code>这个目录下。</p>
+
+<p>把这个文件 scp到 docker gitlab那台机器的<code>/opt/gitlab/data/backups</code></p>
+
+<p>登录到gitlab的container</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker <span class="nb">exec</span> -it gitlab bash</code></pre></div>
+
+<p>在容器里执行下面的命令  </p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">cd</span> /home/git/gitlab
+<span class="nv">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+<span class="nv">$ </span><span class="nb">exit</span></code></pre></div>
+
+<p>这个样数据就全部到新的gitlab上了。
+你会发现跟原来的一样。</p>
+
+<p>下面我们来升级gitlab到新版。</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker stop gitlab
+<span class="nv">$ </span>sudo docker rm gitlab
+
+<span class="nv">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
+  --link redis:redisio <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  sameersbn/gitlab:latest</code></pre></div>
+
+<p>配置好以后，把它保存成一个镜像。</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker commit -m <span class="s2">&quot;update gitlab.yml ,change host,set timezone to BeiJing&quot;</span> -a <span class="s2">&quot;china-ops gitlab v7.9.4&quot;</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></div>
+
+<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
+后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
+hostname等是通过环境变量来控制的。</p>
+
+<p>用这个镜像来启动一个container</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>sudo docker run --name gitlab -d  <span class="se">\</span>
+  -p 80:80  -p 8443:443 <span class="se">\</span>
+  --link mysql:mysql <span class="se">\</span>
+  --link redis:redisio <span class="se">\</span>
+  -e <span class="s2">&quot;DB_USER=gitlab&quot;</span> -e <span class="s2">&quot;DB_PASS=dbpassword&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;DB_NAME=gitlabhq_production&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_HOST=gitlab.china-ops.com&quot;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_TIMEZONE=Beijing&quot;</span> <span class="se">\</span>
+  -e <span class="s1">&#39;GITLAB_BACKUPS=daily&#39;</span> <span class="se">\</span>
+  -e <span class="s2">&quot;GITLAB_GRAVATAR_ENABLED=false&quot;</span> <span class="se">\</span>
+  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
+  china-ops/gitlab:7.9.4</code></pre></div>
+
+<p>参数<code>-e &#39;GITLAB_BACKUPS=daily&#39;</code> 是备份策略，我们设置为每天</p>
+
+<p>默认的密码：<br>
+username: admin@local.host<br>
+password: 5iveL!fe    </p>
+
+<p>参考：　<br>
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a><br>
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a><br>
+<a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
+</div>
+            
+            <div class="spacing"></div>
+            <!-- <h6>SHARE:</h6>
+            <p class="share">
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-tumblr"></i></a>
+                <a href="#"><i class="fa fa-google-plus"></i></a>
+            </p> -->
+        </div><! --/col-lg-8 -->
+
+        <div class="col-lg-4">
+   <!--  <h4>Search</h4>
+    <div class="hline"></div>
+        <p>
+            <br/>
+            <input type="text" class="form-control" placeholder="Search something">
+        </p>
+    <div class="spacing"></div> -->
+    
+    <h4>Categories</h4>
+    <div class="hline"></div>
+    
+        <p>
+            <a href="/category/#other"><i class="fa fa-angle-right"></i> Other</a>
+            <span class="badge badge-theme pull-right">3</span>
+        </p>
+    
+        <p>
+            <a href="/category/#java"><i class="fa fa-angle-right"></i> Java</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
+        <p>
+            <a href="/category/#openstack"><i class="fa fa-angle-right"></i> Openstack</a>
+            <span class="badge badge-theme pull-right">3</span>
+        </p>
+    
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
+
+    <div class="spacing"></div>
+
+    <h4>Recent Posts</h4>
+    <div class="hline"></div>
+        <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
+             
+                <li>
+                    <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/move-gitlab-to-docker-container">把Gitlab迁移到Docker容器里。</a></p>
+                <em>Posted on 09 Apr 2015</em>
+            </li>
+             
+                <li>
+                    <a href="/blog/openstack/xenserver-vm-multi-nic"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/xenserver-vm-multi-nic">XenServer的虚拟机里安装配置两块网卡</a></p>
+                <em>Posted on 11 Mar 2015</em>
+            </li>
+             
+                <li>
+                    <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">在Ubuntu 14.04上部署OpenStack Juno</a></p>
+                <em>Posted on 11 Mar 2015</em>
+            </li>
+             
+        </ul>
+
+    <div class="spacing"></div>
+
+    <h4>Popular Tags</h4>
+    <div class="hline"></div>
+    <p>
+    
+            <a class="btn btn-theme" href="/category/#other" role="button">Other (3)</a>	         
+        
+            <a class="btn btn-theme" href="/category/#java" role="button">Java (1)</a>	         
+        
+            <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
+        
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+        
+    </p>
+	
+    <h4>Subscribe</h4>
+    <div class="hline"></div>
+        <p>
+            <p class="rss-subscribe">Subscribe to this blog <a href="/feed.xml">via RSS</a>.</p>
+        </p>
+    <div class="spacing"></div>
+</div>
+
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
+
+    </div><! --/row -->
+</div><! --/container -->
+
+
+        <div id="footerwrap">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <h4>About me</h4>
+                <div class="hline-w"></div>
+                <p>我是一名程序员，我喜欢编程，学过几门语言，最喜欢java和ruby，目前主要靠java混饭吃。同时我也是一名佛教徒，虽然我现在还没有皈依。</p>
+            </div>
+            <div class="col-lg-4">
+                <h4>Social Links</h4>
+                <div class="hline-w"></div>
+                <p>
+                    
+                        <a href="http://www.weibo.com/xiaopaozi" target="_blank" class="btn-social btn-outline"><i class="fa fa-weibo"></i></a>
+                    
+                        <a href="https://www.facebook.com/renhuailin" target="_blank" class="btn-social btn-outline"><i class="fa fa-facebook"></i></a>
+                    
+                        <a href="https://twitter.com/xiaopaozi" target="_blank" class="btn-social btn-outline"><i class="fa fa-twitter"></i></a>
+                    
+                </p>
+            </div>
+            <div class="col-lg-4">
+                <h4>Links</h4>
+                <div class="hline-w"></div>
+                <p>
+                    
+                        <a href="http://www.zhanglihai.com" target="_blank"> 张利海 </a>
+                    
+                </p>
+            </div>
+        </div><! --/row -->
+    </div><! --/container -->
+</div><! --/footerwrap -->
+        <script src="/assets/js/jquery-1.11.1.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/retina-1.1.0.js"></script>
+<script src="/assets/js/jquery.hoverdir.js"></script>
+<script src="/assets/js/jquery.hoverex.min.js"></script>
+<script src="/assets/js/jquery.prettyPhoto.js"></script>
+<script src="/assets/js/jquery.isotope.min.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+<script>
+// Portfolio
+(function($) {
+	"use strict";
+	var $container = $('.portfolio'),
+		$items = $container.find('.portfolio-item'),
+		portfolioLayout = 'fitRows';
+		
+		if( $container.hasClass('portfolio-centered') ) {
+			portfolioLayout = 'masonry';
+		}
+				
+		$container.isotope({
+			filter: '*',
+			animationEngine: 'best-available',
+			layoutMode: portfolioLayout,
+			animationOptions: {
+			duration: 750,
+			easing: 'linear',
+			queue: false
+		},
+		masonry: {
+		}
+		}, refreshWaypoints());
+		
+		function refreshWaypoints() {
+			setTimeout(function() {
+			}, 1000);   
+		}
+				
+		$('nav.portfolio-filter ul a').on('click', function() {
+				var selector = $(this).attr('data-filter');
+				$container.isotope({ filter: selector }, refreshWaypoints());
+				$('nav.portfolio-filter ul a').removeClass('active');
+				$(this).addClass('active');
+				return false;
+		});
+		
+		function getColumnNumber() { 
+			var winWidth = $(window).width(), 
+			columnNumber = 1;
+		
+			if (winWidth > 1200) {
+				columnNumber = 5;
+			} else if (winWidth > 950) {
+				columnNumber = 4;
+			} else if (winWidth > 600) {
+				columnNumber = 3;
+			} else if (winWidth > 400) {
+				columnNumber = 2;
+			} else if (winWidth > 250) {
+				columnNumber = 1;
+			}
+				return columnNumber;
+			}       
+			
+			function setColumns() {
+				var winWidth = $(window).width(), 
+				columnNumber = getColumnNumber(), 
+				itemWidth = Math.floor(winWidth / columnNumber);
+				
+				$container.find('.portfolio-item').each(function() { 
+					$(this).css( { 
+					width : itemWidth + 'px' 
+				});
+			});
+		}
+		
+		function setPortfolio() { 
+			setColumns();
+			$container.isotope('reLayout');
+		}
+			
+		$container.imagesLoaded(function () { 
+			setPortfolio();
+		});
+		
+		$(window).on('resize', function () { 
+		setPortfolio();          
+	});
+})(jQuery);
+</script>
+    </body>
+</html>
