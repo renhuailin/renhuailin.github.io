@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -73,8 +77,8 @@
 			-->
             <a href="/blog/other/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
             <p><csmall>Nov 2, 2014. | By: 任怀林</csmall></p>
-              
-            <p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
+
+            <div id="main_content"><p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">$ jekyll serve
 </code></pre></div>
 <p>然后浏览 http://localhost:4000</p>
@@ -85,18 +89,18 @@
 
 <p>参考：
 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog&mdash;-github Pages和Jekyll入门</a></p>
-
-
+</div>
+            
             <div class="spacing"></div>
             <!-- <h6>SHARE:</h6>
             <p class="share">
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-tumblr"></i></a>
-                <a href="#"><i class="fa fa-google-plus"></i></a>		 		
+                <a href="#"><i class="fa fa-google-plus"></i></a>
             </p> -->
         </div><! --/col-lg-8 -->
-        
+
         <div class="col-lg-4">
    <!--  <h4>Search</h4>
     <div class="hline"></div>
@@ -124,12 +128,23 @@
             <span class="badge badge-theme pull-right">3</span>
         </p>
     
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
              
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
@@ -149,12 +164,6 @@
                 <em>Posted on 11 Mar 2015</em>
             </li>
              
-                <li>
-                    <a href="/blog/other/config-lvm"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/other/config-lvm">配置LVM</a></p>
-                <em>Posted on 30 Jan 2015</em>
-            </li>
-             
         </ul>
 
     <div class="spacing"></div>
@@ -169,6 +178,8 @@
         
             <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
         
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+        
     </p>
 	
     <h4>Subscribe</h4>
@@ -179,8 +190,17 @@
     <div class="spacing"></div>
 </div>
 
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
+
     </div><! --/row -->
 </div><! --/container -->
+
 
         <div id="footerwrap">
     <div class="container">

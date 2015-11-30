@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -73,8 +77,8 @@
 			-->
             <a href="/blog/java/java-decompilers"><h3 class="ctitle">Java 反编译器</h3></a>
             <p><csmall>Nov 8, 2014. | By: 任怀林</csmall></p>
-              
-            <p>前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。</p>
+
+            <div id="main_content"><p>前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。</p>
 
 <!--more-->
 
@@ -101,18 +105,18 @@
 <span class="nv">$ </span>java -jar cfr_0_87.jar /home/harley/myJar.jar --outputdir /home/harley/java</code></pre></div>
 
 <p>好吧，这不算是一个好文章，只是我用来做备忘的，：）。</p>
-
-
+</div>
+            
             <div class="spacing"></div>
             <!-- <h6>SHARE:</h6>
             <p class="share">
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-tumblr"></i></a>
-                <a href="#"><i class="fa fa-google-plus"></i></a>		 		
+                <a href="#"><i class="fa fa-google-plus"></i></a>
             </p> -->
         </div><! --/col-lg-8 -->
-        
+
         <div class="col-lg-4">
    <!--  <h4>Search</h4>
     <div class="hline"></div>
@@ -140,12 +144,23 @@
             <span class="badge badge-theme pull-right">3</span>
         </p>
     
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
              
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
@@ -165,12 +180,6 @@
                 <em>Posted on 11 Mar 2015</em>
             </li>
              
-                <li>
-                    <a href="/blog/other/config-lvm"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/other/config-lvm">配置LVM</a></p>
-                <em>Posted on 30 Jan 2015</em>
-            </li>
-             
         </ul>
 
     <div class="spacing"></div>
@@ -185,6 +194,8 @@
         
             <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
         
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+        
     </p>
 	
     <h4>Subscribe</h4>
@@ -195,8 +206,17 @@
     <div class="spacing"></div>
 </div>
 
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
+
     </div><! --/row -->
 </div><! --/container -->
+
 
         <div id="footerwrap">
     <div class="container">

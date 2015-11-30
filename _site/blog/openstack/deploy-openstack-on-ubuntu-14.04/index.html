@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -73,8 +77,8 @@
 			-->
             <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04"><h3 class="ctitle">在Ubuntu 14.04上部署OpenStack Juno</h3></a>
             <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
-              
-            <h1>1 规划</h1>
+
+            <div id="main_content"><h1>1 规划</h1>
 
 <p>192.168.234.202   Openstack controller node<br>
 192.168.234.205   Openstack network node<br>
@@ -2798,18 +2802,18 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
 <p>参考：　
 <a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a><br>
 <a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
-
-
+</div>
+            
             <div class="spacing"></div>
             <!-- <h6>SHARE:</h6>
             <p class="share">
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-tumblr"></i></a>
-                <a href="#"><i class="fa fa-google-plus"></i></a>		 		
+                <a href="#"><i class="fa fa-google-plus"></i></a>
             </p> -->
         </div><! --/col-lg-8 -->
-        
+
         <div class="col-lg-4">
    <!--  <h4>Search</h4>
     <div class="hline"></div>
@@ -2837,12 +2841,23 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
             <span class="badge badge-theme pull-right">3</span>
         </p>
     
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
              
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
@@ -2862,12 +2877,6 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
                 <em>Posted on 11 Mar 2015</em>
             </li>
              
-                <li>
-                    <a href="/blog/other/config-lvm"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/other/config-lvm">配置LVM</a></p>
-                <em>Posted on 30 Jan 2015</em>
-            </li>
-             
         </ul>
 
     <div class="spacing"></div>
@@ -2882,6 +2891,8 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
         
             <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
         
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+        
     </p>
 	
     <h4>Subscribe</h4>
@@ -2892,8 +2903,17 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
     <div class="spacing"></div>
 </div>
 
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
+
     </div><! --/row -->
 </div><! --/container -->
+
 
         <div id="footerwrap">
     <div class="container">

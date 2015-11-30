@@ -163,17 +163,20 @@ $ sudo docker run --name gitlab -d  \
   -e "DB_NAME=gitlabhq_production" \
   -e "GITLAB_HOST=gitlab.china-ops.com" \
   -e "GITLAB_TIMEZONE=Beijing" \
+  -e 'GITLAB_BACKUPS=daily' \
   -e "GITLAB_GRAVATAR_ENABLED=false" \
   -v /opt/gitlab/data:/home/git/data \
   china-ops/gitlab:7.9.4
 {% endhighlight %}
 
+参数`-e 'GITLAB_BACKUPS=daily'` 是备份策略，我们设置为每天
+
+
 默认的密码：    
 username: admin@local.host    
 password: 5iveL!fe    
 
-参考：　
-[https://github.com/openstack/keystone/blob/master/tools/sample_data.sh](https://github.com/openstack/keystone/blob/master/tools/sample_data.sh)
-[https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst](https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst)
-
+参考：　  
+[https://github.com/openstack/keystone/blob/master/tools/sample_data.sh](https://github.com/openstack/keystone/blob/master/tools/sample_data.sh)      
+[https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst](https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst)    
 [Docker FAQ —— Docker 使用常见问题（持续更新中）](http://dockerpool.com/article/1413082493)

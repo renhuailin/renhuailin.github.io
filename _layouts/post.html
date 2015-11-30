@@ -11,20 +11,28 @@ layout: default
 			-->
             <a href="{{ page.url | prepend: site.baseurl }}"><h3 class="ctitle">{{ page.title }}</h3></a>
             <p><csmall>{{ page.date | date: "%b %-d, %Y" }}. | By: {{ page.author }}</csmall></p>
-              
-            {{ content }}
 
+            <div id="main_content">{{ content }}</div>
+            
             <div class="spacing"></div>
             <!-- <h6>SHARE:</h6>
             <p class="share">
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-tumblr"></i></a>
-                <a href="#"><i class="fa fa-google-plus"></i></a>		 		
+                <a href="#"><i class="fa fa-google-plus"></i></a>
             </p> -->
         </div><! --/col-lg-8 -->
-        
+
         {% include sidebar.html %}
+
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
 
     </div><! --/row -->
 </div><! --/container -->

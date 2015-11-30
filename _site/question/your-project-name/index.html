@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -118,12 +122,23 @@
             <span class="badge badge-theme pull-right">3</span>
         </p>
     
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
              
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
@@ -143,12 +158,6 @@
                 <em>Posted on 11 Mar 2015</em>
             </li>
              
-                <li>
-                    <a href="/blog/other/config-lvm"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/other/config-lvm">配置LVM</a></p>
-                <em>Posted on 30 Jan 2015</em>
-            </li>
-             
         </ul>
 
     <div class="spacing"></div>
@@ -162,6 +171,8 @@
             <a class="btn btn-theme" href="/category/#java" role="button">Java (1)</a>	         
         
             <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
+        
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
         
     </p>
 	

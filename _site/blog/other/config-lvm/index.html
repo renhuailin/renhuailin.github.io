@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -73,8 +77,8 @@
 			-->
             <a href="/blog/other/config-lvm"><h3 class="ctitle">配置LVM</h3></a>
             <p><csmall>Jan 30, 2015. | By: 任怀林</csmall></p>
-              
-            <p>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。</p>
+
+            <div id="main_content"><p>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。</p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">root@localhost:~# fdisk /dev/xvdb 
 Command <span class="o">(</span>m <span class="k">for</span> <span class="nb">help</span><span class="o">)</span>: m
@@ -373,18 +377,18 @@ none                            5.0M     <span class="m">0</span>  5.0M   0% /ru
 none                            4.8G     <span class="m">0</span>  4.8G   0% /run/shm
 none                            100M     <span class="m">0</span>  100M   0% /run/user
 /dev/xvda1                      236M   37M  187M  17% /boot</code></pre></div>
-
-
+</div>
+            
             <div class="spacing"></div>
             <!-- <h6>SHARE:</h6>
             <p class="share">
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-tumblr"></i></a>
-                <a href="#"><i class="fa fa-google-plus"></i></a>		 		
+                <a href="#"><i class="fa fa-google-plus"></i></a>
             </p> -->
         </div><! --/col-lg-8 -->
-        
+
         <div class="col-lg-4">
    <!--  <h4>Search</h4>
     <div class="hline"></div>
@@ -412,12 +416,23 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
             <span class="badge badge-theme pull-right">3</span>
         </p>
     
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+             
+                <li>
+                    <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
+                <em>Posted on 25 Nov 2015</em>
+            </li>
              
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
@@ -437,12 +452,6 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
                 <em>Posted on 11 Mar 2015</em>
             </li>
              
-                <li>
-                    <a href="/blog/other/config-lvm"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/other/config-lvm">配置LVM</a></p>
-                <em>Posted on 30 Jan 2015</em>
-            </li>
-             
         </ul>
 
     <div class="spacing"></div>
@@ -457,6 +466,8 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
         
             <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
         
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+        
     </p>
 	
     <h4>Subscribe</h4>
@@ -467,8 +478,17 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
     <div class="spacing"></div>
 </div>
 
+        <script type="text/javascript">
+        $('#main_content').toc({
+            showAlways:true,
+            showText:'Expand TOC',
+            saveShowStatus:false
+        });
+        </script>
+
     </div><! --/row -->
 </div><! --/container -->
+
 
         <div id="footerwrap">
     <div class="container">

@@ -18,10 +18,10 @@
     <link href="/assets/css/style.css" rel="stylesheet">
     <link href="/assets/css/syntax.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <!--<link rel="stylesheet" href="/css/main.css">-->
-
+    <link rel="stylesheet" href="/css/toc.css">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -32,7 +32,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/assets/js/modernizr.js"></script>
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
 </head>
 
 
@@ -111,76 +115,11 @@
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_04.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->		
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_01.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_01.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->		
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
                     <img src="/assets/img/project/portfolio_10.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
                                 <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_10.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->		
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_05.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_05.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->		
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_06.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_06.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->		
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_03.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_03.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->		
@@ -202,11 +141,63 @@
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_02.jpg" alt="">
+                    <img src="/assets/img/project/portfolio_06.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_02.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_06.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                            </div><!-- he bg -->
+                        </div><!-- he view -->		
+                    </div><!-- he wrap -->
+                </div><!-- end col-12 -->
+            
+                <div class="portfolio-item graphic-design">
+                    <div class="he-wrap tpl6">
+                    <img src="/assets/img/project/portfolio_01.jpg" alt="">
+                        <div class="he-view">
+                            <div class="bg a0" data-animate="fadeIn">
+                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_01.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                            </div><!-- he bg -->
+                        </div><!-- he view -->		
+                    </div><!-- he wrap -->
+                </div><!-- end col-12 -->
+            
+                <div class="portfolio-item graphic-design">
+                    <div class="he-wrap tpl6">
+                    <img src="/assets/img/project/portfolio_03.jpg" alt="">
+                        <div class="he-view">
+                            <div class="bg a0" data-animate="fadeIn">
+                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_03.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                            </div><!-- he bg -->
+                        </div><!-- he view -->		
+                    </div><!-- he wrap -->
+                </div><!-- end col-12 -->
+            
+                <div class="portfolio-item graphic-design">
+                    <div class="he-wrap tpl6">
+                    <img src="/assets/img/project/portfolio_05.jpg" alt="">
+                        <div class="he-view">
+                            <div class="bg a0" data-animate="fadeIn">
+                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_05.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                            </div><!-- he bg -->
+                        </div><!-- he view -->		
+                    </div><!-- he wrap -->
+                </div><!-- end col-12 -->
+            
+                <div class="portfolio-item graphic-design">
+                    <div class="he-wrap tpl6">
+                    <img src="/assets/img/project/portfolio_04.jpg" alt="">
+                        <div class="he-view">
+                            <div class="bg a0" data-animate="fadeIn">
+                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->		
@@ -239,6 +230,19 @@
                     </div><!-- he wrap -->
                 </div><!-- end col-12 -->
             
+                <div class="portfolio-item graphic-design">
+                    <div class="he-wrap tpl6">
+                    <img src="/assets/img/project/portfolio_02.jpg" alt="">
+                        <div class="he-view">
+                            <div class="bg a0" data-animate="fadeIn">
+                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
+                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_02.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a href="/project/your-project-name" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                            </div><!-- he bg -->
+                        </div><!-- he view -->		
+                    </div><!-- he wrap -->
+                </div><!-- end col-12 -->
+            
         </div><!-- portfolio -->
     </div><!-- portfolio container -->
 </div><!--/Portfoliowrap -->
@@ -263,6 +267,8 @@
             <h4>Latest Posts</h4>
             <div class="hline"></div>
              
+                <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0.</a></p>
+             
                 <p><a href="/blog/openstack/move-gitlab-to-docker-container">把Gitlab迁移到Docker容器里。.</a></p>
              
                 <p><a href="/blog/openstack/xenserver-vm-multi-nic">XenServer的虚拟机里安装配置两块网卡.</a></p>
@@ -270,8 +276,6 @@
                 <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">在Ubuntu 14.04上部署OpenStack Juno.</a></p>
              
                 <p><a href="/blog/other/config-lvm">配置LVM.</a></p>
-             
-                <p><a href="/blog/other/vm-communicate-with-my-laptop">从宿主机访问VirtualBox里的虚机.</a></p>
              
         </div>
 
