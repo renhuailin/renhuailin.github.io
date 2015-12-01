@@ -17,12 +17,27 @@
     var tocContainerHTML = '<div id="toc-container"><table class="toc" id="toc"><tbody><tr><td>%1<ul>%2</ul></td></tr></tbody></table></div>';
 
     function createLevelHTML(anchorId, tocLevel, tocSection, tocNumber, tocText, tocInner) {
-        var link = '<a href="#%1"><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+        var link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
             .replace('%1', anchorId)
             .replace('%2', tocNumber)
             .replace('%3', tocText)
             .replace('%4', tocInner ? tocInner : '');
-        return '<li class="toclevel-%1 tocsection-%2">%3</li>\n'
+
+        if (tocLevel == 1) {
+            link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+                .replace('%1', anchorId)
+                .replace('%2', tocNumber)
+                .replace('%3', tocText)
+                .replace('%4', tocInner ? tocInner : '');
+        } else if (tocLevel == 2) {
+            link = '<a href="#%1"><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+                .replace('%1', anchorId)
+                .replace('%2', tocNumber)
+                .replace('%3', tocText)
+                .replace('%4', tocInner ? tocInner : '');
+        }
+
+        return '<li class="toclevel-%1 l%1 tocsection-%2">%3</li>\n'
             .replace('%1', tocLevel)
             .replace('%2', tocSection)
             .replace('%3', link);
