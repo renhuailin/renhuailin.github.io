@@ -28,6 +28,9 @@ $ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RA
 # pull gitlab 7.9.4 image from docker hub.
 docker pull sameersbn/gitlab:7.9.4
 
+## TEST 2
+
+### test3
 
 恢復備份：
 

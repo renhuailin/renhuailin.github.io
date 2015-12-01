@@ -42,7 +42,7 @@
 
     <body>
         <!-- Fixed navbar -->
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -55,7 +55,7 @@
     </div>
     <div class="navbar-collapse collapse navbar-right">
       <ul class="nav navbar-nav">
-		  <!-- 
+		  <!--
         <li ><a href="/">首页</a></li>
         <li class="active"><a href="/blog/">BLOG</a></li>
         <li ><a href="/portfolio/">PORTFOLIO</a></li>
@@ -66,6 +66,7 @@
     </div><!--/.nav-collapse -->
   </div>
 </div>
+
 
                 <div class="container mtb">
     <div class="row">
@@ -96,6 +97,10 @@
 <h1>pull gitlab 7.9.4 image from docker hub.</h1>
 
 <p>docker pull sameersbn/gitlab:7.9.4</p>
+
+<h2>TEST 2</h2>
+
+<h3>test3</h3>
 
 <p>恢復備份：</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">docker run --name gitlab --rm  -p 80:80  -p 8443:443   --link mysql:mysql   --link redis:redisio   -e &quot;DB_USER=gitlab&quot; -e &quot;DB_PASS=somepass&quot;   -e &quot;DB_NAME=gitlabhq_production&quot;   -e &quot;GITLAB_HOST=gitlab.china-ops.com&quot;   -e &quot;GITLAB_TIMEZONE=Beijing&quot;   -e &quot;GITLAB_GRAVATAR_ENABLED=false&quot;  -e &#39;GITLAB_BACKUPS=daily&#39; -e &quot;NGINX_MAX_UPLOAD_SIZE=100m&quot; -e &quot;UNICORN_TIMEOUT=120&quot; -e &quot;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&quot;  -v /opt/data/gitlab:/home/git/data   sameersbn/gitlab:7.9.4  app:rake gitlab:backup:restore BACKUP=1448510466
@@ -3626,7 +3631,13 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
             <input type="text" class="form-control" placeholder="Search something">
         </p>
     <div class="spacing"></div> -->
-    
+
+    <!-- fdsaf  -->
+    <div id="tocNavigator" class="directory-nav" >
+
+        <span class="cur-tag"></span><span class="c-top"></span><span class="c-bottom"></span><span class="line"></span>
+    </div>
+
     <h4>Categories</h4>
     <div class="hline"></div>
     
@@ -3656,31 +3667,31 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
-             
+            
                 <li>
                     <a href="/blog/docker/backup-restore-gitlab"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0</a></p>
                 <em>Posted on 25 Nov 2015</em>
             </li>
-             
+            
                 <li>
                     <a href="/blog/openstack/move-gitlab-to-docker-container"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/move-gitlab-to-docker-container">把Gitlab迁移到Docker容器里。</a></p>
                 <em>Posted on 09 Apr 2015</em>
             </li>
-             
+            
                 <li>
                     <a href="/blog/openstack/xenserver-vm-multi-nic"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/xenserver-vm-multi-nic">XenServer的虚拟机里安装配置两块网卡</a></p>
                 <em>Posted on 11 Mar 2015</em>
             </li>
-             
+            
                 <li>
                     <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">在Ubuntu 14.04上部署OpenStack Juno</a></p>
                 <em>Posted on 11 Mar 2015</em>
             </li>
-             
+            
         </ul>
 
     <div class="spacing"></div>
@@ -3689,16 +3700,16 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
     <div class="hline"></div>
     <p>
     
-            <a class="btn btn-theme" href="/category/#other" role="button">Other (3)</a>	         
+            <a class="btn btn-theme" href="/category/#other" role="button">Other (3)</a>
         
-            <a class="btn btn-theme" href="/category/#java" role="button">Java (1)</a>	         
+            <a class="btn btn-theme" href="/category/#java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>	         
+            <a class="btn btn-theme" href="/category/#openstack" role="button">Openstack (3)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>	         
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (1)</a>
         
     </p>
-	
+
     <h4>Subscribe</h4>
     <div class="hline"></div>
         <p>
@@ -3706,6 +3717,7 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
         </p>
     <div class="spacing"></div>
 </div>
+
 
     </div><! --/row -->
 </div><! --/container -->

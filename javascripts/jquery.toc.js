@@ -13,7 +13,7 @@
  *   http://www.gnu.org/licenses/gpl.html
  */
 (function($) {
-    var toggleHTML = '<div id="toctitle"><h2>Contents</h2> <span class="toctoggle">[<a id="toctogglelink" class="internal" href="#">hide</a>]</span></div>';
+    var toggleHTML = '<div id="toctitle"><h2>目錄</h2> <span class="toctoggle">[<a id="toctogglelink" class="internal" href="#">隱藏</a>]</span></div>';
     var tocContainerHTML = '<div id="toc-container"><table class="toc" id="toc"><tbody><tr><td>%1<ul>%2</ul></td></tr></tbody></table></div>';
 
     function createLevelHTML(anchorId, tocLevel, tocSection, tocNumber, tocText, tocInner) {
@@ -30,12 +30,13 @@
 
     $.fn.toc = function(settings) {
         var config = {
+            displayBox:'',   //Id of displayBox
             anchorPrefix: 'tocAnchor-',
             showAlways: false,
             saveShowStatus: true,
-            contentsText: 'Contents',
-            hideText: 'hide',
-            showText: 'show'};
+            contentsText: '目錄',
+            hideText: '隱藏',
+            showText: '展開'};
 
         if (settings) {
             $.extend(config, settings);
@@ -94,11 +95,14 @@
             var replacedTocContainer = tocContainerHTML
                 .replace('%1', replacedToggleHTML)
                 .replace('%2', tocHTML);
-            tocContainer.prepend(replacedTocContainer);
+
+
+            $("#" + config.displayBox).prepend(replacedTocContainer);
+            //tocContainer.prepend(replacedTocContainer);
 
             $('#toctogglelink').click(function() {
                 var ul = $($('#toc ul')[0]);
-                
+
                 if (ul.is(':visible')) {
                     ul.hide();
                     $(this).text(config.showText);
@@ -119,7 +123,7 @@
 
             if (config.saveShowStatus && $.cookie('toc-hide')) {
                 var ul = $($('#toc ul')[0]);
-                
+
                 ul.hide();
                 $('#toctogglelink').text(config.showText);
                 $('#toc').addClass('tochidden');
