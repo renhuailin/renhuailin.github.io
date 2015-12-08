@@ -13,45 +13,69 @@
  *   http://www.gnu.org/licenses/gpl.html
  */
 (function($) {
-    var toggleHTML = '<div id="toctitle"><h2>目錄</h2> <span class="toctoggle">[<a id="toctogglelink" class="internal" href="#">隱藏</a>]</span></div>';
-    var tocContainerHTML = '<div id="toc-container"><table class="toc" id="toc"><tbody><tr><td>%1<ul>%2</ul></td></tr></tbody></table></div>';
+    var toggleHTML = '';
+    var tocContainerHTML = '<div id="toc-container">%1<ul>%2</ul></div>';
 
     function createLevelHTML(anchorId, tocLevel, tocSection, tocNumber, tocText, tocInner) {
-        var link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+        var link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext"></span></a>%3    %4'
             .replace('%1', anchorId)
             .replace('%2', tocNumber)
             .replace('%3', tocText)
             .replace('%4', tocInner ? tocInner : '');
 
         if (tocLevel == 1) {
-            link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
-                .replace('%1', anchorId)
-                .replace('%2', tocNumber)
-                .replace('%3', tocText)
-                .replace('%4', tocInner ? tocInner : '');
+            // link = '<a href="#%1"><span class="c-dot"></span><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+            //     .replace('%1', anchorId)
+            //     .replace('%2', tocNumber)
+            //     .replace('%3', tocText)
+            //     .replace('%4', tocInner ? tocInner : '');
+
+            // return '<li class="toclevel-%1 l%1 tocsection-%2">%3</li>\n'
+            //     .replace(/%1/g, tocLevel)
+            //     .replace('%2', tocSection)
+            //     .replace('%3', link);
+
+            // temp.push(');
+            // return '<li class="l1"><span class="c-dot"></span>' + tocNumber + '. <a class="l1-text">' + tocText + '</a></li>'
+
+            return '<li class="l1"><span class="c-dot"></span><span class="text"><a class="l-text" href="#$href" >$tocNumber    $tocText</a></li>$innerToc</span>'
+                .replace("$tocNumber", tocNumber)
+                .replace("$href",anchorId)
+                .replace("$tocText", tocText)
+                .replace("$innerToc",tocInner);
+
         } else if (tocLevel == 2) {
-            link = '<a href="#%1"><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
-                .replace('%1', anchorId)
-                .replace('%2', tocNumber)
-                .replace('%3', tocText)
-                .replace('%4', tocInner ? tocInner : '');
+            //二級目錄
+            // link = '<a href="#%1"><span class="tocnumber">%2</span> <span class="toctext">%3</span></a>%4'
+            //     .replace('%1', anchorId)
+            //     .replace('%2', tocNumber)
+            //     .replace('%3', tocText)
+            //     .replace('%4', tocInner ? tocInner : '');
+            // temp.push('<li class="l2">'+index1+'.'+index2+' <a class="l2-text">'+text+'</a></li>');
+            // return '<li class="toclevel-%1 l%1 tocsection-%2">%3</li>\n'
+            //     .replace(/%1/g, tocLevel)
+            //     .replace('%2', tocSection)
+            //     .replace('%3', link);
+            return '<li class="l2"><span class="c-dot"></span><span class="text"><a class="l2-text" href="#$href"> $tocNumber  $tocText</a></li></span>'
+                .replace("$tocNumber", tocNumber)
+                .replace("$href",anchorId)
+                .replace("$tocText", tocText);
+            // return '<li class="l2">' + tocNumber + ' <a class="l2-text">' + tocText + '</a></li>';
         }
 
-        return '<li class="toclevel-%1 l%1 tocsection-%2">%3</li>\n'
-            .replace('%1', tocLevel)
-            .replace('%2', tocSection)
-            .replace('%3', link);
+        return "";
     }
 
     $.fn.toc = function(settings) {
         var config = {
-            displayBox:'',   //Id of displayBox
+            displayBox: '', //Id of displayBox
             anchorPrefix: 'tocAnchor-',
             showAlways: false,
             saveShowStatus: true,
             contentsText: '目錄',
             hideText: '隱藏',
-            showText: '展開'};
+            showText: '展開'
+        };
 
         if (settings) {
             $.extend(config, settings);
@@ -71,7 +95,7 @@
 
             h1.nextUntil('h1').filter('h2').each(function() {
                 ++innerSection;
-                var anchorId = config.anchorPrefix + tocLevel + '-' + tocSection + '-' +  + innerSection;
+                var anchorId = config.anchorPrefix + tocLevel + '-' + tocSection + '-' + +innerSection;
                 $(this).attr('id', anchorId);
                 levelHTML += createLevelHTML(anchorId,
                     tocLevel + 1,
@@ -122,14 +146,19 @@
                     ul.hide();
                     $(this).text(config.showText);
                     if (config.saveShowStatus) {
-                        $.cookie('toc-hide', '1', { expires: 365, path: '/' });
+                        $.cookie('toc-hide', '1', {
+                            expires: 365,
+                            path: '/'
+                        });
                     }
                     $('#toc').addClass('tochidden');
                 } else {
                     ul.show();
                     $(this).text(config.hideText);
                     if (config.saveShowStatus) {
-                        $.removeCookie('toc-hide', { path: '/' });
+                        $.removeCookie('toc-hide', {
+                            path: '/'
+                        });
                     }
                     $('#toc').removeClass('tochidden');
                 }

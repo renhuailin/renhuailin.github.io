@@ -761,27 +761,16 @@ character-set-server <span class="o">=</span> utf8</code></pre></div>
 <p>配置RabbitMQ</p>
 
 <p>RabbitMQ在安装时创建了一个用户<code>guest</code>,我们就用这个用户了，只是把他的密码修改为<code>openstack</code></p>
-
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># rabbitmqctl change_password guest openstack</span></code></pre></div>
-
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># rabbitmqctl change_password guest openstack</span>
+</code></pre></div>
 <p>For RabbitMQ version 3.3.0 or newer, you must enable remote access for the guest account.</p>
 
 <p>Check the RabbitMQ version:</p>
-
-<h1>rabbitmqctl status | grep rabbit</h1>
-
-<p>Status of node &lsquo;rabbit@controller&rsquo; &hellip;
- {running<em>applications,[{rabbit,&ldquo;RabbitMQ&rdquo;,&ldquo;3.4.2&rdquo;},
-If necessary, edit the /etc/rabbitmq/rabbitmq.config file and configure loopback</em>users to reference an empty list:</p>
-
-<p>[{rabbit, [{loopback_users, []}]}].
-[Note]  Note
-Contents of the original file might vary depending on the source of the RabbitMQ package. In some cases, you might need to create this file.</p>
-
+<div class="highlight"><pre><code class="language-text" data-lang="text"># rabbitmqctl status | grep rabbit
+</code></pre></div>
 <p>Restart the message broker service:</p>
-
-<h1>service rabbitmq-server restart</h1>
-
+<div class="highlight"><pre><code class="language-text" data-lang="text"># service rabbitmq-server restart
+</code></pre></div>
 <h1>5 安装OpenStack的认证服务 OpenStack Identity service</h1>
 
 <p>OpenStack Identity service提供如下功能</p>
@@ -1002,7 +991,7 @@ Contents of the original file might vary depending on the source of the RabbitMQ
 <p>上面的命令<code>keystone service-list | awk &#39;/ identity / {print $2}&#39;</code>返回的其实就是我创建的Identity service实体的id.</p>
 
 <ul>
-<li>Note 
+<li>Note
 Each service that you add to your OpenStack environment requires adding information such as API endpoints to the Identity service. The sections of this guide that cover service installation include steps to add the appropriate information to the Identity service</li>
 </ul>
 
@@ -1020,7 +1009,7 @@ Each service that you add to your OpenStack environment requires adding informat
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone --os-tenant-name admin --os-username admin --os-password openstack <span class="se">\</span>
   --os-auth-url http://controller:35357/v2.0 token-get
-  
+
 +-----------+----------------------------------+
 <span class="p">|</span>  Property <span class="p">|</span>              Value               <span class="p">|</span>
 +-----------+----------------------------------+
@@ -1281,7 +1270,7 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 <span class="na">admin_tenant_name</span> <span class="o">=</span> <span class="s">service</span>
 <span class="na">admin_user</span> <span class="o">=</span> <span class="s">glance</span>
 <span class="na">admin_password</span> <span class="o">=</span> <span class="s">GLANCE_PASS</span>
- 
+
 <span class="k">[paste_deploy]</span>
 <span class="err">...</span>
 <span class="na">flavor</span> <span class="o">=</span> <span class="s">keystone</span>
@@ -1969,7 +1958,7 @@ net.ipv4.conf.default.rp_filter<span class="o">=</span>0</code></pre></div>
 <p>重启网络服务</p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service neutron-plugin-openvswitch-agent restart</span>
-<span class="c"># service neutron-l3-agent restart </span>
+<span class="c"># service neutron-l3-agent restart</span>
 <span class="c"># service neutron-dhcp-agent restart</span>
 <span class="c"># service neutron-metadata-agent restart</span></code></pre></div>
 
@@ -2141,7 +2130,7 @@ net.ipv4.conf.default.rp_filter<span class="o">=</span>0</code></pre></div>
 
 <span class="nv">$ </span>neutron net-create ext-net --router:external True <span class="se">\</span>
   --provider:physical_network external --provider:network_type flat
-  
+
 Created a new network:                                                                                                                      
 +---------------------------+--------------------------------------+                                                                        
 <span class="p">|</span> Field                     <span class="p">|</span> Value                                <span class="p">|</span>                                                                        
@@ -2175,7 +2164,7 @@ Created a new network:
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>neutron subnet-create ext-net --name ext-subnet <span class="se">\</span>
   --allocation-pool <span class="nv">start</span><span class="o">=</span>192.168.234.230,end<span class="o">=</span>192.168.234.239 <span class="se">\</span>
   --disable-dhcp --gateway 192.168.234.1 192.168.234.0/24
-  
+
 Created a new subnet:
 +-------------------+--------------------------------------------------------+
 <span class="p">|</span> Field             <span class="p">|</span> Value                                                  <span class="p">|</span>
@@ -2203,11 +2192,11 @@ Created a new subnet:
 
 <p>1 创建租户网络</p>
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># source demo-openrc.sh </span>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># source demo-openrc.sh</span>
 
 
 <span class="nv">$ </span>neutron net-create demo-net
-  
+
 Created a new network:
 +-----------------+--------------------------------------+
 <span class="p">|</span> Field           <span class="p">|</span> Value                                <span class="p">|</span>
@@ -2343,7 +2332,7 @@ Set gateway <span class="k">for</span> router demo-router</code></pre></div>
   db.addUser<span class="o">({</span>user: <span class="s2">&quot;ceilometer&quot;</span>,
   <span class="nb">pwd</span>: <span class="s2">&quot;openstack&quot;</span>,
   roles: <span class="o">[</span> <span class="s2">&quot;readWrite&quot;</span>, <span class="s2">&quot;dbAdmin&quot;</span> <span class="o">]})</span><span class="err">&#39;</span>
-  
+
 MongoDB shell version: 2.4.9
 connecting to: controller:27017/test
 <span class="o">{</span>
@@ -2425,7 +2414,7 @@ connecting to: controller:27017/test
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># openssl rand -hex 10</span>
 177e8037fc8c7916e329</code></pre></div>
 
-<p>３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： </p>
+<p>３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：</p>
 
 <div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
 <span class="err">...</span>
@@ -2478,11 +2467,11 @@ connecting to: controller:27017/test
 
 <h3>10.2.1 安装配置Agent</h3>
 
-<p>1 </p>
+<p>1</p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install ceilometer-agent-compute</span></code></pre></div>
 
-<p>2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： </p>
+<p>2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：</p>
 
 <div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
 <span class="err">...</span>
@@ -2517,7 +2506,7 @@ connecting to: controller:27017/test
 
 <p>Edit the /etc/nova/nova.conf file and configure notifications in the [DEFAULT] section:</p>
 
-<p>编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知: </p>
+<p>编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知:</p>
 
 <div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[DEFAULT]</span>
 <span class="na">instance_usage_audit</span> <span class="o">=</span> <span class="s">True</span>
@@ -2812,7 +2801,7 @@ root@localhost:~# neutron agent-list
 
 <p>创建 cinder 服务实体:</p>
 
-<p><strong>注意</strong> 
+<p><strong>注意</strong>
 块存储服务需要两个不同的实体以支持v1和v2版本的API．</p>
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>keystone service-create --name cinder --type volume <span class="se">\</span>
@@ -2884,7 +2873,7 @@ root@localhost:~# neutron agent-list
 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install cinder-api cinder-scheduler python-cinderclient</span></code></pre></div>
 
-<p>2　编辑 /etc/cinder/cinder.conf 完成下列操作： </p>
+<p>2　编辑 /etc/cinder/cinder.conf 完成下列操作：</p>
 
 <div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="k">[database]</span>
 <span class="err">...</span>
@@ -2902,7 +2891,7 @@ root@localhost:~# neutron agent-list
 
 <span class="err">...</span>
 <span class="na">auth_strategy</span> <span class="o">=</span> <span class="s">keystone</span>
- 
+
 <span class="k">[keystone_authtoken]</span>
 <span class="err">...</span>
 <span class="c1">#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.</span>
@@ -3096,7 +3085,7 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn<span class="s1">&#39;t contain 
 <span class="na">glance_host</span> <span class="o">=</span> <span class="s">controller</span>
 <span class="na">verbose</span> <span class="o">=</span> <span class="s">True</span>
 <span class="na">auth_strategy</span> <span class="o">=</span> <span class="s">keystone</span>
- 
+
 <span class="k">[keystone_authtoken]</span>
 <span class="err">...</span>
 <span class="na">auth_uri</span> <span class="o">=</span> <span class="s">http://controller:5000/v2.0</span>
@@ -3634,7 +3623,20 @@ none                            100M     <span class="m">0</span>  100M   0% /ru
 
     <!-- fdsaf  -->
     <div id="tocNavigator" class="directory-nav" >
-        <span class="cur-tag"></span><span class="c-top"></span><span class="c-bottom"></span><span class="line"></span>
+        <div id="navmain">
+        <span class="c-top"></span>
+        <span class="c-bottom"></span>
+        <span class="line"></span>
+
+        <div class="right-wrap">
+            <a class="go-up" href="javascript:void(0);"></a>
+            <a class="go-down disable" href="javascript:void(0);"></a>
+        </div>
+        </div>
+        <div class="bottom-wrap">
+            <a class="toggle-button" href="javascript:void(0);"></a>
+            <a class="gotop-button" href="javascript:void(0);"></a>
+        </div>
     </div>
 
     <h4>Categories</h4>

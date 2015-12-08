@@ -234,7 +234,20 @@ password: 5iveL!fe    </p>
 
     <!-- fdsaf  -->
     <div id="tocNavigator" class="directory-nav" >
-        <span class="cur-tag"></span><span class="c-top"></span><span class="c-bottom"></span><span class="line"></span>
+        <div id="navmain">
+        <span class="c-top"></span>
+        <span class="c-bottom"></span>
+        <span class="line"></span>
+
+        <div class="right-wrap">
+            <a class="go-up" href="javascript:void(0);"></a>
+            <a class="go-down disable" href="javascript:void(0);"></a>
+        </div>
+        </div>
+        <div class="bottom-wrap">
+            <a class="toggle-button" href="javascript:void(0);"></a>
+            <a class="gotop-button" href="javascript:void(0);"></a>
+        </div>
     </div>
 
     <h4>Categories</h4>
@@ -321,7 +334,7 @@ password: 5iveL!fe    </p>
         <script type="text/javascript">
 
         $('#main_content').toc({
-            displayBox:"tocNavigator",
+            displayBox:"navmain",
             showAlways:true,
             showText:'展開',
             contentsText: "目錄",
@@ -355,6 +368,10 @@ password: 5iveL!fe    </p>
             this.curIndex = 0;
             this.scrollIng = false;
             this.init();
+            this.$goUpButton = "";
+            this.$goDownButton = "";
+            this.$tocContainer;
+            this.$oldCurLi;
         }
 
         DirectoryNav.prototype = {
@@ -364,27 +381,7 @@ password: 5iveL!fe    </p>
                 this.bindEvent();
             },
             make: function() {
-                // //生成导航目录结构,这是根据需求自己生成的。如果你直接在页面中输出一个结构那也挺好不用 搞js
-                // $("body").append('<div class="directory-nav" id="directoryNav"><ul></ul><span class="cur-tag"></span><span class="c-top"></span><span class="c-bottom"></span><span class="line"></span></div>>');
-                // var $hs = this.$h,
-                //     $directoryNav = $("#directoryNav"),
-                //     temp = [],
-                //     index1 = 0,
-                //     index2 = 0;
-                // $hs.each(function(index){
-                //     var $this = $(this),
-                //             text = $this.text();
-                //     if(this.tagName.toLowerCase()=='h2'){
-                //         index1++;
-                //         if(index1%2==0) index2 = 0;
-                //         temp.push('<li class="l1"><span class="c-dot"></span>'+index1+'. <a class="l1-text">'+text+'</a></li>');
-                //     }else{
-                //         index2++;
-                //         temp.push('<li class="l2">'+index1+'.'+index2+' <a class="l2-text">'+text+'</a></li>');
-                //
-                //     }
-                // });
-                // $directoryNav.find("ul").html(temp.join(""));
+
                 $directoryNav = $("#tocNavigator")
 
                 //设置变量
@@ -392,6 +389,14 @@ password: 5iveL!fe    </p>
                 this.$pageNavListLis = this.$pageNavList.find("li");
                 this.$curTag = this.$pageNavList.find(".cur-tag");
                 this.$pageNavListLiH = this.$pageNavListLis.eq(0).height();
+                this.$goUpButton = $("#tocNavigator a.go-up");
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                this.$tocContainer = $("#toc-container");
+
+                // $("#toc-container").scroll(function() {
+                //     HandlingScrollingStuff();
+                // });
 
                 if (!this.opts.scrollTopBorder) {
                     this.$pageNavList.show();
@@ -399,38 +404,144 @@ password: 5iveL!fe    </p>
             },
             setArr: function() {
                 var This = this;
+                var i = 0;
                 this.$h.each(function() {
-                    var $this = $(this),
-                        offT = Math.round($this.offset().top);
-                    This.offArr.push(offT);
+                    var $this = $(this);
+                    var offT = Math.round($this.offset().top);
+                    var info = {"index":i,"top":offT,"bottom":0};
+                    This.offArr.push(info);
+                    if(i > 0) {
+                        This.offArr[i - 1].bottom = offT;
+                    }
+                    i++;
                 });
+                This.offArr[--i].bottom = $(document).height();
             },
             posTag: function(top) {
                 this.$curTag.css({
                     top: top + 'px'
                 });
             },
+
             ifPos: function(st) {
                 var offArr = this.offArr;
                 //console.log(st);
+
+                this.$pageNavListLis = this.$pageNavList.find("li");
+
                 var windowHeight = Math.round(this.$win.height() * this.opts.scrollThreshold);
+
+                var $curLi;
+                var indexNearTop;
+                var indexNearMiddle;
                 for (var i = 0; i < offArr.length; i++) {
-                    if ((offArr[i] - windowHeight) < st) {
-                        var $curLi = this.$pageNavListLis.eq(i),
-                            tagTop = $curLi.position().top;
-                        $curLi.addClass("cur").siblings("li").removeClass("cur");
-                        this.curIndex = i;
-                        this.posTag(tagTop + this.$pageNavListLiH * 0.5);
-                        //this.curIndex = this.$pageNavListLis.filter(".cur").index();
-                        this.opts.scrollChange.call(this);
+
+                    if(offArr[i].top <= (st)  && (st) < offArr[i].bottom) {
+                        indexNearMiddle = offArr[i].index;
+                        break;
                     }
                 }
+
+                if (this.$oldCurLi != indexNearMiddle) {
+                    $curLi = this.$pageNavListLis.eq(indexNearMiddle);
+
+                    var tagTop = $curLi.position().top;
+
+                    var newTop = $("#toc-container").scrollTop() + tagTop -  $("#toc-container").eq(0).height() / 2;
+
+                    if (newTop < 0) {
+                        newTop = 0;
+                    }
+
+                    $("#toc-container").scrollTop(newTop);
+
+                    this.opts.scrollChange.call(this);
+
+                    this.$pageNavList.find("span.cur-tag").removeClass("cur-tag").addClass("c-dot");
+                    this.$pageNavList.find("li").removeClass("cur");
+                    $curLi.addClass("cur");
+                    $curLi.find("span.c-dot").removeClass("c-dot").addClass("cur-tag");
+                    this.$oldCurLi = indexNearMiddle;
+                }
+
             },
             bindEvent: function() {
                 var This = this,
                     show = false,
                     timer = 0;
-                this.$win.on("scroll", function() {
+
+                this.$pageNavList.on("mouseout",function () {
+                    $("div.right-wrap").hide();
+                });
+
+                this.$pageNavList.on("mouseover",function () {
+                    $("div.right-wrap").show();
+                });
+
+                this.$goUpButton.on("click",function () {
+                    var $this = $(this);
+                    if($this.hasClass("disable")) {
+                        return;
+                    }
+
+                    var newTop = $("#toc-container").scrollTop() - 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    } else {
+                        $("#toc-container").scrollTop(0);
+                    }
+                });
+
+                this.$goDownButton.on("click",function () {
+                    var newTop = $("#toc-container").scrollTop() + 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    }
+                });
+
+                $("a.toggle-button").on("click",function () {
+                    if ($("#tocNavigator").hasClass("collapse")) {
+                        $("#tocNavigator").removeClass("collapse");
+                    } else {
+                        $("#tocNavigator").addClass("collapse");
+                    }
+                    $("#tocNavigator #navmain").toggle();
+                })
+
+                $("a.gotop-button").on("click",function () {
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                })
+
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                $("#toc-container").on("scroll",function (data,event) {
+                    var $this = $(this);
+                    $goUpButton = $("#tocNavigator a.go-up");
+                    $goDownButton = $("#tocNavigator a.go-down");
+
+                    var newTop = $this.scrollTop();
+                    if(newTop > 0) {
+                        $goUpButton.removeClass("disable");
+                        $goUpButton.prop('disabled',false);
+                    } else {
+                        $goUpButton.addClass("disable");
+                        $goUpButton.prop('disabled',true);
+                    }
+
+                    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight){
+                        $goDownButton.addClass("disable");
+                        $goDownButton.prop('disabled',true);
+                    } else {
+                        $goDownButton.removeClass("disable");
+                        $goDownButton.prop('disabled',false);
+                    }
+
+                });
+
+
+                this.$win.on("scroll", function(event) {
+                    // console.log(event);
+
                     var $this = $(this);
                     clearTimeout(timer);
                     timer = setTimeout(function() {
@@ -452,13 +563,16 @@ password: 5iveL!fe    </p>
                                 show = false;
                             }
                         }
+
+                        //This.$goUpButton.eq(0).prop('disabled', This.$tocContainer.scrollTop() < This.$tocContainer.eq(0).height());
+
                     }, This.opts.delayDetection);
                 });
 
                 this.$pageNavList.on("click", "li", function() {
-                    var $this = $(this),
-                        index = $this.index();
-                    This.scrollTo(This.offArr[index]);
+                    var $this = $(this);
+                    var index = $this.index();
+                    // This.scrollTo(This.offArr[index]);
                 })
             },
             scrollTo: function(offset, callback) {
@@ -474,7 +588,7 @@ password: 5iveL!fe    </p>
         };
 
         //实例化
-        var directoryNav = new DirectoryNav($("h2,h3"), {
+        var directoryNav = new DirectoryNav($("h1,h2"), {
             scrollTopBorder: 650 //滚动条距离顶部多少的时候显示导航，如果为0，则一直显示
         });
         </script>

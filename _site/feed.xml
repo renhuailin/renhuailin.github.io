@@ -5,8 +5,8 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 01 Dec 2015 18:10:00 +0800</pubDate>
-    <lastBuildDate>Tue, 01 Dec 2015 18:10:00 +0800</lastBuildDate>
+    <pubDate>Tue, 08 Dec 2015 16:48:04 +0800</pubDate>
+    <lastBuildDate>Tue, 08 Dec 2015 16:48:04 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -689,27 +689,16 @@ character-set-server &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; utf8&lt;/cod
 &lt;p&gt;配置RabbitMQ&lt;/p&gt;
 
 &lt;p&gt;RabbitMQ在安装时创建了一个用户&lt;code&gt;guest&lt;/code&gt;,我们就用这个用户了，只是把他的密码修改为&lt;code&gt;openstack&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# rabbitmqctl change_password guest openstack&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# rabbitmqctl change_password guest openstack&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;For RabbitMQ version 3.3.0 or newer, you must enable remote access for the guest account.&lt;/p&gt;
 
 &lt;p&gt;Check the RabbitMQ version:&lt;/p&gt;
-
-&lt;h1&gt;rabbitmqctl status | grep rabbit&lt;/h1&gt;
-
-&lt;p&gt;Status of node &amp;lsquo;rabbit@controller&amp;rsquo; &amp;hellip;
- {running&lt;em&gt;applications,[{rabbit,&amp;ldquo;RabbitMQ&amp;rdquo;,&amp;ldquo;3.4.2&amp;rdquo;},
-If necessary, edit the /etc/rabbitmq/rabbitmq.config file and configure loopback&lt;/em&gt;users to reference an empty list:&lt;/p&gt;
-
-&lt;p&gt;[{rabbit, [{loopback_users, []}]}].
-[Note]  Note
-Contents of the original file might vary depending on the source of the RabbitMQ package. In some cases, you might need to create this file.&lt;/p&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# rabbitmqctl status | grep rabbit
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Restart the message broker service:&lt;/p&gt;
-
-&lt;h1&gt;service rabbitmq-server restart&lt;/h1&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# service rabbitmq-server restart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h1&gt;5 安装OpenStack的认证服务 OpenStack Identity service&lt;/h1&gt;
 
 &lt;p&gt;OpenStack Identity service提供如下功能&lt;/p&gt;
@@ -930,7 +919,7 @@ Contents of the original file might vary depending on the source of the RabbitMQ
 &lt;p&gt;上面的命令&lt;code&gt;keystone service-list | awk &amp;#39;/ identity / {print $2}&amp;#39;&lt;/code&gt;返回的其实就是我创建的Identity service实体的id.&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Note 
+&lt;li&gt;Note
 Each service that you add to your OpenStack environment requires adding information such as API endpoints to the Identity service. The sections of this guide that cover service installation include steps to add the appropriate information to the Identity service&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -948,7 +937,7 @@ Each service that you add to your OpenStack environment requires adding informat
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone --os-tenant-name admin --os-username admin --os-password openstack &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
   --os-auth-url http://controller:35357/v2.0 token-get
-  
+
 +-----------+----------------------------------+
 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  Property &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;              Value               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
 +-----------+----------------------------------+
@@ -1209,7 +1198,7 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 &lt;span class=&quot;na&quot;&gt;admin_tenant_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;service&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;admin_user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;glance&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;admin_password&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GLANCE_PASS&lt;/span&gt;
- 
+
 &lt;span class=&quot;k&quot;&gt;[paste_deploy]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;flavor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
@@ -1897,7 +1886,7 @@ net.ipv4.conf.default.rp_filter&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0&l
 &lt;p&gt;重启网络服务&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service neutron-plugin-openvswitch-agent restart&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# service neutron-l3-agent restart &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# service neutron-l3-agent restart&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;# service neutron-dhcp-agent restart&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;# service neutron-metadata-agent restart&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -2069,7 +2058,7 @@ net.ipv4.conf.default.rp_filter&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0&l
 
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;neutron net-create ext-net --router:external True &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
   --provider:physical_network external --provider:network_type flat
-  
+
 Created a new network:                                                                                                                      
 +---------------------------+--------------------------------------+                                                                        
 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Field                     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Value                                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;                                                                        
@@ -2103,7 +2092,7 @@ Created a new network:
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;neutron subnet-create ext-net --name ext-subnet &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
   --allocation-pool &lt;span class=&quot;nv&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;192.168.234.230,end&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;192.168.234.239 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
   --disable-dhcp --gateway 192.168.234.1 192.168.234.0/24
-  
+
 Created a new subnet:
 +-------------------+--------------------------------------------------------+
 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Field             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Value                                                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
@@ -2131,11 +2120,11 @@ Created a new subnet:
 
 &lt;p&gt;1 创建租户网络&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# source demo-openrc.sh &lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# source demo-openrc.sh&lt;/span&gt;
 
 
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;neutron net-create demo-net
-  
+
 Created a new network:
 +-----------------+--------------------------------------+
 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Field           &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Value                                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
@@ -2271,7 +2260,7 @@ Set gateway &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; router demo-router&
   db.addUser&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;user: &lt;span class=&quot;s2&quot;&gt;&amp;quot;ceilometer&amp;quot;&lt;/span&gt;,
   &lt;span class=&quot;nb&quot;&gt;pwd&lt;/span&gt;: &lt;span class=&quot;s2&quot;&gt;&amp;quot;openstack&amp;quot;&lt;/span&gt;,
   roles: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;readWrite&amp;quot;&lt;/span&gt;, &lt;span class=&quot;s2&quot;&gt;&amp;quot;dbAdmin&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]})&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;
-  
+
 MongoDB shell version: 2.4.9
 connecting to: controller:27017/test
 &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -2353,7 +2342,7 @@ connecting to: controller:27017/test
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# openssl rand -hex 10&lt;/span&gt;
 177e8037fc8c7916e329&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： &lt;/p&gt;
+&lt;p&gt;３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
@@ -2406,11 +2395,11 @@ connecting to: controller:27017/test
 
 &lt;h3&gt;10.2.1 安装配置Agent&lt;/h3&gt;
 
-&lt;p&gt;1 &lt;/p&gt;
+&lt;p&gt;1&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install ceilometer-agent-compute&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作： &lt;/p&gt;
+&lt;p&gt;2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
@@ -2445,7 +2434,7 @@ connecting to: controller:27017/test
 
 &lt;p&gt;Edit the /etc/nova/nova.conf file and configure notifications in the [DEFAULT] section:&lt;/p&gt;
 
-&lt;p&gt;编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知: &lt;/p&gt;
+&lt;p&gt;编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[DEFAULT]&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;instance_usage_audit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
@@ -2740,7 +2729,7 @@ root@localhost:~# neutron agent-list
 
 &lt;p&gt;创建 cinder 服务实体:&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt; 
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 块存储服务需要两个不同的实体以支持v1和v2版本的API．&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;keystone service-create --name cinder --type volume &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
@@ -2812,7 +2801,7 @@ root@localhost:~# neutron agent-list
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# apt-get install cinder-api cinder-scheduler python-cinderclient&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;2　编辑 /etc/cinder/cinder.conf 完成下列操作： &lt;/p&gt;
+&lt;p&gt;2　编辑 /etc/cinder/cinder.conf 完成下列操作：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span class=&quot;k&quot;&gt;[database]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
@@ -2830,7 +2819,7 @@ root@localhost:~# neutron agent-list
 
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;auth_strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
- 
+
 &lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;c1&quot;&gt;#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.&lt;/span&gt;
@@ -3024,7 +3013,7 @@ Disk /dev/mapper/ubuntu1404server--vg-root doesn&lt;span class=&quot;s1&quot;&gt
 &lt;span class=&quot;na&quot;&gt;glance_host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;controller&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;True&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;auth_strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;keystone&lt;/span&gt;
- 
+
 &lt;span class=&quot;k&quot;&gt;[keystone_authtoken]&lt;/span&gt;
 &lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;na&quot;&gt;auth_uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://controller:5000/v2.0&lt;/span&gt;
