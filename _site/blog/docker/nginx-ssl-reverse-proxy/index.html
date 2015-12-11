@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 从宿主机访问VirtualBox里的虚机</title>
+    <title>念西堂 - Nginx自签名https和反向代理</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,16 +76,133 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/other/vm-communicate-with-my-laptop"><h3 class="ctitle">从宿主机访问VirtualBox里的虚机</h3></a>
-            <p><csmall>Jan 6, 2015. | By: 任怀林</csmall></p>
+            <a href="/blog/docker/nginx-ssl-reverse-proxy"><h3 class="ctitle">Nginx自签名https和反向代理</h3></a>
+            <p><csmall>Dec 11, 2015. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"># ifconfig wlan0:0 192.168.234.249/24
+            <div id="main_content"><h1 id="场景">场景</h1>
+
+<p>公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，
+只能通过一个公网IP来访问，所以需要用Nginx做个反向代理来访问些服务器。另外，这些服务都要以https来访问。</p>
+
+<table><thead>
+<tr>
+<th>服务器</th>
+<th>内网IP</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>wiki.renhl.com</td>
+<td>172.168.100.47</td>
+</tr>
+<tr>
+<td>hub.renhl.com</td>
+<td>172.168.100.48</td>
+</tr>
+</tbody></table>
+
+<table><thead>
+<tr>
+<th>header 1</th>
+<th>header 2</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>cell 1</td>
+<td>cell 2</td>
+</tr>
+<tr>
+<td>cell 3</td>
+<td>cell 4</td>
+</tr>
+</tbody></table>
+
+<h1 id="生成自签名的证书">生成自签名的证书</h1>
+
+<p>因为是自己公司用也就无需申请认证的证书了，自签名即可。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo mkdir -p /etc/nginx/ssl
+$ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt
 </code></pre></div>
-<p>回到银丰后，把这个配置删除掉：<br>
-&ldquo;`</p>
+<h1 id="配置反向代理">配置反向代理</h1>
 
-<h1 id="ifconfig-wlan0-0-192-168-234-249-down">ifconfig wlan0:0 192.168.234.249 down</h1>
+<p>编辑<code>/etc/nginx/sites-available/default</code>,加入如下内容：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">upstream wiki  {
+    server 172.168.100.47:80; # wiki.renhl.com
+}
+
+upstream hub  {
+    server 172.168.100.48; # hub.renhl.com
+}
+
+## Start wiki.renhl.com ##
+server {
+
+    listen 80;
+
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/ssl/nginx.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+    server_name  wiki.ecloud.com.cn;
+
+    access_log  /var/log/nginx/wiki.renhl.access.log;
+    error_log  /var/log/nginx/wiki.renhl.error.log;
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+
+    ## send request back to apache1 ##
+    location / {
+     proxy_pass  http://wiki;
+     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+     proxy_redirect off;
+     proxy_buffering off;
+     proxy_set_header        Host            $host;
+     proxy_set_header        X-Real-IP       $remote_addr;
+     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+   }
+}
+## End wiki.renhl.com ##
+
+## START hub.renhl.com ##
+server {
+    server_name hub.renhl.com;
+
+    listen 80;
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/ssl/nginx.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+   access_log  /var/log/nginx/hub.renhl.access.log;
+   error_log   /var/log/nginx/hub.renhl.error.log;
+   root        /usr/local/nginx/html;
+   index       index.html;
+
+   location / {
+        proxy_pass  https://hub;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+        proxy_buffering off;
+        proxy_set_header        Host           $host;
+        proxy_set_header        X-Real-IP       $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+## END hub.renhl.com  ##
+</code></pre></div>
+<h1 id="ip限制">IP限制</h1>
+
+<p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">allow 111.206.238.12;
+allow 111.206.238.94;
+deny all;
+</code></pre></div>
+<h1 id="參考文献">參考文献</h1>
+
+<ul>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04">https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04</a></li>
+<li><a href="http://www.cyberciti.biz/tips/using-nginx-as-reverse-proxy.html">http://www.cyberciti.biz/tips/using-nginx-as-reverse-proxy.html</a></li>
+</ul>
 </div>
 
             <div class="spacing"></div>
@@ -469,7 +586,7 @@
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/other/vm-communicate-with-my-laptop" data-title="从宿主机访问VirtualBox里的虚机" data-url="http://www.renhl.com/blog/other/vm-communicate-with-my-laptop "></div>
+<div class="ds-thread" data-thread-key="/blog/docker/nginx-ssl-reverse-proxy" data-title="Nginx自签名https和反向代理" data-url="http://www.renhl.com/blog/docker/nginx-ssl-reverse-proxy "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

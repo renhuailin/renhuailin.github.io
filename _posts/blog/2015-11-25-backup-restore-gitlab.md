@@ -10,9 +10,6 @@ thumb: openstack.png
 ---
 公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。
 
-
-
-
 # 備份原來的gitlab
 ```
 $ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
@@ -22,7 +19,7 @@ $ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RA
 
 查看當前的版本，進入gitlab，在左側的菜單欄裏選help,可以看到當前版本。
 
-我現在的版本時7.9.4
+我現在的版本7.9.4
 
 
 # pull gitlab 7.9.4 image from docker hub.

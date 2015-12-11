@@ -269,6 +269,8 @@
             <h4>Latest Posts</h4>
             <div class="hline"></div>
              
+                <p><a href="/blog/docker/nginx-ssl-reverse-proxy">Nginx自签名https和反向代理.</a></p>
+             
                 <p><a href="/blog/docker/backup-restore-gitlab">升級gitlab到8.2.0.</a></p>
              
                 <p><a href="/blog/openstack/move-gitlab-to-docker-container">把Gitlab迁移到Docker容器里。.</a></p>
@@ -276,8 +278,6 @@
                 <p><a href="/blog/openstack/xenserver-vm-multi-nic">XenServer的虚拟机里安装配置两块网卡.</a></p>
              
                 <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">在Ubuntu 14.04上部署OpenStack Juno.</a></p>
-             
-                <p><a href="/blog/other/config-lvm">配置LVM.</a></p>
              
         </div>
 
