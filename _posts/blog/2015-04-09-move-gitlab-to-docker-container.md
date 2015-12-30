@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 把Gitlab迁移到Docker容器里。
+title: 把Gitlab迁移到Docker容器里
 date: 2015-04-09 12:30:00
 author: 任怀林
 categories:
 - blog
-- OpenStack
-thumb: openstack.png
+- docker
+thumb: docker.png
 ---
 公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。
 
@@ -69,7 +69,7 @@ run redis
 $ sudo docker run --name=redis -d sameersbn/redis:latest
 ```
 
-# 4 Gitlab 
+# 4 Gitlab
 
 Pull 先把老版的imagepull回来     
 

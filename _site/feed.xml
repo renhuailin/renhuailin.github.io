@@ -5,9 +5,92 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 11 Dec 2015 11:00:44 +0800</pubDate>
-    <lastBuildDate>Fri, 11 Dec 2015 11:00:44 +0800</lastBuildDate>
+    <pubDate>Wed, 30 Dec 2015 12:31:48 +0800</pubDate>
+    <lastBuildDate>Wed, 30 Dec 2015 12:31:48 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Blog: Linux uid备忘</title>
+        <description>&lt;p&gt;最近在運行Jenkins容器時出現了權限問題，其原因是我掛載的volume的owner uid與容器裏的jenkins uid不一致,導致無法向掛載的卷寫數據。&lt;/p&gt;
+
+&lt;p&gt;我發現dockerfile裏指定jenkins的uid爲1000.爲什麼是1000？爲什麼不是其它值？我的host主機裏有uid爲1000的user嗎？&lt;/p&gt;
+
+&lt;p&gt;我查看了/etc/passwd,還真有uid爲1000的用戶。看來uid爲1000的用戶是除了root以外，第一個普通用戶的uid。真的是這樣嗎？問了Google後明白了一點，寫下來備忘。&lt;/p&gt;
+
+&lt;p&gt;uid爲0是root用戶;其實是所有uid爲0的用戶都是超級管理員。這意味着，你的系統裏可以有多個uid爲0的用戶，而且這個用戶的name不一定非要叫&lt;code&gt;root&lt;/code&gt;. 但是請不要添加其它uid爲0的用戶，因爲這可能會引些系統混亂哦。&lt;/p&gt;
+
+&lt;p&gt;1~99的uid傳統是保留給特殊的系統用戶（有時稱做pseudo-users），比如www-data,mail,news,backup等。這些用戶也都是管理員，執行一些管理任務，但是它們不需要超級管理員那麼大的權限。&lt;/p&gt;
+
+&lt;p&gt;65534通常分配給nobody這個用戶。&lt;/p&gt;
+
+&lt;p&gt;接下來就是沒有特權的普通用戶了，有一些發行版是從100開始分配普通用戶的uid的，有一些發行版如redhat,是從500開始。debian是從1000開始的。&lt;/p&gt;
+
+&lt;p&gt;所以在ubuntu或debian系統裏的第一個普通用戶的uid肯定是1000，也是因爲這個，很多docker images裏要求的uid都是1000，因爲這個uid的用戶在host主機上應該是肯定存在的。&lt;/p&gt;
+
+&lt;p&gt;参考文档
+&lt;a href=&quot;http://www.linfo.org/uid.html&quot;&gt;http://www.linfo.org/uid.html&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 30 Dec 2015 20:02:06 +0800</pubDate>
+        <link>http://yourdomain.com/blog/linux/linux-ubuntu-uid-1000</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/linux/linux-ubuntu-uid-1000</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Blog: Jenkins + gitlab做持续集成</title>
+        <description>&lt;h1 id=&quot;安装jenkins&quot;&gt;安装Jenkins&lt;/h1&gt;
+
+&lt;h2 id=&quot;配置jdk&quot;&gt;配置jdk&lt;/h2&gt;
+
+&lt;h1 id=&quot;安装-ant-maven&quot;&gt;安装 ant,maven&lt;/h1&gt;
+
+&lt;h1 id=&quot;配置jenkins的安全策略&quot;&gt;配置Jenkins的安全策略&lt;/h1&gt;
+
+&lt;h1 id=&quot;插件管理&quot;&gt;插件管理&lt;/h1&gt;
+
+&lt;p&gt;在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：
+&lt;code&gt;
+$ git config --global http.sslverify false
+&lt;/code&gt;
+另一个办法就是设置环境变量
+&lt;code&gt;
+GIT_SSL_NO_VERIFY=1
+&lt;/code&gt;
+我在安装Jenkins的Server上运行了&lt;code&gt;git config --global http.sslverify false&lt;/code&gt;，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。&lt;/p&gt;
+
+&lt;p&gt;那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？&lt;/p&gt;
+
+&lt;p&gt;在项目的“配置”里勾先上“参数化构建过程”，然后添加一个字符型的参数，把这环境变量添加上。&lt;/p&gt;
+
+&lt;p&gt;GitLab 8.3以後，GitLab Hook Plugin 已經不推薦了&amp;quot;deprecated&amp;quot;.推薦使用&amp;#39;Jenkins CI&amp;rsquo; project 。&lt;/p&gt;
+
+&lt;h1 id=&quot;错误处理&quot;&gt;错误处理&lt;/h1&gt;
+
+&lt;p&gt;我一不小心点击了反选，把overall/read权限弄没有了，登录上来什么用不了。&lt;/p&gt;
+
+&lt;p&gt;搜了一下网上，简单的做法是把config.xml里的useSecurity设置为false,把&lt;code&gt;authorizationStrategy&lt;/code&gt;，完全删除。再重启Jenkins就可以了。&lt;/p&gt;
+
+&lt;h1 id=&quot;参考文档&quot;&gt;参考文档&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu&quot;&gt;http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html&quot;&gt;http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 17 Dec 2015 18:43:06 +0800</pubDate>
+        <link>http://yourdomain.com/blog/gitlab/jenkins-gitlab-ci</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/gitlab/jenkins-gitlab-ci</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>gitlab</category>
+        
+      </item>
     
       <item>
         <title>Blog: Nginx自签名https和反向代理</title>
@@ -29,22 +112,6 @@
 &lt;tr&gt;
 &lt;td&gt;hub.renhl.com&lt;/td&gt;
 &lt;td&gt;172.168.100.48&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;&lt;/table&gt;
-
-&lt;table&gt;&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;header 1&lt;/th&gt;
-&lt;th&gt;header 2&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;cell 1&lt;/td&gt;
-&lt;td&gt;cell 2&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;cell 3&lt;/td&gt;
-&lt;td&gt;cell 4&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;&lt;/table&gt;
 
@@ -148,26 +215,114 @@ deny all;
       </item>
     
       <item>
-        <title>Blog: 升級gitlab到8.2.0</title>
+        <title>Blog: 升級gitlab从7.9.4到8.2.2</title>
         <description>&lt;p&gt;公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。&lt;/p&gt;
 
 &lt;h1 id=&quot;備份原來的gitlab&quot;&gt;備份原來的gitlab&lt;/h1&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;到gitlab的data/backups目錄，把最近的備份copy出來。&lt;/p&gt;
+&lt;p&gt;到gitlab的data/backups目錄，把最近的備份copy出來。
+gitlab的备份是类似&lt;code&gt;1449806583_gitlab_backup.tar&lt;/code&gt;这样的文件名，请注意下划线前面的数字，我们将在恢复的时候用到。&lt;/p&gt;
 
-&lt;p&gt;查看當前的版本，進入gitlab，在左側的菜單欄裏選help,可以看到當前版本。&lt;/p&gt;
+&lt;p&gt;查看當前的版本
+查看當前的版本，進入gitlab，在左側的菜單欄裏選&lt;code&gt;help&lt;/code&gt;,可以看到當前版本。我們要先運行舊版本的container,然後pull新版本的gitlab image回來升級。&lt;/p&gt;
 
-&lt;p&gt;我現在的版本7.9.4&lt;/p&gt;
+&lt;p&gt;OK，看了一下我現在的版本7.9.4&lt;/p&gt;
 
-&lt;h1 id=&quot;pull-gitlab-7-9-4-image-from-docker-hub&quot;&gt;pull gitlab 7.9.4 image from docker hub.&lt;/h1&gt;
+&lt;h1 id=&quot;pull-各種-images&quot;&gt;Pull 各種 images&lt;/h1&gt;
 
-&lt;p&gt;docker pull sameersbn/gitlab:7.9.4&lt;/p&gt;
+&lt;p&gt;Next , pull gitlab 7.9.4 image from docker hub. 哈.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# docker pull sameersbn/gitlab:7.9.4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;把最新版本的8.2.2 pull回來。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# docker pull sameersbn/gitlab:8.2.2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;網上說MySQL 5.7是相當重要的一個版本，支持好多令人激動的新特性，那我就5.7吧，用docker好處就是能用最新版本的軟件，：）&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# docker pull mysql:5.7
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最後要把redis pull回來，因爲要用到。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# docker pull sameersbn/redis:latest
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然後要把MySQL配置好，請參考&lt;a href=&quot;http://www.renhl.com/blog/openstack/move-gitlab-to-docker-container/&quot;&gt;我的上篇文章&lt;/a&gt;，這裏就不再贅述了。&lt;/p&gt;
 
-&lt;h2 id=&quot;test-2&quot;&gt;TEST 2&lt;/h2&gt;
+&lt;h1 id=&quot;使用docker-compose啓動舊版本gitlab&quot;&gt;使用docker-compose啓動舊版本gitlab&lt;/h1&gt;
 
-&lt;h3 id=&quot;test3&quot;&gt;test3&lt;/h3&gt;
+&lt;p&gt;爲了方便維護，我使用了docker-compose。這是我的配置文件：&lt;/p&gt;
 
+&lt;p&gt;docker-compose.yml&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;l-Scalar-Plain&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sameersbn/gitlab:7.9.4&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;app:start&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;gitlab&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;80:80&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;8443:443&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_HOST=gitlab.renhl.com&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;DB_USER=gitlab&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;DB_PASS=dbpass&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;DB_NAME=gitlabhq_production&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_TIMEZONE=Beijing&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_GRAVATAR_ENABLED=false&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_BACKUPS=daily&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;NGINX_MAX_UPLOAD_SIZE=100m&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;UNICORN_TIMEOUT=120&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;/opt/data/gitlab:/home/git/data&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;links&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql:mysql&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis:redisio&lt;/span&gt;
+
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql:5.7&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
+
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#  container_name: redis&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;啓動gitlab container.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# docker-compose up -d
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;l-Scalar-Plain&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sameersbn/gitlab:8.2.2&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;app:start&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;gitlab&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;80:80&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;8443:443&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_HOST=gitlab.china-ops.com&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;DB_USER=gitlab&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;DB_PASS=1q2w3e4r&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;DB_NAME=gitlabhq_production&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_TIMEZONE=Beijing&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_GRAVATAR_ENABLED=false&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_BACKUPS=daily&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;NGINX_MAX_UPLOAD_SIZE=100m&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;UNICORN_TIMEOUT=120&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;/opt/data/gitlab:/home/git/data&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;links&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql:mysql&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis:redisio&lt;/span&gt;
+
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;mysql:5.7&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
+
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#  container_name: redis&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;恢復備份：&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run --name gitlab --rm  -p 80:80  -p 8443:443   --link mysql:mysql   --link redis:redisio   -e &amp;quot;DB_USER=gitlab&amp;quot; -e &amp;quot;DB_PASS=somepass&amp;quot;   -e &amp;quot;DB_NAME=gitlabhq_production&amp;quot;   -e &amp;quot;GITLAB_HOST=gitlab.china-ops.com&amp;quot;   -e &amp;quot;GITLAB_TIMEZONE=Beijing&amp;quot;   -e &amp;quot;GITLAB_GRAVATAR_ENABLED=false&amp;quot;  -e &amp;#39;GITLAB_BACKUPS=daily&amp;#39; -e &amp;quot;NGINX_MAX_UPLOAD_SIZE=100m&amp;quot; -e &amp;quot;UNICORN_TIMEOUT=120&amp;quot; -e &amp;quot;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&amp;quot;  -v /opt/data/gitlab:/home/git/data   sameersbn/gitlab:7.9.4  app:rake gitlab:backup:restore BACKUP=1448510466
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -231,151 +386,20 @@ mkdir -p /opt/data/mysql&lt;/p&gt;
 &lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
   &lt;span class=&quot;l-Scalar-Plain&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;redis&lt;/span&gt;
   &lt;span class=&quot;l-Scalar-Plain&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h1 id=&quot;1-规划&quot;&gt;1 规划&lt;/h1&gt;
-
-&lt;p&gt;规划：&lt;br&gt;
-一个容器运行gitlab&lt;br&gt;
-一个容器运行MySQL,然后 link到gitlab上。&lt;br&gt;
-一个容器运行Redis,然后 link到gitlab上。   &lt;/p&gt;
-
-&lt;h1 id=&quot;2-安装gitlab&quot;&gt;2 安装gitlab&lt;/h1&gt;
-
-&lt;p&gt;我们先运行MySQL，&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ sudo docker pull sameersbn/mysql:latest
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;在host主机上创建mysql的数据目录。   &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ sudo mkdir -p /opt/mysql/data
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;启动MySQL容器。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ sudo docker run --name mysql -d \
-    -v /opt/mysql/data:/var/lib/mysql \
-    sameersbn/mysql:latest
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;连接到MySQL上，修改授权信息   &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; -it mysql bash
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;创建数据库并授权。    &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gitlabhq_production&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;utf8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;COLLATE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;utf8_unicode_ci&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;LOCK&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TABLES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;UPDATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DROP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gitlabhq_production&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;gitlab&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;172.17.%.%&amp;#39;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;dbpassword&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;FLUSH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h1 id=&quot;3-配置redis&quot;&gt;3 配置redis&lt;/h1&gt;
-
-&lt;p&gt;Pull image     &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker pull sameersbn/redis:latest
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;run redis&lt;br&gt;
-&lt;code&gt;sh
-$ sudo docker run --name=redis -d sameersbn/redis:latest
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;4-gitlab&quot;&gt;4 Gitlab&lt;/h1&gt;
-
-&lt;p&gt;Pull 先把老版的imagepull回来     &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker pull sameersbn/gitlab:6.7.5
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;创建数据目录     &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo mkdir -p /opt/gitlab/data
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;这个目录会映像到窗口的&lt;code&gt;/home/git/data&lt;/code&gt;目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。&lt;/p&gt;
-
-&lt;p&gt;运行gitlab容器,进行设置，容器会进行数据库的migration等操作。      &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -i -t --rm --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_USER=gitlab&amp;quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_PASS=dbpassword&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_NAME=gitlabhq_production&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;运行gitlab容器    &lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d -P --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_USER=gitlab&amp;quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_PASS=dbpassword&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_NAME=gitlabhq_production&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:6.7.5&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 从原来gitlab里导出备份&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /home/git/gitlab
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo -u git -H bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rake gitlab:backup:create &lt;span class=&quot;nv&quot;&gt;RAILS_ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;production&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;导出的文件放在&lt;code&gt;/home/git/gitlab/tmp/backups&lt;/code&gt;这个目录下。&lt;/p&gt;
-
-&lt;p&gt;把这个文件 scp到 docker gitlab那台机器的&lt;code&gt;/opt/gitlab/data/backups&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;登录到gitlab的container&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; -it gitlab bash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;在容器里执行下面的命令  &lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /home/git/gitlab
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo -u git -H  bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rake gitlab:backup:restore &lt;span class=&quot;nv&quot;&gt;RAILS_ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;production
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这个样数据就全部到新的gitlab上了。
-你会发现跟原来的一样。&lt;/p&gt;
-
-&lt;p&gt;下面我们来升级gitlab到新版。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker stop gitlab
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker rm gitlab
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d -P --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link redis:redisio &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_USER=gitlab&amp;quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_PASS=dbpassword&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_NAME=gitlabhq_production&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:latest&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;配置好以后，把它保存成一个镜像。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker commit -m &lt;span class=&quot;s2&quot;&gt;&amp;quot;update gitlab.yml ,change host,set timezone to BeiJing&amp;quot;&lt;/span&gt; -a &lt;span class=&quot;s2&quot;&gt;&amp;quot;china-ops gitlab v7.9.4&amp;quot;&lt;/span&gt; 6af1d0739ae0 china-ops/gitlab:7.9.4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
-hostname等是通过环境变量来控制的。&lt;/p&gt;
-
-&lt;p&gt;用这个镜像来启动一个container&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d  &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -p 80:80  -p 8443:443 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link redis:redisio &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_USER=gitlab&amp;quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_PASS=dbpassword&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;DB_NAME=gitlabhq_production&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;GITLAB_HOST=gitlab.china-ops.com&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;GITLAB_TIMEZONE=Beijing&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s1&quot;&gt;&amp;#39;GITLAB_BACKUPS=daily&amp;#39;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&amp;quot;GITLAB_GRAVATAR_ENABLED=false&amp;quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  china-ops/gitlab:7.9.4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;参数&lt;code&gt;-e &amp;#39;GITLAB_BACKUPS=daily&amp;#39;&lt;/code&gt; 是备份策略，我们设置为每天&lt;/p&gt;
-
-&lt;p&gt;默认的密码：&lt;br&gt;
-username: &lt;a href=&quot;mailto:admin@local.host&quot;&gt;admin@local.host&lt;/a&gt;&lt;br&gt;
-password: 5iveL!fe    &lt;/p&gt;
-
-&lt;p&gt;参考：　&lt;br&gt;
-&lt;a href=&quot;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&quot;&gt;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&lt;/a&gt;&lt;br&gt;
-&lt;a href=&quot;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&quot;&gt;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&lt;/a&gt;&lt;br&gt;
-&lt;a href=&quot;http://dockerpool.com/article/1413082493&quot;&gt;Docker FAQ —— Docker 使用常见问题（持续更新中）&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
         <pubDate>Wed, 25 Nov 2015 22:16:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/docker/backup-restore-gitlab</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/docker/backup-restore-gitlab</guid>
+        <link>http://yourdomain.com/blog/gitlab/backup-restore-gitlab</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/gitlab/backup-restore-gitlab</guid>
         
         
         <category>blog</category>
         
-        <category>docker</category>
+        <category>gitlab</category>
         
       </item>
     
       <item>
-        <title>Blog: 把Gitlab迁移到Docker容器里。</title>
+        <title>Blog: 把Gitlab迁移到Docker容器里</title>
         <description>&lt;p&gt;公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。&lt;/p&gt;
 
 &lt;h1 id=&quot;1-规划&quot;&gt;1 规划&lt;/h1&gt;
@@ -510,13 +534,13 @@ password: 5iveL!fe    &lt;/p&gt;
 &lt;a href=&quot;http://dockerpool.com/article/1413082493&quot;&gt;Docker FAQ —— Docker 使用常见问题（持续更新中）&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 09 Apr 2015 20:30:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/openstack/move-gitlab-to-docker-container</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/openstack/move-gitlab-to-docker-container</guid>
+        <link>http://yourdomain.com/blog/docker/move-gitlab-to-docker-container</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/docker/move-gitlab-to-docker-container</guid>
         
         
         <category>blog</category>
         
-        <category>openstack</category>
+        <category>docker</category>
         
       </item>
     
@@ -3682,44 +3706,6 @@ none                            100M     &lt;span class=&quot;m&quot;&gt;0&lt;/s
         <category>blog</category>
         
         <category>java</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: 我的第一篇博客</title>
-        <description>&lt;p&gt;我的博客是用&lt;a href=&quot;http://jekyllrb.com/&quot;&gt;jekyll&lt;/a&gt;搭建的。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ jekyll serve
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;然后浏览 &lt;a href=&quot;http://localhost:4000&quot;&gt;http://localhost:4000&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;方法高亮使用：&lt;a href=&quot;http://pygments.org/&quot;&gt;pygments&lt;/a&gt;,它支持的语法列表：&lt;a href=&quot;http://pygments.org/docs/lexers/&quot;&gt;http://pygments.org/docs/lexers/&lt;/a&gt;  &lt;/p&gt;
-
-&lt;p&gt;我用的jekyll theme 是&lt;a href=&quot;https://github.com/st4ple/solid-jekyll&quot;&gt;solid jekyll&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;参考：
-&lt;a href=&quot;http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html&quot;&gt;搭建一个免费的，无限流量的Blog&amp;mdash;-github Pages和Jekyll入门&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 02 Nov 2014 18:50:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/other/my-first-blog-with-jekyll</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/other/my-first-blog-with-jekyll</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>other</category>
-        
-      </item>
-    
-      <item>
-        <title>Question: Why did the Chicken cross the road?</title>
-        <description>&lt;p&gt;To get to the other side.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 26 Apr 2014 00:54:46 +0800</pubDate>
-        <link>http://yourdomain.com/question/your-project-name</link>
-        <guid isPermaLink="true">http://yourdomain.com/question/your-project-name</guid>
-        
-        
-        <category>question</category>
         
       </item>
     
