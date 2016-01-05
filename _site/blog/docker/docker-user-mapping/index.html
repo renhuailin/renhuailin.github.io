@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - XenServer的虚拟机里安装配置两块网卡</title>
+    <title>念西堂 - Docker容器用戶映射</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,54 +76,113 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/openstack/xenserver-vm-multi-nic"><h3 class="ctitle">XenServer的虚拟机里安装配置两块网卡</h3></a>
-            <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
+            <a href="/blog/docker/docker-user-mapping"><h3 class="ctitle">Docker容器用戶映射</h3></a>
+            <p><csmall>Dec 30, 2015. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>在安装OpenStack时，我的network节点只配置了一个nic，所以当<code>配置Open vSwitch (OVS) 服务</code>时，在运行完命令</p>
+            <div id="main_content"><p>root(id = 0) 是容器的默認用戶。Docker image的製作者可以添加新的用戶。    </p>
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service openvswitch-switch restart</span>
-<span class="c"># ovs-vsctl add-br br-ex</span>
-<span class="c"># ovs-vsctl add-port br-ex eth0</span></code></pre></div>
+<p>比如jenkins image的Dockerfile是這樣的：</p>
+<div class="highlight"><pre><code class="language-dockerfile" data-lang="dockerfile"><span class="k">FROM</span> java:8-jdk
 
-<p>之后，我就无法通过eth0上的那个external IP来访问它了，管理IP也无法访问，所以官方的文档是要求network节点要有3个nic。</p>
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget git curl zip <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*
 
-<p>没有办法，我只能新建一个vm来安装network,这个过程还是碰到了问题。</p>
+<span class="k">ENV</span> JENKINS_HOME /var/jenkins_home
+<span class="k">ENV</span> JENKINS_SLAVE_AGENT_PORT <span class="m">50000</span>
 
-<p>因为我的XenServer有两卡网卡，我就创建了两个虚拟网卡，分别映射到这两块网卡上。vm启动后，我配置网络如下：</p>
+<span class="c"># Jenkins is run with user `jenkins`, uid = 1000</span>
+<span class="c"># If you bind mount a volume from the host or a data container,</span>
+<span class="c"># ensure you use the same uid</span>
+<span class="k">RUN</span> useradd -d <span class="s2">&quot;$JENKINS_HOME&quot;</span> -u <span class="m">1000</span> -m -s /bin/bash jenkins
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># The primary network interface</span>
-auto eth0
-iface eth0 inet static
-address 192.168.234.205
-netmask 255.255.255.0
-gateway 192.168.234.1
+<span class="c"># Jenkins home directory is a volume, so configuration and build history</span>
+<span class="c"># can be persisted and survive image upgrades</span>
+<span class="k">VOLUME</span> /var/jenkins_home
 
-<span class="c">#management interface</span>
-auto eth1
-iface eth1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-<span class="c">#gateway 10.0.0.1</span>
+<span class="c"># `/usr/share/jenkins/ref/` contains all reference configuration we want</span>
+<span class="c"># to set on a fresh new installation. Use it to bundle additional plugins</span>
+<span class="c"># or config file with your custom jenkins Docker image.</span>
+<span class="k">RUN</span> mkdir -p /usr/share/jenkins/ref/init.groovy.d
 
-<span class="c">#Instance tunnels interface.</span>
-auto eth1:1
-iface eth1:1 inet static
-address 10.0.1.21
-netmask 255.255.255.0</code></pre></div>
+<span class="k">ENV</span> TINI_SHA 066ad710107dc7ee05d3aa6e4974f01dc98f3888
 
-<p>也就是外网IP设置在eth0上，管理IP和tunnels IP设置在eth1上。 可是我发现，我无法通过eth1上的管理来访问vm，折腾了好久，我才意识到，XenServer上的网卡2应该没插网线。这提醒了我，如果宿主机上有两块网卡，一定要确定都能工作才行。</p>
+<span class="c"># Use tini as subreaper in Docker container to adopt zombie processes</span>
+<span class="k">RUN</span> curl -fL https://github.com/krallin/tini/releases/download/v0.5.0/tini-static -o /bin/tini <span class="o">&amp;&amp;</span> chmod +x /bin/tini <span class="err">\</span>
+  <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;$TINI_SHA /bin/tini&quot;</span> <span class="p">|</span> sha1sum -c -
 
-<p>知道问题了就好解决，两块虚拟网卡都映射到同一块物理网卡就没问题了。</p>
+COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
 
-<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，
-<a href="http://www.gossamer-threads.com/lists/openstack/operators/34627">这个帖子</a>里讲了解决方案，那就是清除eth0的IP,把外网的IP绑定到br-ex上．</p>
+<span class="k">ENV</span> JENKINS_VERSION 1.625.3
+<span class="k">ENV</span> JENKINS_SHA 537d910f541c25a23499b222ccd37ca25e074a0c
 
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">ifconfig eth0 0.0.0.0 
-ifconfig br-ex 192.168.234.205</code></pre></div>
 
-<p>你会问，我已经无法连接这台虚拟机了，怎么执行这个操作？</p>
+<span class="c"># could use ADD but this one does not check Last-Modified header</span>
+<span class="c"># see https://github.com/docker/docker/issues/8331</span>
+<span class="k">RUN</span> curl -fL http://mirrors.jenkins-ci.org/war-stable/<span class="nv">$JENKINS_VERSION</span>/jenkins.war -o /usr/share/jenkins/jenkins.war <span class="err">\</span>
+  <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;$JENKINS_SHA /usr/share/jenkins/jenkins.war&quot;</span> <span class="p">|</span> sha1sum -c -
 
-<p>当然是用的network节点的管理段IP啊，它就是干这个用的，：）。</p>
+<span class="k">ENV</span> JENKINS_UC https://updates.jenkins-ci.org
+<span class="k">RUN</span> chown -R jenkins <span class="s2">&quot;$JENKINS_HOME&quot;</span> /usr/share/jenkins/ref
+
+<span class="c"># for main web interface:</span>
+<span class="k">EXPOSE</span> <span class="m">8080</span>
+
+<span class="c"># will be used by attached slave agents:</span>
+<span class="k">EXPOSE</span> <span class="m">50000</span>
+
+<span class="k">ENV</span> COPY_REFERENCE_FILE_LOG <span class="nv">$JENKINS_HOME</span>/copy_reference_file.log
+
+USER jenkins
+
+COPY jenkins.sh /usr/local/bin/jenkins.sh
+<span class="k">ENTRYPOINT</span> <span class="o">[</span><span class="s2">&quot;/bin/tini&quot;</span>, <span class="s2">&quot;--&quot;</span>, <span class="s2">&quot;/usr/local/bin/jenkins.sh&quot;</span><span class="o">]</span>
+
+<span class="c"># from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle</span>
+COPY plugins.sh /usr/local/bin/plugins.sh
+</code></pre></div>
+<p>請注意這一行：
+<code>
+RUN useradd -d &quot;$JENKINS_HOME&quot; -u 1000 -m -s /bin/bash jenkins
+</code></p>
+
+<p>製作者創建了一個新用戶叫<code>jenkins</code>,指定它的uid爲1000。</p>
+
+<p>如果我們不向容器掛載任何卷，那沒問題。如果我們向容器掛載了卷，就有權限的問題。</p>
+
+<p>假設我們把本地<code>/opt/jenkins_home</code>掛載爲容器的<code>/var/jenkins_home</code>，而本地的/opt/jenkins_home是屬於root用戶的。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"># ls /opt
+drwxr-xr-x  2 root root  4096 Dec 30 03:11 jenkins_home/
+</code></pre></div>
+<p>那容器在運行時jenkins嘗試向這個目錄寫數據時就會出錯，權限不足。</p>
+
+<p>爲什麼？</p>
+
+<p>因爲容器裏的jenkins用戶的uid是1000,在host主機上，uid爲1000用戶是普通用戶，無法寫root  owned的目錄。</p>
+
+<p>解決方法有兩個。</p>
+
+<p>1 我們把本地的/opt/jenkins_home的所有者修改爲uid爲1000的那個用戶,假設在本地這個用戶是ubuntu。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"># chown -R ubuntu:ubuntu /opt/jenkins_home
+</code></pre></div>
+<p>這樣我們再把這個目錄掛載到容器裏時，容器裏的jenkins用戶就有寫入的權限了。</p>
+
+<p>或者：</p>
+
+<p>2 運行時通過<code>-u</code>指定一個用戶</p>
+
+<p>docker run的 <code>-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。<br>
+如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則沒有這個限制。</p>
+
+<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code>-u ubuntu</code>，容器就會報錯：
+<code>
+ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
+</code></p>
+
+<p>回到剛纔我們說的問題，/opt/jenkins<em>home的owner是root,所以容器無法寫數據。我們可以在運行時使用參數<code>-u root</code>,這樣容器內的默認用戶變爲root，就可以向`/opt/jenkins</em>home`寫入數據了。</p>
+
+<p>總結：image的製作者可以指定容器的默認用戶，因爲作者認爲容器內的進程無需使用root用戶來運行。通常作者指定的用戶的uid都會爲1000（如果image是基於ubuntu或debian的），以保證有本地用戶可以映射。</p>
+
+<p>如果在運行時不想使用作者指定的用戶，可以通過<code>-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。<br>
+如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則這個用戶在容器裏可以不存在。</p>
 </div>
 
             <div class="spacing"></div>
@@ -521,7 +580,7 @@ ifconfig br-ex 192.168.234.205</code></pre></div>
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/openstack/xenserver-vm-multi-nic" data-title="XenServer的虚拟机里安装配置两块网卡" data-url="http://www.renhl.com/blog/openstack/xenserver-vm-multi-nic "></div>
+<div class="ds-thread" data-thread-key="/blog/docker/docker-user-mapping" data-title="Docker容器用戶映射" data-url="http://www.renhl.com/blog/docker/docker-user-mapping "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

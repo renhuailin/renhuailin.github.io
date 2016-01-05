@@ -269,6 +269,8 @@
             <h4>Latest Posts</h4>
             <div class="hline"></div>
              
+                <p><a href="/blog/docker/docker-user-mapping">Docker容器用戶映射.</a></p>
+             
                 <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘.</a></p>
              
                 <p><a href="/blog/gitlab/jenkins-gitlab-ci">Jenkins + gitlab做持续集成.</a></p>
@@ -276,8 +278,6 @@
                 <p><a href="/blog/docker/nginx-ssl-reverse-proxy">Nginx自签名https和反向代理.</a></p>
              
                 <p><a href="/blog/gitlab/backup-restore-gitlab">升級gitlab从7.9.4到8.2.2.</a></p>
-             
-                <p><a href="/blog/docker/move-gitlab-to-docker-container">把Gitlab迁移到Docker容器里.</a></p>
              
         </div>
 
