@@ -5,9 +5,132 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 05 Jan 2016 10:59:12 +0800</pubDate>
-    <lastBuildDate>Tue, 05 Jan 2016 10:59:12 +0800</lastBuildDate>
+    <pubDate>Tue, 05 Jan 2016 12:06:44 +0800</pubDate>
+    <lastBuildDate>Tue, 05 Jan 2016 12:06:44 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Blog: 为docker私有registry配置nginx反向代理</title>
+        <description>&lt;p&gt;公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。
+我的&lt;a href=&quot;http://www.renhl.com/blog/docker/nginx-ssl-reverse-proxy/&quot;&gt;上一篇blog&lt;/a&gt; 讲了如何配置nginx反向代理。所以本文主要是讲我在使用中遇到的问题及解决方法。&lt;/p&gt;
+
+&lt;p&gt;这是我最初的nginx配置&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;upstream my_docker_registry  {
+    server 192.168.100.48:8443; # registry.renhl.com
+}
+
+## START hub.renhl.com ##
+server {
+    server_name registry.renhl.com;
+
+    listen 80;
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/ssl/nginx.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+    root        /usr/local/nginx/html;
+    index       index.html;
+
+    allow 111.206.238.12;
+    allow 111.206.238.94;
+    deny all;
+
+   location / {
+        proxy_pass  https://my_docker_registry;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+        proxy_buffering off;
+        proxy_set_header        X-Real-IP       $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+## END hub.renhl.com  ##
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后我开始push image到这个registry上，发现报错了：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;The push refers to a repository [hub.renhl.com/mediawiki] (len: 1)
+unable to ping registry endpoint https://hub.renhl.com/v0/
+v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certificate is valid for renhl.com, not hub.renhl.com
+ v1 ping attempt failed with error: Get https://hub.renhl.com/v1/_ping: x509: certificate is valid for renhl.com, not hub.renhl.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书&lt;code&gt;/etc/nginx/ssl/nginx.crt&lt;/code&gt;。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# 使用私有registry的ssl证书
+ssl_certificate /opt/renhl_com_docker_registry/certs/registry_renhl_com.crt;
+ssl_certificate_key /opt/renhl_com_docker_registry/certs/registry_renhl_com.key;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;好，重启nginx再Push一下试试，又报错了：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;The push refers to a repository [registry.renhl.com/mediawiki] (len: 1)
+846b3100eaa8: Buffering to Disk
+dial tcp: lookup my_docker_registry: no such host
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;原因很清楚，反向代理把my&lt;em&gt;docker&lt;/em&gt;registry，做为host发到了客户端了，要让反向代理设置正确的host。把下面的一行加到nginx配置里。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;proxy_set_header        Host            $host;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重启nginx push一下试试，还报错：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Error parsing HTTP response: invalid character &amp;#39;&amp;lt;&amp;#39; looking for beginning of value: &amp;quot;&amp;lt;html&amp;gt;\r\n&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;413 Request Entity Too Large&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;\r\n&amp;lt;body bgcolor=\&amp;quot;white\&amp;quot;&amp;gt;\r\n&amp;lt;center&amp;gt;&amp;lt;h1&amp;gt;413 Request Entity Too Large&amp;lt;/h1&amp;gt;&amp;lt;/center&amp;gt;\r\n&amp;lt;hr&amp;gt;&amp;lt;center&amp;gt;nginx/1.4.6 (Ubuntu)&amp;lt;/center&amp;gt;\r\n&amp;lt;/body&amp;gt;\r\n&amp;lt;/html&amp;gt;\r\n&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我push的imgage太大，被nginx拒绝了。问了Google以后，在nginx的配置加入下面的两行：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
+# required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
+chunked_transfer_encoding on;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;再push image，成功了！这是最后的配置：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;upstream my_docker_registry  {
+    server 192.168.100.48:8443; # registry.renhl.com
+}
+
+## START registry.renhl.com ##
+server {
+    server_name registry.renhl.com;
+
+    listen 80;
+    listen 443 ssl;
+
+    # 使用私有registry的ssl证书
+    ssl_certificate /opt/renhl_com_docker_registry/certs/registry_renhl_com.crt;
+    ssl_certificate_key /opt/renhl_com_docker_registry/certs/registry_renhl_com.key;
+
+
+    root        /usr/local/nginx/html;
+    index       index.html;
+
+    allow 111.206.238.12;
+    allow 111.206.238.94;
+    deny all;
+
+
+    client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
+
+    # required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
+    chunked_transfer_encoding on;
+
+   location / {
+        proxy_pass  https://my_docker_registry;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+        proxy_buffering off;
+        proxy_set_header        Host            $host;
+        proxy_set_header        X-Real-IP       $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+## END registry.renhl.com  ##
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如果你在配置docker的私有registry时碰到了同样的问题，希望这篇博客能帮到你，：）&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;参考资料：&lt;/strong&gt;
+&lt;a href=&quot;http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory&quot;&gt;http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 05 Jan 2016 19:30:21 +0800</pubDate>
+        <link>http://yourdomain.com/blog/docker/docker-private-registry-behind-nginx-reverse-proxy</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/docker/docker-private-registry-behind-nginx-reverse-proxy</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>docker</category>
+        
+      </item>
     
       <item>
         <title>Blog: Docker容器用戶映射</title>
@@ -3753,27 +3876,6 @@ none                            100M     &lt;span class=&quot;m&quot;&gt;0&lt;/s
         <pubDate>Fri, 30 Jan 2015 20:30:00 +0800</pubDate>
         <link>http://yourdomain.com/blog/other/config-lvm</link>
         <guid isPermaLink="true">http://yourdomain.com/blog/other/config-lvm</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>other</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: 从宿主机访问VirtualBox里的虚机</title>
-        <description>&lt;p&gt;我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;# ifconfig wlan0:0 192.168.234.249/24
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;回到银丰后，把这个配置删除掉：&lt;br&gt;
-&amp;ldquo;`&lt;/p&gt;
-
-&lt;h1 id=&quot;ifconfig-wlan0-0-192-168-234-249-down&quot;&gt;ifconfig wlan0:0 192.168.234.249 down&lt;/h1&gt;
-</description>
-        <pubDate>Tue, 06 Jan 2015 22:30:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/other/vm-communicate-with-my-laptop</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/other/vm-communicate-with-my-laptop</guid>
         
         
         <category>blog</category>
