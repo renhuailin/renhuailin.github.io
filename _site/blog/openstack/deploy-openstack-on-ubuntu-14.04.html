@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - Blog</title>
+    <title>念西堂 - 在Ubuntu 14.04上部署OpenStack Juno</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -57,7 +57,7 @@
       <ul class="nav navbar-nav">
 		  <!--
         <li ><a href="/">首页</a></li>
-        <li class="active"><a href="/blog/">BLOG</a></li>
+        <li ><a href="/blog/">BLOG</a></li>
         <li ><a href="/portfolio/">PORTFOLIO</a></li>
         <li ><a href="/about/">ABOUT</a></li>
         <li ><a href="/contact/">CONTACT</a></li>
@@ -68,1327 +68,18 @@
 </div>
 
 
-                <div class="container mtb">
+            <div class="container mtb">
     <div class="row">
-
-        <! -- BLOG POSTS LIST -->
+        <! -- SINGLE POST -->
         <div class="col-lg-8">
-
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/docker/install-chef">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/docker/install-chef"><h3 class="ctitle">安装chef</h3></a>
-                <p><csmall>Feb 22, 2016. | By: 任怀林</csmall></p>
-                <h1 id="why-chef">1 why chef</h1>
-<p>为什么选择chef,而不是puppet,ansible或salt.
-说到配置管理大家首先想到应该是puppet, 为什么不用puppet有以下几点原因：
-１　puppet的配置都集中在puppet master上，你只能上面编写module,class。这使得puppet与jenkins等CI/CD工具配合起来比较困难。</p>
-
-<p>chef分为三个组件，chef server,chef workstation,node。其中chef workstation是日常管理常用的，你可配置多个chef workstation,与jenkins等CI/CD工具配合起来比较容易。
-2 puppet的module和class使用的是puppet自己的一种语法，虽然跟ruby很相似，但毕竟不是一种语言，还是要有个学习的过程。
-而chef直接使用了ruby语言来编写cookbook。所以chef更适合开发人员使用。</p>
-
-<p>ansible和salt没有仔细了解，我看了一下配置文件是yaml的，语法看起来非常的难受，就没再研究了。</p>
-
-<h1 id="chef">2 chef的架构</h1>
-<p>这是官方的图
-<img src="/assets/img/blog/2016/2/22/chef_overview.svg" alt="chef_overview" /></p>
-
-<p>chef核心组件有三个，chef server,chef workstation,node。
-chef workstation 用户在这上面编写、测试和维护cookbook，配置节点，分发配置到节点。chef的cookbook对应puppet的module,
-用户在chef workstation上编写和测试cookbook完后push到chef server上。node节点从cher server上获取cookbook并运行。
-这一点跟puppet不同，如果用puppet，用户大部分的时间可能都在puppet master上，因为配置都保存在puppet master上。直接在puppet　master上工作是有风险的。</p>
-
-<p>因为workstation组件,我个感觉chef在架构比puppet要好一些。</p>
-
-<p>chef server  官方把它比喻成信息港，它保存了cookbook，policy等信息，这些信息都workstation　push上来的。node节点访问chef server来获得配置信息。</p>
-
-<p>node　就是chef管理的主机，它可以是物理机，虚拟机，云或者是网络设备。</p>
-
-<h1 id="chef-server">3　安装　chef server</h1>
-<p>首先我们来安装chef server,chef官方提供了一个400多兆的.deb文件，你可以在<a href="https://downloads.chef.io/chef-server/">这里</a>下载</p>
-
-<p>#1 安装workstation</p>
-
-<p>就是安装chef sdk包</p>
-
-<h1 id="dpkg--i-chefdk-xxxxdeb">dpkg -i chefdk-xxxx.deb</h1>
-<p># chef verify</p>
-
-<h1 id="chef-node">2 安装chef node</h1>
-<p>就是安装chef client包</p>
-
-<h1 id="chef-generate-repo-chef-repo">chef generate repo ~/chef-repo</h1>
-
-<h1 id="install-chef-workstation">Install chef workstation</h1>
-
-<p>去chef management console下载Starter.kit
-<code class="highlighter-rouge">
-$ chef generate repo ~/chef-repo
-</code></p>
-
-<h1 id="install-chef-manage-console">install chef manage console.</h1>
-
-<p>这个应该是这样安装
-$ chef-server-ctl install opscode-manage</p>
-
-<p>因为无法直接。</p>
-
-<p>只能下载离线包来安装
-$  chef-server-ctl install chef-manage –path /root</p>
-
-<p>$ chef-server-ctl reconfigure</p>
-
-<p>$ chef-manage-ctl reconfigure</p>
-
-<h1 id="create-the-administrator-account-and-an-organization">Create the administrator account and an organization</h1>
-
-<p>Item 	Description 	Notes and examples
-ADMIN_USER_NAME 	user name for the administrator account 	jsmith, admin
-ADMIN_PASSWORD 	password for the administrator account 	Note your password somewhere safe!
-ADMIN_FIRST_NAME 	administrator’s first name 	Joe
-ADMIN_LAST_NAME 	administrator’s last name 	Smith
-ADMIN_EMAIL 	administrator’s email address 	joe.smith@example.com
-ORG_FULL_NAME 	your organization’s full name 	Fourth Coffee, Inc.
-ORG_SHORT_NAME 	your organization’s abbreviated name 	4thcoffee</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>#$ sudo chef-server-ctl user-create ADMIN_USER_NAME ADMIN_FIRST_NAME ADMIN_LAST_NAME ADMIN_EMAIL ADMIN_PASSWORD --filename ADMIN_USER_NAME.pem
-$ sudo chef-server-ctl user-create admin Huailin Ren renhuailin@ecloud.com.cn zxcv5678 --filename admin.pem
-</code></pre>
-</div>
-
-<p>查看生成的pem</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ls *.pem
-</code></pre>
-</div>
-
-<p>创建组织</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># sudo chef-server-ctl org-create ORG_SHORT_NAME "ORG_LONG_NAME" --association_user ADMIN_USER_NAME
-
-# sudo chef-server-ctl org-create chinaops "China OPS Inc." --association_user admin
-</code></pre>
-</div>
-
-<h1 id="workstation">现在我们切回到Workstation.</h1>
-
-<p>用浏览器打开Chef Server所在的主机的IP，如https://chefserver.china-ops.com</p>
-
-<p>切到Administrator标签</p>
-
-<p>然后下载Starter Kit.</p>
-
-<p>然后把这个解压到workstation的<code class="highlighter-rouge">~/chef-repo</code>.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ls ~/chef-repo/.chef
-admin.pem  chinaops-validator.pem  knife.rb
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd ~/chef-repo
-$ knife ssl fetch
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>WARNING: Certificates from chefmaster.china-ops.com will be fetched and placed in your trusted_cert
-directory (/root/chef-repo/.chef/trusted_certs).
-
-Knife has no means to verify these are the correct certificates. You should
-verify the authenticity of these certificates after downloading.
-
-Adding certificate for chefmaster.china-ops.com in /root/chef-repo/.chef/trusted_certs/chefmaster_china-ops_com.crt
-</code></pre>
-</div>
-
-<p>用<code class="highlighter-rouge">knife ssl check</code>来verify这个证书。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife ssl check
-	Connecting to host chefmaster.china-ops.com:443
-	Successfully verified certificates from `chefmaster.china-ops.com'
-</code></pre>
-</div>
-
-<h3 id="test-the-connection-to-chef-server--workstationchef-server">Test the connection to Chef server  测试Workstation到Chef server的连接。</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife client list
-	chinaops-validator
-</code></pre>
-</div>
-
-<p>接下来转到workstation上。
-<code class="highlighter-rouge">
-$ cd ~/chef-repo
-$ chef generate cookbook cookbooks/hello_chef_server
-</code></p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># vi cookbooks/hello_chef_server/recipes/default.rb
-</code></pre>
-</div>
-
-<p>输入以下内容</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>#
-# Cookbook Name:: hello_chef_server
-# Recipe:: default
-#
-# Copyright (c) 2016 The Authors, All Rights Reserved.
-
-file "#{Chef::Config[:file_cache_path]}/hello.txt" do
-  contenet "hello chef server"
-end
-</code></pre>
-</div>
-
-<p>上传Cookbook到chef server.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook upload hello_chef_server
-</code></pre>
-</div>
-<p>报错了。看看详细日志吧</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook upload hello_chef_server -VV
-</code></pre>
-</div>
-
-<p>然后在Chef server 上看服务器端的日志
-<code class="highlighter-rouge">
-$ chef-server-ctl tail
-</code>
-结果如下：
-<code class="highlighter-rouge">
-2016-02-22 16:15:10.899 [error] &lt;0.694.0&gt; gen_server &lt;0.694.0&gt; terminated with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]}
-2016-02-22 16:15:10.900 [error] &lt;0.694.0&gt; CRASH REPORT Process &lt;0.694.0&gt; with 1 neighbours exited with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]} in gen_server:terminate/7 line 804
-</code>
-说真的，这日志真心看不懂。</p>
-
-<p>我突然想起来了，我的Chef server的hostname没改成chefserver.china-ops.com,可能跟这个有关。
-于是到chef server上把hostname 改成 <code class="highlighter-rouge">chefserver.china-ops.com</code>,并在<code class="highlighter-rouge">/etc/hosts</code>里解析到本地<code class="highlighter-rouge">127.0.0.1</code>。然后再到workstation上upload cookbook,这次成功了。</p>
-
-<h1 id="bootstrap-node1">Bootstrap node1</h1>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife bootstrap 192.168.50.58 --ssh-user ecloud --ssh-password 'qwer1011' --sudo --use-sudo-password --node-name node1 --run-list 'recipe[hello_chef_server]'
-
-
-ERROR: Error connecting to https://chefmaster.china-ops.com/organizations/chinaops/clients, retry 1/5
-</code></pre>
-</div>
-<p>看来node节点也要配置Chef server的解析。</p>
-
-<p>配置完node节点的host,然后再运行OK了。</p>
-
-<p>第一次bootstrap　node时，用<code class="highlighter-rouge">knife bootstrap</code>,它会配置节点的信息，如节点的名称，run-list等。
-以后的更新用<code class="highlighter-rouge">knife ssh</code>.
-<code class="highlighter-rouge">
-$ knife ssh "name:node1" --ssh-user ecloud --ssh-password 'qwer1011' 'sudo chef-client'
-</code></p>
-
-<h1 id="chef-analytics">安装 Chef Analytics</h1>
-
-<p>http://www.hurryupandwait.io/blog/multi-node-testing-with-test-kitchen-and-docker</p>
-
-<p>https://medium.com/brigade-engineering/reduce-chef-infrastructure-integration-test-times-by-75-with-test-kitchen-and-docker-bf638ab95a0a#.16pstgp4a</p>
-
-<p>这篇文章有讲到如何用docker容器来和kitchen来做开发。
-http://www.timusg.com/blog/2013/10/15/testing-cookbook-with-docker-and-test-kitchen/</p>
-
-<p>主要是使用了kitchen-docker
-https://github.com/portertech/kitchen-docker</p>
-
-<p>依据https://docs.chef.io/cookbook_repo.html
-如果用git来管理cookbook,那么安装第三方cookbook的方式为</p>
-
-<p>$  knife cookbook site install COOKBOOK_NAME</p>
-
-<p>如果不使用git来管理cookbook，那么使用第三方cookbook的方式为：
-$ knife cookbook site download COOKBOOK_NAME</p>
-
-<p>以下命令用来查看 cookbook的元数据信息。
-$ knife cookbook metadata
-这个命令会生成元数据信息，并保存为json格式。</p>
-
-<h1 id="attributes">Attributes</h1>
-<p>At the beginning of a chef-client run, all attributes are reset. 这个要注意。</p>
-
-<h1 id="role">关于Role</h1>
-<p>用chef management console 和knife或是直接编辑文件的方式来管理role是会相互影响的，文档里建议我们只用一种方式，不要几种方式共用，因为会相互覆盖导致数据丢失。</p>
-
-<p><code class="highlighter-rouge">why-run Mode</code> 这个概念puppet里有，就是输出执行过程并不真正执行命令。</p>
-
-<p>实战：</p>
-
-<p>规划</p>
-
-<p>两个Node节点，</p>
-
-<ol>
-  <li>Role: appserver, ENV: development</li>
-  <li>Role: webserver, ENV： production</li>
-</ol>
-
-<p>http://williamherry.blogspot.tw/2012/06/chef_23.html 这篇文章写得挺好的，虽然不长但真是能理解很多东西，：）</p>
-
-<p>#　Chef Delivery</p>
-
-<p>Push build artifacts to production servers in real time　　，这个很重要，是实时的？</p>
-
-<p>＃　使用 docker cookbook
-要在 ubuntu 14.04上使用docker cookbook,首先要安装ruby2.1以上的版本。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo apt-get install software-properties-common
-$ sudo apt-add-repository ppa:brightbox/ruby-ng
-$ sudo apt-get update
-</code></pre>
-</div>
-
-<p>然后在Node节点上安装docker.</p>
-
-<p>Create a new cookbook on workstation.
-# cd ~/chef-repo
-# knife cookbook create COOKBOOK_NAME</p>
-
-<p>Add <code class="highlighter-rouge">depends 'docker', '~&gt; 2.0'</code> to metadata.rb</p>
-
-<h1 id="install-third-party-cookbook">Install third party cookbook</h1>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook site install COOKBOOK_NAME
-</code></pre>
-</div>
-
-<p>or just download a cookbook</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook site download COOKBOOK_NAME
-</code></pre>
-</div>
-
-<p>要在node节点上把默认的rubygem源换成淘宝的,将来可以考虑把这一步也做成一个recipe.
-```
-$ gem sources –add https://ruby.taobao.org/ –remove https://rubygems.org/
-$ gem sources -l
-<em>** CURRENT SOURCES **</em></p>
-
-<p>https://ruby.taobao.org
-# 请确保只有 ruby.taobao.org
-$ gem install rails
-```</p>
-
-<p><strong>参考资料：</strong>
-http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
-
-                <p><a href="/blog/docker/install-chef">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><h3 class="ctitle">为docker私有registry配置nginx反向代理</h3></a>
-                <p><csmall>Jan 5, 2016. | By: 任怀林</csmall></p>
-                <p>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。
-我的<a href="http://www.renhl.com/blog/docker/nginx-ssl-reverse-proxy/">上一篇blog</a> 讲了如何配置nginx反向代理。所以本文主要是讲我在使用中遇到的问题及解决方法。</p>
-
-<p>这是我最初的nginx配置</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
-    <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
-</span><span class="p">}</span>
-
-<span class="c1">## START hub.renhl.com ##
-</span><span class="k">server</span> <span class="p">{</span>
-    <span class="kn">server_name</span> <span class="s">registry.renhl.com</span><span class="p">;</span>
-
-    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
-
-    <span class="kn">ssl_certificate</span> <span class="n">/etc/nginx/ssl/nginx.crt</span><span class="p">;</span>
-    <span class="kn">ssl_certificate_key</span> <span class="n">/etc/nginx/ssl/nginx.key</span><span class="p">;</span>
-
-    <span class="kn">root</span>        <span class="n">/usr/local/nginx/html</span><span class="p">;</span>
-    <span class="kn">index</span>       <span class="s">index.html</span><span class="p">;</span>
-
-    <span class="kn">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
-    <span class="kn">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
-    <span class="kn">deny</span> <span class="s">all</span><span class="p">;</span>
-
-   <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
-        <span class="kn">proxy_pass</span>  <span class="s">https://my_docker_registry</span><span class="p">;</span>
-        <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
-        <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-        <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
-        <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
-        <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="c1">## END hub.renhl.com  ##
-</span></code></pre>
-</div>
-
-<p>然后我开始push image到这个registry上，发现报错了：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>The push refers to a repository [hub.renhl.com/mediawiki] (len: 1)
-unable to ping registry endpoint https://hub.renhl.com/v0/
-v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certificate is valid for renhl.com, not hub.renhl.com
- v1 ping attempt failed with error: Get https://hub.renhl.com/v1/_ping: x509: certificate is valid for renhl.com, not hub.renhl.com
-</code></pre>
-</div>
-<p>我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书<code class="highlighter-rouge">/etc/nginx/ssl/nginx.crt</code>。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1"># 使用私有registry的ssl证书
-</span><span class="k">ssl_certificate</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.crt</span><span class="p">;</span>
-<span class="k">ssl_certificate_key</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.key</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<p>好，重启nginx再Push一下试试，又报错了：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>The push refers to a repository [registry.renhl.com/mediawiki] (len: 1)
-846b3100eaa8: Buffering to Disk
-dial tcp: lookup my_docker_registry: no such host
-</code></pre>
-</div>
-
-<p>原因很清楚，反向代理把my_docker_registry，做为host发到了客户端了，要让反向代理设置正确的host。把下面的一行加到nginx配置里。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<p>重启nginx push一下试试，还报错：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>Error parsing HTTP response: invalid character '<span class="err">&lt;</span>' looking for beginning of value: "<span class="nt">&lt;html&gt;</span>\r\n<span class="nt">&lt;head&gt;&lt;title&gt;</span>413 Request Entity Too Large<span class="nt">&lt;/title&gt;&lt;/head&gt;</span>\r\n<span class="nt">&lt;body</span> <span class="na">bgcolor=</span><span class="s">\"white\"</span><span class="nt">&gt;</span>\r\n<span class="nt">&lt;center&gt;&lt;h1&gt;</span>413 Request Entity Too Large<span class="nt">&lt;/h1&gt;&lt;/center&gt;</span>\r\n<span class="nt">&lt;hr&gt;&lt;center&gt;</span>nginx/1.4.6 (Ubuntu)<span class="nt">&lt;/center&gt;</span>\r\n<span class="nt">&lt;/body&gt;</span>\r\n<span class="nt">&lt;/html&gt;</span>\r\n"
-</code></pre>
-</div>
-
-<p>我push的imgage太大，被nginx拒绝了。问了Google以后，在nginx的配置加入下面的两行：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
-# required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
-</span><span class="k">chunked_transfer_encoding</span> <span class="no">on</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<p>再push image，成功了！这是最后的配置：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
-    <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
-</span><span class="p">}</span>
-
-<span class="c1">## START registry.renhl.com ##
-</span><span class="k">server</span> <span class="p">{</span>
-    <span class="kn">server_name</span> <span class="s">registry.renhl.com</span><span class="p">;</span>
-
-    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
-
-    <span class="c1"># 使用私有registry的ssl证书
-</span>    <span class="kn">ssl_certificate</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.crt</span><span class="p">;</span>
-    <span class="kn">ssl_certificate_key</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.key</span><span class="p">;</span>
-
-
-    <span class="kn">root</span>        <span class="n">/usr/local/nginx/html</span><span class="p">;</span>
-    <span class="kn">index</span>       <span class="s">index.html</span><span class="p">;</span>
-
-    <span class="kn">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
-    <span class="kn">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
-    <span class="kn">deny</span> <span class="s">all</span><span class="p">;</span>
-
-
-    <span class="kn">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
-</span>
-    <span class="c1"># required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
-</span>    <span class="kn">chunked_transfer_encoding</span> <span class="no">on</span><span class="p">;</span>
-
-   <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
-        <span class="kn">proxy_pass</span>  <span class="s">https://my_docker_registry</span><span class="p">;</span>
-        <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
-        <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-        <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
-        <span class="kn">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
-        <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
-        <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="c1">## END registry.renhl.com  ##
-</span></code></pre>
-</div>
-
-<p>如果你在配置docker的私有registry时碰到了同样的问题，希望这篇博客能帮到你，：）</p>
-
-<p><strong>参考资料：</strong>
-http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
-
-                <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/docker/docker-user-mapping">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/docker/docker-user-mapping"><h3 class="ctitle">Docker容器用戶映射</h3></a>
-                <p><csmall>Dec 30, 2015. | By: 任怀林</csmall></p>
-                <p>root(id = 0) 是容器的默認用戶。Docker image的製作者可以添加新的用戶。</p>
-
-<p>比如jenkins image的Dockerfile是這樣的：</p>
-
-<pre><code class="language-dockerfile">FROM java:8-jdk
-
-RUN apt-get update &amp;&amp; apt-get install -y wget git curl zip &amp;&amp; rm -rf /var/lib/apt/lists/*
-
-ENV JENKINS_HOME /var/jenkins_home
-ENV JENKINS_SLAVE_AGENT_PORT 50000
-
-# Jenkins is run with user `jenkins`, uid = 1000
-# If you bind mount a volume from the host or a data container,
-# ensure you use the same uid
-RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
-
-# Jenkins home directory is a volume, so configuration and build history
-# can be persisted and survive image upgrades
-VOLUME /var/jenkins_home
-
-# `/usr/share/jenkins/ref/` contains all reference configuration we want
-# to set on a fresh new installation. Use it to bundle additional plugins
-# or config file with your custom jenkins Docker image.
-RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
-
-ENV TINI_SHA 066ad710107dc7ee05d3aa6e4974f01dc98f3888
-
-# Use tini as subreaper in Docker container to adopt zombie processes
-RUN curl -fL https://github.com/krallin/tini/releases/download/v0.5.0/tini-static -o /bin/tini &amp;&amp; chmod +x /bin/tini \
-  &amp;&amp; echo "$TINI_SHA /bin/tini" | sha1sum -c -
-
-COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
-
-ENV JENKINS_VERSION 1.625.3
-ENV JENKINS_SHA 537d910f541c25a23499b222ccd37ca25e074a0c
-
-
-# could use ADD but this one does not check Last-Modified header
-# see https://github.com/docker/docker/issues/8331
-RUN curl -fL http://mirrors.jenkins-ci.org/war-stable/$JENKINS_VERSION/jenkins.war -o /usr/share/jenkins/jenkins.war \
-  &amp;&amp; echo "$JENKINS_SHA /usr/share/jenkins/jenkins.war" | sha1sum -c -
-
-ENV JENKINS_UC https://updates.jenkins-ci.org
-RUN chown -R jenkins "$JENKINS_HOME" /usr/share/jenkins/ref
-
-# for main web interface:
-EXPOSE 8080
-
-# will be used by attached slave agents:
-EXPOSE 50000
-
-ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
-
-USER jenkins
-
-COPY jenkins.sh /usr/local/bin/jenkins.sh
-ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
-
-# from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
-COPY plugins.sh /usr/local/bin/plugins.sh
-</code></pre>
-
-<p>請注意這一行：
-<code class="highlighter-rouge">
-RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
-</code></p>
-
-<p>製作者創建了一個新用戶叫<code class="highlighter-rouge">jenkins</code>,指定它的uid爲1000。</p>
-
-<p>如果我們不向容器掛載任何卷，那沒問題。如果我們向容器掛載了卷，就有權限的問題。</p>
-
-<p>假設我們把本地<code class="highlighter-rouge">/opt/jenkins_home</code>掛載爲容器的<code class="highlighter-rouge">/var/jenkins_home</code>，而本地的/opt/jenkins_home是屬於root用戶的。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># ls /opt
-drwxr-xr-x  2 root root  4096 Dec 30 03:11 jenkins_home/
-</code></pre>
-</div>
-
-<p>那容器在運行時jenkins嘗試向這個目錄寫數據時就會出錯，權限不足。</p>
-
-<p>爲什麼？</p>
-
-<p>因爲容器裏的jenkins用戶的uid是1000,在host主機上，uid爲1000用戶是普通用戶，無法寫root  owned的目錄。</p>
-
-<p>解決方法有兩個。</p>
-
-<p>1 我們把本地的/opt/jenkins_home的所有者修改爲uid爲1000的那個用戶,假設在本地這個用戶是ubuntu。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># chown -R ubuntu:ubuntu /opt/jenkins_home
-</code></pre>
-</div>
-
-<p>這樣我們再把這個目錄掛載到容器裏時，容器裏的jenkins用戶就有寫入的權限了。</p>
-
-<p>或者：</p>
-
-<p>2 運行時通過<code class="highlighter-rouge">-u</code>指定一個用戶</p>
-
-<p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。  <br />
-如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則沒有這個限制。</p>
-
-<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：
-<code class="highlighter-rouge">
-ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
-</code></p>
-
-<p>回到剛纔我們說的問題，/opt/jenkins_home的owner是root,所以容器無法寫數據。我們可以在運行時使用參數<code class="highlighter-rouge">-u root</code>,這樣容器內的默認用戶變爲root，就可以向<code class="highlighter-rouge">/opt/jenkins_home</code>寫入數據了。</p>
-
-<p>總結：image的製作者可以指定容器的默認用戶，因爲作者認爲容器內的進程無需使用root用戶來運行。通常作者指定的用戶的uid都會爲1000（如果image是基於ubuntu或debian的），以保證有本地用戶可以映射。</p>
-
-<p>如果在運行時不想使用作者指定的用戶，可以通過<code class="highlighter-rouge">-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。  <br />
-如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則這個用戶在容器裏可以不存在。</p>
-
-                <p><a href="/blog/docker/docker-user-mapping">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/linux/linux-ubuntu-uid-1000">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/linux/linux-ubuntu-uid-1000"><h3 class="ctitle">Linux uid备忘</h3></a>
-                <p><csmall>Dec 30, 2015. | By: 任怀林</csmall></p>
-                <p>最近在運行Jenkins容器時出現了權限問題，其原因是我掛載的volume的owner uid與容器裏的jenkins uid不一致,導致無法向掛載的卷寫數據。</p>
-
-<p>我發現dockerfile裏指定jenkins的uid爲1000.爲什麼是1000？爲什麼不是其它值？我的host主機裏有uid爲1000的user嗎？</p>
-
-<p>我查看了/etc/passwd,還真有uid爲1000的用戶。看來uid爲1000的用戶是除了root以外，第一個普通用戶的uid。真的是這樣嗎？問了Google後明白了一點，寫下來備忘。</p>
-
-<p>uid爲0是root用戶;其實是所有uid爲0的用戶都是超級管理員。這意味着，你的系統裏可以有多個uid爲0的用戶，而且這個用戶的name不一定非要叫<code class="highlighter-rouge">root</code>. 但是請不要添加其它uid爲0的用戶，因爲這可能會引些系統混亂哦。</p>
-
-<p>1~99的uid傳統是保留給特殊的系統用戶（有時稱做pseudo-users），比如www-data,mail,news,backup等。這些用戶也都是管理員，執行一些管理任務，但是它們不需要超級管理員那麼大的權限。</p>
-
-<p>65534通常分配給nobody這個用戶。</p>
-
-<p>接下來就是沒有特權的普通用戶了，有一些發行版是從100開始分配普通用戶的uid的，有一些發行版如redhat,是從500開始。debian是從1000開始的。</p>
-
-<p>所以在ubuntu或debian系統裏的第一個普通用戶的uid肯定是1000，也是因爲這個，很多docker images裏要求的uid都是1000，因爲這個uid的用戶在host主機上應該是肯定存在的。</p>
-
-<p>参考文档
-http://www.linfo.org/uid.html</p>
-
-                <p><a href="/blog/linux/linux-ubuntu-uid-1000">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/gitlab/jenkins-gitlab-ci">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/gitlab/jenkins-gitlab-ci"><h3 class="ctitle">Jenkins + gitlab做持续集成</h3></a>
-                <p><csmall>Dec 17, 2015. | By: 任怀林</csmall></p>
-                <p>jenkins  2核  2G  系统 ubuntu 14.04
-registry
-chef server 1 核  2G
-gitlab 1核  2G</p>
-
-<p>node1 最终部署节点　1 核  2G</p>
-
-<h1 id="jenkins">安装Jenkins</h1>
-
-<h2 id="jdk">配置jdk</h2>
-
-<h1 id="antmaven">安装 ant,maven</h1>
-
-<h1 id="jenkins-1">配置Jenkins的安全策略</h1>
-
-<p>#插件管理</p>
-
-<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：
-<code class="highlighter-rouge">
-$ git config --global http.sslverify false
-</code>
-另一个办法就是设置环境变量
-<code class="highlighter-rouge">
-GIT_SSL_NO_VERIFY=1
-</code>
-我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
-
-<p>那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？</p>
-
-<p>在项目的“配置”里勾先上“参数化构建过程”，然后添加一个字符型的参数，把这环境变量添加上。</p>
-
-<p>GitLab 8.3以後，GitLab Hook Plugin 已經不推薦了”deprecated”.推薦使用’Jenkins CI’ project 。</p>
-
-<p>#错误处理</p>
-
-<p>我一不小心点击了反选，把overall/read权限弄没有了，登录上来什么用不了。</p>
-
-<p>搜了一下网上，简单的做法是把config.xml里的useSecurity设置为false,把<code class="highlighter-rouge">authorizationStrategy</code>，完全删除。再重启Jenkins就可以了。</p>
-
-<p>#</p>
-
-<p>在源码管理下勾选上<code class="highlighter-rouge">git</code>,然后从gitlab里复制项目的clone地址过来，填到Repository URL文本框里。</p>
-
-<p><img src="/assets/img/blog/2016/03/01/git_repo_config.png" alt="git_repo_config.png" /></p>
-
-<p>下一步<code class="highlighter-rouge">Additional Behaviours</code>中选择<code class="highlighter-rouge">Merge before build</code>.</p>
-
-<p><code class="highlighter-rouge">Name of repository</code>中填入<code class="highlighter-rouge">origin</code></p>
-
-<p><code class="highlighter-rouge">Branch to merge to</code>中填入<code class="highlighter-rouge">${gitlabTargetBranch}</code>
-<img src="/assets/img/blog/2016/03/01/Additional_Behaviours.png" alt="Additional_Behaviours.png" /></p>
-
-<p>接下来配置<code class="highlighter-rouge">构建触发器</code>，配置<code class="highlighter-rouge">Rebuild open Merge Requests</code>为　<code class="highlighter-rouge">On push to source or target branch</code>.
-<img src="/assets/img/blog/2016/03/01/build_trigger.png" alt="build_trigger.png" /></p>
-
-<p>下面是配置mvn build时的参数，这个大家应该比较熟悉了，不多说。</p>
-
-<p>接下我们要配置一下gitlab里项目，为项目添加一个webhook,这个webhook是Jenkins的gitlab插件触发build的URL.</p>
-
-<p>在gitlab你的项目主页里点击<code class="highlighter-rouge">Settings</code>,然后点击左侧菜单的<code class="highlighter-rouge">Web hooks</code>.</p>
-
-<p>在URL文本框里，我们要填写上你的项目在Jenkins里URL.</p>
-
-<p>假设你的项目在Jenkins里的构建job的URL地址为：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/job/edesktop-manager
-</code></pre>
-</div>
-
-<p>把URL中的<code class="highlighter-rouge">/job</code>换成<code class="highlighter-rouge">/project/</code>就是这个job的build触发URL，把它填到gilab项目设置的Web hooks　URL里。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/project/edesktop-manager
-</code></pre>
-</div>
-
-<p><img src="/assets/img/blog/2016/03/01/gitlab_webhooks.png" alt="gitlab_webhooks.png" /></p>
-
-<p>保存配置，然后点击<code class="highlighter-rouge">TEST HOOK</code>按钮，测试一下这个hook,如果系统显示没有问题，系统会提示：hook已经成功执行。
-你在Jenkins里会看到有一个新build执行了。</p>
-
-<p>要想让Jenkins能运行docker,我们要jenkins用户加到docker这个组里来。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># usermod -a -G docker jenkins
-</code></pre>
-</div>
-
-<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.
-<code class="highlighter-rouge">
-Cannot connect to the Docker daemon. Is the docker daemon running on this host?
-</code></p>
-
-<p>可以参考这个<a href="https://github.com/docker/docker/issues/5314">issue</a></p>
-
-<h1 id="section">参考文档</h1>
-<p>http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu</p>
-
-<p>http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html</p>
-
-                <p><a href="/blog/gitlab/jenkins-gitlab-ci">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/docker/nginx-ssl-reverse-proxy">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/docker/nginx-ssl-reverse-proxy"><h3 class="ctitle">Nginx自签名https和反向代理</h3></a>
-                <p><csmall>Dec 11, 2015. | By: 任怀林</csmall></p>
-                <h1 id="section">场景</h1>
-<p>公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，
-只能通过一个公网IP来访问，所以需要用Nginx做个反向代理来访问些服务器。另外，这些服务都要以https来访问。</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>服务器</th>
-      <th>内网IP</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>wiki.renhl.com</td>
-      <td>172.168.100.47</td>
-    </tr>
-    <tr>
-      <td>hub.renhl.com</td>
-      <td>172.168.100.48</td>
-    </tr>
-  </tbody>
-</table>
-
-<h1 id="section-1">生成自签名的证书</h1>
-<p>因为是自己公司用也就无需申请认证的证书了，自签名即可。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mkdir -p /etc/nginx/ssl
-$ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt
-</code></pre>
-</div>
-
-<h1 id="section-2">配置反向代理</h1>
-
-<p>编辑<code class="highlighter-rouge">/etc/nginx/sites-available/default</code>,加入如下内容：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>upstream wiki  {
-	server 172.168.100.47:80; # wiki.renhl.com
-}
-
-upstream hub  {
-	server 172.168.100.48; # hub.renhl.com
-}
-
-## Start wiki.renhl.com ##
-server {
-
-    listen 80;
-
-    listen 443 ssl;
-
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
-
-	server_name  wiki.ecloud.com.cn;
-
-    access_log  /var/log/nginx/wiki.renhl.access.log;
-    error_log  /var/log/nginx/wiki.renhl.error.log;
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
-
-    ## send request back to apache1 ##
-    location / {
-     proxy_pass  http://wiki;
-     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-     proxy_redirect off;
-     proxy_buffering off;
-     proxy_set_header        Host            $host;
-     proxy_set_header        X-Real-IP       $remote_addr;
-     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-   }
-}
-## End wiki.renhl.com ##
-
-## START hub.renhl.com ##
-server {
-   	server_name hub.renhl.com;
-
-	listen 80;
-    listen 443 ssl;
-
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
-
-   access_log  /var/log/nginx/hub.renhl.access.log;
-   error_log   /var/log/nginx/hub.renhl.error.log;
-   root        /usr/local/nginx/html;
-   index       index.html;
-
-   location / {
-        proxy_pass  https://hub;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-        proxy_redirect off;
-        proxy_buffering off;
-        proxy_set_header        Host           $host;
-        proxy_set_header        X-Real-IP       $remote_addr;
-        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-## END hub.renhl.com  ##
-
-</code></pre>
-</div>
-
-<h1 id="ip">IP限制</h1>
-<p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>allow 111.206.238.12;
-allow 111.206.238.94;
-deny all;
-</code></pre>
-</div>
-
-<h1 id="section-3">參考文献</h1>
-<ul>
-  <li>https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04</li>
-  <li>http://www.cyberciti.biz/tips/using-nginx-as-reverse-proxy.html</li>
-</ul>
-
-                <p><a href="/blog/docker/nginx-ssl-reverse-proxy">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/gitlab/backup-restore-gitlab">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/gitlab/backup-restore-gitlab"><h3 class="ctitle">升級gitlab从7.9.4到8.2.2</h3></a>
-                <p><csmall>Nov 25, 2015. | By: 任怀林</csmall></p>
-                <p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
-
-<h1 id="gitlab">備份原來的gitlab</h1>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
-</code></pre>
-</div>
-<p>到gitlab的data/backups目錄，把最近的備份copy出來。
-gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup.tar</code>这样的文件名，请注意下划线前面的数字，我们将在恢复的时候用到。</p>
-
-<p>查看當前的版本
-查看當前的版本，進入gitlab，在左側的菜單欄裏選<code class="highlighter-rouge">help</code>,可以看到當前版本。我們要先運行舊版本的container,然後pull新版本的gitlab image回來升級。</p>
-
-<p>OK，看了一下我現在的版本7.9.4</p>
-
-<h1 id="pull--images">Pull 各種 images</h1>
-
-<p>Next , pull gitlab 7.9.4 image from docker hub. 哈.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># docker pull sameersbn/gitlab:7.9.4
-</code></pre>
-</div>
-
-<p>把最新版本的8.2.2 pull回來。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># docker pull sameersbn/gitlab:8.2.2
-</code></pre>
-</div>
-
-<p>網上說MySQL 5.7是相當重要的一個版本，支持好多令人激動的新特性，那我就5.7吧，用docker好處就是能用最新版本的軟件，：）</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># docker pull mysql:5.7
-</code></pre>
-</div>
-
-<p>最後要把redis pull回來，因爲要用到。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># docker pull sameersbn/redis:latest
-</code></pre>
-</div>
-
-<p>然後要把MySQL配置好，請參考<a href="http://www.renhl.com/blog/openstack/move-gitlab-to-docker-container/">我的上篇文章</a>，這裏就不再贅述了。</p>
-
-<h1 id="docker-composegitlab">使用docker-compose啓動舊版本gitlab</h1>
-
-<p>爲了方便維護，我使用了docker-compose。這是我的配置文件：</p>
-
-<p>docker-compose.yml</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>
-<span class="s">gitlab</span><span class="pi">:</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:7.9.4</span>
-  <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
-  <span class="s">ports</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">80:80"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">8443:443"</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">GITLAB_HOST=gitlab.renhl.com</span>
-    <span class="pi">-</span> <span class="s">DB_USER=gitlab</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">DB_PASS=dbpass"</span>
-    <span class="pi">-</span> <span class="s">DB_NAME=gitlabhq_production</span>
-    <span class="pi">-</span> <span class="s">GITLAB_TIMEZONE=Beijing</span>
-    <span class="pi">-</span> <span class="s">GITLAB_GRAVATAR_ENABLED=false</span>
-    <span class="pi">-</span> <span class="s">GITLAB_BACKUPS=daily</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">NGINX_MAX_UPLOAD_SIZE=100m"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">UNICORN_TIMEOUT=120"</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/gitlab:/home/git/data</span>
-  <span class="s">links</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">mysql:mysql</span>
-    <span class="pi">-</span> <span class="s">redis:redisio</span>
-
-<span class="s">mysql</span><span class="pi">:</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">MYSQL_ROOT_PASSWORD=mysql</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/mysql:/var/lib/mysql</span>
-
-<span class="s">redis</span><span class="pi">:</span>
-<span class="c1">#  container_name: redis</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/redis:latest</span>
-</code></pre>
-</div>
-
-<p>啓動gitlab container.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># docker-compose up -d
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>
-<span class="s">gitlab</span><span class="pi">:</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.2</span>
-  <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
-  <span class="s">ports</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">80:80"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">8443:443"</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">GITLAB_HOST=gitlab.china-ops.com</span>
-    <span class="pi">-</span> <span class="s">DB_USER=gitlab</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">DB_PASS=1q2w3e4r"</span>
-    <span class="pi">-</span> <span class="s">DB_NAME=gitlabhq_production</span>
-    <span class="pi">-</span> <span class="s">GITLAB_TIMEZONE=Beijing</span>
-    <span class="pi">-</span> <span class="s">GITLAB_GRAVATAR_ENABLED=false</span>
-    <span class="pi">-</span> <span class="s">GITLAB_BACKUPS=daily</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">NGINX_MAX_UPLOAD_SIZE=100m"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">UNICORN_TIMEOUT=120"</span>
-    <span class="pi">-</span> <span class="s">GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/gitlab:/home/git/data</span>
-  <span class="s">links</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">mysql:mysql</span>
-    <span class="pi">-</span> <span class="s">redis:redisio</span>
-
-<span class="s">mysql</span><span class="pi">:</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">MYSQL_ROOT_PASSWORD=mysql</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/mysql:/var/lib/mysql</span>
-
-<span class="s">redis</span><span class="pi">:</span>
-<span class="c1">#  container_name: redis</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/redis:latest</span>
-</code></pre>
-</div>
-
-<p>恢復備份：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>docker run --name gitlab --rm  -p 80:80  -p 8443:443   --link mysql:mysql   --link redis:redisio   -e "DB_USER=gitlab" -e "DB_PASS=somepass"   -e "DB_NAME=gitlabhq_production"   -e "GITLAB_HOST=gitlab.china-ops.com"   -e "GITLAB_TIMEZONE=Beijing"   -e "GITLAB_GRAVATAR_ENABLED=false"  -e 'GITLAB_BACKUPS=daily' -e "NGINX_MAX_UPLOAD_SIZE=100m" -e "UNICORN_TIMEOUT=120" -e "GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz"  -v /opt/data/gitlab:/home/git/data   sameersbn/gitlab:7.9.4  app:rake gitlab:backup:restore BACKUP=1448510466
-</code></pre>
-</div>
-
-<p>後面的那個數字一定要是你的備份的號。</p>
-
-<h1 id="pull-gitlab-820-image-from-docker-hub">pull gitlab 8.2.0 image from docker hub.</h1>
-
-<p>docker pull sameersbn/gitlab:8.2.0
-docker pull mysql:5.7
-docker pull sameersbn/redis:latest</p>
-
-<p>mkdir -p /opt/data/gitlab/data
-mkdir -p /opt/data/mysql</p>
-
-<p>$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">MYSQL_ROOT_PASSWORD=mysql</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/mysql:/var/lib/mysql</span>
-<span class="s">docker</span>
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
-<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
-<span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
-<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<p>pwgen -Bsv1 64</p>
-
-<p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.0</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
-  <span class="s">ports</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">80:80"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">8443:443"</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">DB_USER=gitlab</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">DB_PASS=1q2w3e4r"</span>
-    <span class="pi">-</span> <span class="s">DB_NAME=gitlabhq_production</span>
-    <span class="pi">-</span> <span class="s">GITLAB_TIMEZONE=Beijing</span>
-    <span class="pi">-</span> <span class="s">GITLAB_GRAVATAR_ENABLED=false</span>
-    <span class="pi">-</span> <span class="s">GITLAB_BACKUPS=daily</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">NGINX_MAX_UPLOAD_SIZE=100m"</span>
-    <span class="pi">-</span> <span class="s2">"</span><span class="s">UNICORN_TIMEOUT=120"</span>
-    <span class="pi">-</span> <span class="s">GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/gitlab:/home/git/data</span>
-  <span class="s">links</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">mysql:mysql</span>
-    <span class="pi">-</span> <span class="s">redis:redisio</span>
-<span class="s">mysql</span><span class="pi">:</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
-  <span class="s">environment</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">MYSQL_ROOT_PASSWORD=mysql</span>
-  <span class="s">volumes</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">/opt/data/mysql:/var/lib/mysql</span>
-
-<span class="s">redis</span><span class="pi">:</span>
-  <span class="s">container_name</span><span class="pi">:</span> <span class="s">redis</span>
-  <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/redis:latest</span>
-</code></pre>
-</div>
-
-                <p><a href="/blog/gitlab/backup-restore-gitlab">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/docker/move-gitlab-to-docker-container">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/docker/move-gitlab-to-docker-container"><h3 class="ctitle">把Gitlab迁移到Docker容器里</h3></a>
-                <p><csmall>Apr 9, 2015. | By: 任怀林</csmall></p>
-                <p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
-
-<h1 id="section">1 规划</h1>
-
-<p>规划：   <br />
-一个容器运行gitlab  <br />
-一个容器运行MySQL,然后 link到gitlab上。 <br />
-一个容器运行Redis,然后 link到gitlab上。</p>
-
-<h1 id="gitlab">2 安装gitlab</h1>
-
-<p>我们先运行MySQL，</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo docker pull sameersbn/mysql:latest
-</code></pre>
-</div>
-
-<p>在host主机上创建mysql的数据目录。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mkdir -p /opt/mysql/data
-</code></pre>
-</div>
-
-<p>启动MySQL容器。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo docker run --name mysql -d \
-    -v /opt/mysql/data:/var/lib/mysql \
-    sameersbn/mysql:latest
-</code></pre>
-</div>
-
-<p>连接到MySQL上，修改授权信息</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
-</code></pre>
-</div>
-
-<p>创建数据库并授权。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
-<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
-<span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
-<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<h1 id="redis">3 配置redis</h1>
-
-<p>Pull image</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
-</code></pre>
-</div>
-
-<p>run redis   <br />
-<code class="highlighter-rouge">sh
-$ sudo docker run --name=redis -d sameersbn/redis:latest
-</code></p>
-
-<h1 id="gitlab-1">4 Gitlab</h1>
-
-<p>Pull 先把老版的imagepull回来</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
-</code></pre>
-</div>
-
-<p>创建数据目录</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
-</code></pre>
-</div>
-<p>这个目录会映像到窗口的<code class="highlighter-rouge">/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
-
-<p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
-</code></pre>
-</div>
-
-<p>运行gitlab容器</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:6.7.5</code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 从原来gitlab里导出备份</span>
-<span class="gp">$ </span><span class="nb">cd</span> /home/git/gitlab
-<span class="gp">$ </span>sudo -u git -H bundle <span class="nb">exec </span>rake gitlab:backup:create <span class="nv">RAILS_ENV</span><span class="o">=</span>production</code></pre></figure>
-
-<p>导出的文件放在<code class="highlighter-rouge">/home/git/gitlab/tmp/backups</code>这个目录下。</p>
-
-<p>把这个文件 scp到 docker gitlab那台机器的<code class="highlighter-rouge">/opt/gitlab/data/backups</code></p>
-
-<p>登录到gitlab的container</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it gitlab bash</code></pre></figure>
-
-<p>在容器里执行下面的命令</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span><span class="nb">cd</span> /home/git/gitlab
-<span class="gp">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
-<span class="gp">$ </span><span class="nb">exit</span></code></pre></figure>
-
-<p>这个样数据就全部到新的gitlab上了。
-你会发现跟原来的一样。</p>
-
-<p>下面我们来升级gitlab到新版。</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker stop gitlab
-<span class="gp">$ </span>sudo docker rm gitlab
-
-<span class="gp">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
-  --link redis:redisio <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:latest</code></pre></figure>
-
-<p>配置好以后，把它保存成一个镜像。</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker commit -m <span class="s2">"update gitlab.yml ,change host,set timezone to BeiJing"</span> -a <span class="s2">"china-ops gitlab v7.9.4"</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></figure>
-
-<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
-hostname等是通过环境变量来控制的。</p>
-
-<p>用这个镜像来启动一个container</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker run --name gitlab -d  <span class="se">\</span>
-  -p 80:80  -p 8443:443 <span class="se">\</span>
-  --link mysql:mysql <span class="se">\</span>
-  --link redis:redisio <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_HOST=gitlab.china-ops.com"</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_TIMEZONE=Beijing"</span> <span class="se">\</span>
-  -e <span class="s1">'GITLAB_BACKUPS=daily'</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_GRAVATAR_ENABLED=false"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  china-ops/gitlab:7.9.4</code></pre></figure>
-
-<p>参数<code class="highlighter-rouge">-e 'GITLAB_BACKUPS=daily'</code> 是备份策略，我们设置为每天</p>
-
-<p>默认的密码：  <br />
-username: admin@local.host  <br />
-password: 5iveL!fe</p>
-
-<p>参考：　<br />
-<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
-<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>  <br />
-<a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
-
-                <p><a href="/blog/docker/move-gitlab-to-docker-container">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/openstack/xenserver-vm-multi-nic">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/openstack/xenserver-vm-multi-nic"><h3 class="ctitle">XenServer的虚拟机里安装配置两块网卡</h3></a>
-                <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
-                <p>在安装OpenStack时，我的network节点只配置了一个nic，所以当<code class="highlighter-rouge">配置Open vSwitch (OVS) 服务</code>时，在运行完命令</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># service openvswitch-switch restart</span>
-<span class="c"># ovs-vsctl add-br br-ex</span>
-<span class="c"># ovs-vsctl add-port br-ex eth0</span></code></pre></figure>
-
-<p>之后，我就无法通过eth0上的那个external IP来访问它了，管理IP也无法访问，所以官方的文档是要求network节点要有3个nic。</p>
-
-<p>没有办法，我只能新建一个vm来安装network,这个过程还是碰到了问题。</p>
-
-<p>因为我的XenServer有两卡网卡，我就创建了两个虚拟网卡，分别映射到这两块网卡上。vm启动后，我配置网络如下：</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># The primary network interface</span>
-auto eth0
-iface eth0 inet static
-address 192.168.234.205
-netmask 255.255.255.0
-gateway 192.168.234.1
-
-<span class="c">#management interface</span>
-auto eth1
-iface eth1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-<span class="c">#gateway 10.0.0.1</span>
-
-<span class="c">#Instance tunnels interface.</span>
-auto eth1:1
-iface eth1:1 inet static
-address 10.0.1.21
-netmask 255.255.255.0</code></pre></figure>
-
-<p>也就是外网IP设置在eth0上，管理IP和tunnels IP设置在eth1上。 可是我发现，我无法通过eth1上的管理来访问vm，折腾了好久，我才意识到，XenServer上的网卡2应该没插网线。这提醒了我，如果宿主机上有两块网卡，一定要确定都能工作才行。</p>
-
-<p>知道问题了就好解决，两块虚拟网卡都映射到同一块物理网卡就没问题了。</p>
-
-<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，
-<a href="http://www.gossamer-threads.com/lists/openstack/operators/34627">这个帖子</a>里讲了解决方案，那就是清除eth0的IP,把外网的IP绑定到br-ex上．</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">ifconfig eth0 0.0.0.0 
-ifconfig br-ex 192.168.234.205 </code></pre></figure>
-
-<p>你会问，我已经无法连接这台虚拟机了，怎么执行这个操作？</p>
-
-<p>当然是用的network节点的管理段IP啊，它就是干这个用的，：）。</p>
-
-                <p><a href="/blog/openstack/xenserver-vm-multi-nic">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04"><h3 class="ctitle">在Ubuntu 14.04上部署OpenStack Juno</h3></a>
-                <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
-                <h1 id="section">1 规划</h1>
+            <! -- Blog Post  -->
+			<!--
+            <p><img class="img-responsive" src="/assets/img/blog/"></p>
+			-->
+            <a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04"><h3 class="ctitle">在Ubuntu 14.04上部署OpenStack Juno</h3></a>
+            <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
+
+            <div id="main_content"><h1 id="section">1 规划</h1>
 
 <p>192.168.234.202   Openstack controller node   <br />
 192.168.234.205   Openstack network node   <br />
@@ -4093,399 +2784,16 @@ Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn'</span>t contain a valid part
 <p>参考：　
 <a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
 <a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
-
-                <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/other/config-lvm">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/other/config-lvm"><h3 class="ctitle">配置LVM</h3></a>
-                <p><csmall>Jan 30, 2015. | By: 任怀林</csmall></p>
-                <p>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">root@localhost:~# </span>fdisk /dev/xvdb 
-Command <span class="o">(</span>m <span class="k">for </span><span class="nb">help</span><span class="o">)</span>: m
-Command action
-   a   toggle a bootable flag
-   b   edit bsd disklabel
-   c   toggle the dos compatibility flag
-   d   delete a partition
-   l   list known partition types
-   m   print this menu
-   n   add a new partition
-   o   create a new empty DOS partition table
-   p   print the partition table
-   q   quit without saving changes
-   s   create a new empty Sun disklabel
-   t   change a partition<span class="s1">'s system id
-   u   change display/entry units
-   v   verify the partition table
-   w   write table to disk and exit
-   x   extra functionality (experts only)</span></code></pre></figure>
-
-<p>2 显示当前的分区表</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">Command <span class="o">(</span>m <span class="k">for </span><span class="nb">help</span><span class="o">)</span>: p 
-
-Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units <span class="o">=</span> sectors of 1 <span class="k">*</span> 512 <span class="o">=</span> 512 bytes
-Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512 bytes / 512 bytes
-I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e
-
-    Device Boot      Start         End      Blocks   Id  System</code></pre></figure>
-
-<p>#创建一个新的分区</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">Command <span class="o">(</span>m <span class="k">for </span><span class="nb">help</span><span class="o">)</span>: n
-Partition <span class="nb">type</span>:
-   p   primary <span class="o">(</span>0 primary, 0 extended, 4 free<span class="o">)</span>
-   e   extended
-
-<span class="c">#创建一个主分区</span>
-Select <span class="o">(</span>default p<span class="o">)</span>: 
-Using default response p
-
-<span class="c">#按提示来，用默认值</span>
-Partition number <span class="o">(</span>1-4, default 1<span class="o">)</span>: 
-Using default value 1
-
-<span class="c">#按提示来，用默认值</span>
-First sector <span class="o">(</span>2048-209715199, default 2048<span class="o">)</span>: 
-Using default value 2048
-
-<span class="c">#这里把整个盘分成了一个区</span>
-Last sector, +sectors or +size<span class="o">{</span>K,M,G<span class="o">}</span> <span class="o">(</span>2048-209715199, default 209715199<span class="o">)</span>: 
-Using default value 209715199
-
-
-<span class="c"># 把分区类型转成lvm</span>
-Command <span class="o">(</span>m <span class="k">for </span><span class="nb">help</span><span class="o">)</span>: t
-Selected partition 1
-
-<span class="c">#如果不记得分区的类型的代码了，可以用L命令显示分区类型列表</span>
-Hex code <span class="o">(</span><span class="nb">type </span>L to list codes<span class="o">)</span>: L
-
- 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
- 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec <span class="o">(</span>FAT-
- 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec <span class="o">(</span>FAT-
- 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden C:  c6  DRDOS/sec <span class="o">(</span>FAT-
- 4  FAT16 &lt;32M      40  Venix 80286     85  Linux extended  c7  Syrinx         
- 5  Extended        41  PPC PReP Boot   86  NTFS volume <span class="nb">set </span>da  Non-FS data    
- 6  FAT16           42  SFS             87  NTFS volume <span class="nb">set </span>db  CP/M / CTOS / .
- 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility   
- 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt         
- 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access     
- a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O        
- b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor      
- c  W95 FAT32 <span class="o">(</span>LBA<span class="o">)</span> 52  CP/M            a0  IBM Thinkpad hi eb  BeOS fs        
- e  W95 FAT16 <span class="o">(</span>LBA<span class="o">)</span> 53  OnTrack DM6 Aux a5  FreeBSD         ee  GPT            
- f  W95 Ext<span class="s1">'d (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/
-10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b
-11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor      
-12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor      
-14  Hidden FAT16 &lt;3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary  
-16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS    
-17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
-18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto
-1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep        
-1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT            
-1e  Hidden W95 FAT1 80  Old Minix      
-Hex code (type L to list codes): 8e
-Changed system type of partition 1 to 8e (Linux LVM)
-
-#再看一下
-Command (m for help): p
-
-Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-255 heads, 63 sectors/track, 13054 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e
-
-    Device Boot      Start         End      Blocks   Id  System
-/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM
-
-#写入分区信息
-Command (m for help): w
-The partition table has been altered!
-
-Calling ioctl() to re-read partition table.
-Syncing disks.
-
-#重新加载分区信息
-root@localhost:~# partprobe 
-root@localhost:~# fdisk -l
-
-Disk /dev/xvda: 32.2 GB, 32212254720 bytes
-255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00020a62
-
-    Device Boot      Start         End      Blocks   Id  System
-/dev/xvda1            2048      499711      248832   83  Linux
-/dev/xvda2          501758    62912511    31205377    5  Extended
-/dev/xvda5          501760    62912511    31205376   8e  Linux LVM
-
-Disk /dev/xvdb: 107.4 GB, 107374182400 bytes
-43 heads, 44 sectors/track, 110843 cylinders, total 209715200 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xdd2fff2e
-#这是我们刚创建的lvm分区
-    Device Boot      Start         End      Blocks   Id  System
-/dev/xvdb1            2048   209715199   104856576   8e  Linux LVM
-
-Disk /dev/mapper/localhost--vg-root: 30.6 GB, 30614224896 bytes
-255 heads, 63 sectors/track, 3721 cylinders, total 59793408 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000
-
-Disk /dev/mapper/localhost--vg-root doesn'</span>t contain a valid partition table
-
-Disk /dev/mapper/localhost--vg-swap_1: 1337 MB, 1337982976 bytes
-255 heads, 63 sectors/track, 162 cylinders, total 2613248 sectors
-Units <span class="o">=</span> sectors of 1 <span class="k">*</span> 512 <span class="o">=</span> 512 bytes
-Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512 bytes / 512 bytes
-I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: 512 bytes / 512 bytes
-Disk identifier: 0x00000000
-
-Disk /dev/mapper/localhost--vg-swap_1 doesn<span class="s1">'t contain a valid partition table
-
-#创建一个lvm物理卷pv
-root@localhost:~# pvcreate /dev/xvdb1
-  Physical volume "/dev/xvdb1" successfully created
-  
-root@localhost:~# pvscan
-  PV /dev/xvda5   VG localhost-vg    lvm2 [29.76 GiB / 0    free]
-  PV /dev/xvdb1                      lvm2 [100.00 GiB]
-  Total: 2 [129.76 GiB] / in use: 1 [29.76 GiB] / in no VG: 1 [100.00 GiB]
-  
-  
-  
-#因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。
-root@localhost:~# vgscan
-  Reading all physical volumes.  This may take a while...
-  Found volume group "localhost-vg" using metadata type lvm2
-  
-
-#把新建的pv添加到vg里吧
-root@localhost:~# vgextend localhost-vg /dev/xvdb1
-  Volume group "localhost-vg" successfully extended
-#看一下vg的详情
-
-root@localhost:~# vgdisplay 
-  --- Volume group ---
-  VG Name               localhost-vg
-  System ID             
-  Format                lvm2
-  Metadata Areas        2
-  Metadata Sequence No  4
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                2
-  Open LV               2
-  Max PV                0
-  Cur PV                2
-  Act PV                2
-  VG Size               129.75 GiB
-  PE Size               4.00 MiB
-  Total PE              33217
-  Alloc PE / Size       7618 / 29.76 GiB
-  Free  PE / Size       25599 / 100.00 GiB  &lt;= 这个信息很重要，我们在扩大lv时要用到
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
-
-#看看系统里的逻辑卷lv吧
-root@localhost:~# lvdisplay 
-  --- Logical volume ---
-  LV Path                /dev/localhost-vg/root
-  LV Name                root
-  VG Name                localhost-vg
-  LV UUID                YfzzNm-ozhH-k2r2-KucH-p2he-CcVj-SCpuAr
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
-  LV Status              available
-  # open                 1
-  LV Size                28.51 GiB  &lt;= 大小还没变
-  Current LE             7299
-  Segments               1
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:0
-   
-  --- Logical volume ---
-  LV Path                /dev/localhost-vg/swap_1
-  LV Name                swap_1
-  VG Name                localhost-vg
-  LV UUID                6Kid6V-tQ1B-TT43-g7at-Ha1d-yR3X-DomZA7
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2015-01-26 16:36:55 +0800
-  LV Status              available
-  # open                 2
-  LV Size                1.25 GiB
-  Current LE             319
-  Segments               1
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     256
-  Block device           252:1
-
-#扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.
-root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
-  Extending logical volume root to 128.51 GiB
-  Logical volume root successfully resized
-  
-  
-#再看看vg,会发现Free PE数量为0了。
-root@localhost:~# vgdisplay
-  --- Volume group ---
-  VG Name               localhost-vg
-  System ID             
-  Format                lvm2
-  Metadata Areas        2
-  Metadata Sequence No  5
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                2
-  Open LV               2
-  Max PV                0
-  Cur PV                2
-  Act PV                2
-  VG Size               129.75 GiB
-  PE Size               4.00 MiB
-  Total PE              33217
-  Alloc PE / Size       33217 / 129.75 GiB
-  Free  PE / Size       0 / 0   
-  VG UUID               B1b5mq-JMhc-HbPo-ImdF-50pB-fpML-eivSLF
-
-
-#df一下看看。
-root@localhost:~# df -h
-Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost--vg-root   28G  1.3G   26G   5% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
-udev                            4.8G  4.0K  4.8G   1% /dev
-tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot
-
-#What!为什么这里的容量还不对？因为你只是调整了lv的大小，它上面的文件系统还不知道呢。
-#好吧，我们来把lv的容量扩到文件系统里吧。  
-root@localhost:~# resize2fs /dev/mapper/localhost--vg-root 
-resize2fs 1.42.9 (4-Feb-2014)
-Filesystem at /dev/mapper/localhost--vg-root is mounted on /; on-line resizing required
-old_desc_blocks = 2, new_desc_blocks = 9
-The filesystem on /dev/mapper/localhost--vg-root is now 33687552 blocks long.
-
-#再看看吧，OK!
-root@localhost:~# df -h
-Filesystem                      Size  Used Avail Use% Mounted on
-/dev/mapper/localhost--vg-root  127G  1.3G  120G   2% /
-none                            4.0K     0  4.0K   0% /sys/fs/cgroup
-udev                            4.8G  4.0K  4.8G   1% /dev
-tmpfs                           979M  400K  978M   1% /run
-none                            5.0M     0  5.0M   0% /run/lock
-none                            4.8G     0  4.8G   0% /run/shm
-none                            100M     0  100M   0% /run/user
-/dev/xvda1                      236M   37M  187M  17% /boot</span></code></pre></figure>
-
-
-                <p><a href="/blog/other/config-lvm">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/other/vm-communicate-with-my-laptop">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/other/vm-communicate-with-my-laptop"><h3 class="ctitle">从宿主机访问VirtualBox里的虚机</h3></a>
-                <p><csmall>Jan 6, 2015. | By: 任怀林</csmall></p>
-                <p>我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># ifconfig wlan0:0 192.168.234.249/24
-</code></pre>
 </div>
 
-<p>回到银丰后，把这个配置删除掉：   <br />
-<code class="highlighter-rouge">
-# ifconfig wlan0:0 192.168.234.249 down
-</code></p>
-
-                <p><a href="/blog/other/vm-communicate-with-my-laptop">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/java/java-decompilers">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/java/java-decompilers"><h3 class="ctitle">Java 反编译器</h3></a>
-                <p><csmall>Nov 8, 2014. | By: 任怀林</csmall></p>
-                <p>前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。</p>
-
-
-                <p><a href="/blog/java/java-decompilers">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-                <! -- Blog Post -->
-				<!-- 
-                <a href="/blog/other/my-first-blog-with-jekyll">
-                    <img class="img-responsive" src="/assets/img/blog/">
-                </a> 
-				-->   
-                <a href="/blog/other/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
-                <p><csmall>Nov 2, 2014. | By: 任怀林</csmall></p>
-                <p>2016-04-14:  <br />
-更新jekyll到3.1.2版本，因为<a href="https://github.com/blog/2136-a-look-behind-our-decision-to-standardize-on-a-single-markdown-engine-for-github-pages">Github决定使用单一markdown引擎</a>  <br />
-方法高亮使用：<a href="https://github.com/jneen/rouge">Rouge</a>,它支持的语法列表：<a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a></p>
-
-<p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ jekyll serve
-</code></pre>
-</div>
-
-<p>然后浏览 http://localhost:4000</p>
-
-<p>方法高亮使用：<a href="http://pygments.org/">pygments</a>,它支持的语法列表：<a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a></p>
-
-<p>我用的jekyll theme 是<a href="https://github.com/st4ple/solid-jekyll">solid jekyll</a></p>
-
-<p>参考：
-<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog—-github Pages和Jekyll入门</a></p>
-
-                <p><a href="/blog/other/my-first-blog-with-jekyll">[Read More]</a></p>
-                <div class="hline"></div>
-
-                <div class="spacing"></div>
-            
-
+            <div class="spacing"></div>
+            <!-- <h6>SHARE:</h6>
+            <p class="share">
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-tumblr"></i></a>
+                <a href="#"><i class="fa fa-google-plus"></i></a>
+            </p> -->
         </div><! --/col-lg-8 -->
 
         <div class="col-lg-4">
@@ -4610,8 +2918,289 @@ none                            100M     0  100M   0% /run/user
 </div>
 
 
+        <script type="text/javascript">
+
+        $('#main_content').toc({
+            displayBox:"navmain",
+            showAlways:true,
+            showText:'展開',
+            contentsText: "目錄",
+            hideText:"隱藏",
+            saveShowStatus:false
+        });
+
+        /*
+         * 懒人建站 http://www.51xuediannao.com/
+         * 仿百度百科右侧导航代码 - 页面目录结构导航 v0.01
+         * 只写了两级，无限级别也可以，是逻辑上的级别，html结构全是同一级别
+         * 滑标动画用的css3过渡动画，不支持的浏览器就没动画效果了
+         * 和百度百科比起来还是比较弱，没有实现右边也可以滚动的功能
+         */
+        function DirectoryNav($h, config) {
+            this.opts = $.extend(true, {
+                scrollThreshold: 0.5, //滚动检测阀值 0.5在浏览器窗口中间部位
+                scrollSpeed: 700, //滚动到指定位置的动画时间
+                scrollTopBorder: 500, //滚动条距离顶部多少的时候显示导航，如果为0，则一直显示
+                easing: 'swing', //不解释
+                delayDetection: 50, //延时检测，避免滚动的时候检测过于频繁
+                scrollChange: function() {}
+            }, config);
+            this.$win = $(window);
+            this.$h = $h;
+            this.$pageNavList = "";
+            this.$pageNavListLis = "";
+            this.$curTag = "";
+            this.$pageNavListLiH = "";
+            this.offArr = [];
+            this.curIndex = 0;
+            this.scrollIng = false;
+            this.init();
+            this.$goUpButton = "";
+            this.$goDownButton = "";
+            this.$tocContainer;
+            this.$oldCurLi;
+        }
+
+        DirectoryNav.prototype = {
+            init: function() {
+                this.make();
+                this.setArr();
+                this.bindEvent();
+            },
+            make: function() {
+
+                $directoryNav = $("#tocNavigator")
+
+                //设置变量
+                this.$pageNavList = $directoryNav;
+                this.$pageNavListLis = this.$pageNavList.find("li");
+                this.$curTag = this.$pageNavList.find(".cur-tag");
+                this.$pageNavListLiH = this.$pageNavListLis.eq(0).height();
+                this.$goUpButton = $("#tocNavigator a.go-up");
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                this.$tocContainer = $("#toc-container");
+
+                // $("#toc-container").scroll(function() {
+                //     HandlingScrollingStuff();
+                // });
+
+                if (!this.opts.scrollTopBorder) {
+                    this.$pageNavList.show();
+                }
+            },
+            setArr: function() {
+                var This = this;
+                var i = 0;
+                this.$h.each(function() {
+                    var $this = $(this);
+                    var offT = Math.round($this.offset().top);
+                    var info = {"index":i,"top":offT,"bottom":0};
+                    This.offArr.push(info);
+                    if(i > 0) {
+                        This.offArr[i - 1].bottom = offT;
+                    }
+                    i++;
+                });
+                This.offArr[--i].bottom = $(document).height();
+            },
+            posTag: function(top) {
+                this.$curTag.css({
+                    top: top + 'px'
+                });
+            },
+
+            ifPos: function(st) {
+                var offArr = this.offArr;
+                //console.log(st);
+
+                this.$pageNavListLis = this.$pageNavList.find("li");
+
+                var windowHeight = Math.round(this.$win.height() * this.opts.scrollThreshold);
+
+                var $curLi;
+                var indexNearTop;
+                var indexNearMiddle;
+                for (var i = 0; i < offArr.length; i++) {
+
+                    if(offArr[i].top <= (st)  && (st) < offArr[i].bottom) {
+                        indexNearMiddle = offArr[i].index;
+                        break;
+                    }
+                }
+
+                if (this.$oldCurLi != indexNearMiddle) {
+                    $curLi = this.$pageNavListLis.eq(indexNearMiddle);
+
+                    var tagTop = $curLi.position().top;
+
+                    var newTop = $("#toc-container").scrollTop() + tagTop -  $("#toc-container").eq(0).height() / 2;
+
+                    if (newTop < 0) {
+                        newTop = 0;
+                    }
+
+                    $("#toc-container").scrollTop(newTop);
+
+                    this.opts.scrollChange.call(this);
+
+                    this.$pageNavList.find("span.cur-tag").removeClass("cur-tag").addClass("c-dot");
+                    this.$pageNavList.find("li").removeClass("cur");
+                    $curLi.addClass("cur");
+                    $curLi.find("span.c-dot").removeClass("c-dot").addClass("cur-tag");
+                    this.$oldCurLi = indexNearMiddle;
+                }
+
+            },
+            bindEvent: function() {
+                var This = this,
+                    show = false,
+                    timer = 0;
+
+                this.$pageNavList.on("mouseout",function () {
+                    $("div.right-wrap").hide();
+                });
+
+                this.$pageNavList.on("mouseover",function () {
+                    $("div.right-wrap").show();
+                });
+
+                this.$goUpButton.on("click",function () {
+                    var $this = $(this);
+                    if($this.hasClass("disable")) {
+                        return;
+                    }
+
+                    var newTop = $("#toc-container").scrollTop() - 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    } else {
+                        $("#toc-container").scrollTop(0);
+                    }
+                });
+
+                this.$goDownButton.on("click",function () {
+                    var newTop = $("#toc-container").scrollTop() + 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    }
+                });
+
+                $("a.toggle-button").on("click",function () {
+                    if ($("#tocNavigator").hasClass("collapse")) {
+                        $("#tocNavigator").removeClass("collapse");
+                    } else {
+                        $("#tocNavigator").addClass("collapse");
+                    }
+                    $("#tocNavigator #navmain").toggle();
+                })
+
+                $("a.gotop-button").on("click",function () {
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                })
+
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                $("#toc-container").on("scroll",function (data,event) {
+                    var $this = $(this);
+                    $goUpButton = $("#tocNavigator a.go-up");
+                    $goDownButton = $("#tocNavigator a.go-down");
+
+                    var newTop = $this.scrollTop();
+                    if(newTop > 0) {
+                        $goUpButton.removeClass("disable");
+                        $goUpButton.prop('disabled',false);
+                    } else {
+                        $goUpButton.addClass("disable");
+                        $goUpButton.prop('disabled',true);
+                    }
+
+                    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight){
+                        $goDownButton.addClass("disable");
+                        $goDownButton.prop('disabled',true);
+                    } else {
+                        $goDownButton.removeClass("disable");
+                        $goDownButton.prop('disabled',false);
+                    }
+
+                });
+
+
+                this.$win.on("scroll", function(event) {
+                    // console.log(event);
+
+                    var $this = $(this);
+                    clearTimeout(timer);
+                    timer = setTimeout(function() {
+                        This.scrollIng = true;
+                        if ($this.scrollTop() > This.opts.scrollTopBorder) {
+                            if (!This.$pageNavListLiH) {
+                                This.$pageNavListLiH = This.$pageNavListLis.eq(0).height();
+                            }
+
+                            if (!show) {
+                                This.$pageNavList.fadeIn();
+                                show = true;
+                            }
+
+                            This.ifPos($(this).scrollTop());
+                        } else {
+                            if (show) {
+                                This.$pageNavList.fadeOut();
+                                show = false;
+                            }
+                        }
+
+                        //This.$goUpButton.eq(0).prop('disabled', This.$tocContainer.scrollTop() < This.$tocContainer.eq(0).height());
+
+                    }, This.opts.delayDetection);
+                });
+
+                this.$pageNavList.on("click", "li", function() {
+                    var $this = $(this);
+                    var index = $this.index();
+                    // This.scrollTo(This.offArr[index]);
+                })
+            },
+            scrollTo: function(offset, callback) {
+                var This = this;
+                $('html,body').animate({
+                    scrollTop: offset
+                }, this.opts.scrollSpeed, this.opts.easing, function() {
+                    This.scrollIng = false;
+                    //修正弹两次回调 蛋疼
+                    callback && this.tagName.toLowerCase() == 'body' && callback();
+                });
+            }
+        };
+
+        //实例化
+        var directoryNav = new DirectoryNav($("h1,h2"), {
+            scrollTopBorder: 650 //滚动条距离顶部多少的时候显示导航，如果为0，则一直显示
+        });
+        </script>
+
+        <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="/blog/openstack/deploy-openstack-on-ubuntu-14.04" data-title="在Ubuntu 14.04上部署OpenStack Juno" data-url="http://www.renhl.com/blog/openstack/deploy-openstack-on-ubuntu-14.04 "></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"renhl"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+<!-- 多说公共JS代码 end -->
+
+
     </div><! --/row -->
 </div><! --/container -->
+
 
         <div id="footerwrap">
     <div class="container">

@@ -8,8 +8,13 @@ baseurl: "" #important: start with /
 url: "http://yourdomain.com"
 
 # Build settings
-#markdown: kramdown
-markdown: redcarpet
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+#markdown: redcarpet
 permalink: /:categories/:title
 excerpt_separator: <!--more--> #use this in posts to define how long the excerpt of the post (that is shown on the Blog page) is
 
@@ -17,7 +22,9 @@ redcarpet:
   extensions: ["smart","fenced_code","gh_blockcode","autolink", "tables", "with_toc_data"]
 
 
-highlighter: pygments
+#highlighter: Rouge
+# rouge:
+#   line_numbers: true
 
 colors:  #in hex code if not noted else
   primary: "#00b3fe" #"#F70031"

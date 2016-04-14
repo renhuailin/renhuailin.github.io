@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+
+    <title>念西堂 - Jenkins + gitlab做持续集成</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/syntax.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <!--<link rel="stylesheet" href="/css/main.css">-->
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- <script src="/assets/js/modernizr.js"></script> -->
+
+    <script src="/javascripts/jquery-1.11.3.min.js"></script>
+    <script src="/javascripts/jquery.toc.js"></script>
+
+</head>
+
+
+    <body>
+        <!-- Fixed navbar -->
+<div class="navbar navbar-default" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">念西堂</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-right">
+      <ul class="nav navbar-nav">
+		  <!--
+        <li ><a href="/">首页</a></li>
+        <li ><a href="/blog/">BLOG</a></li>
+        <li ><a href="/portfolio/">PORTFOLIO</a></li>
+        <li ><a href="/about/">ABOUT</a></li>
+        <li ><a href="/contact/">CONTACT</a></li>
+			  -->
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+
+            <div class="container mtb">
+    <div class="row">
+        <! -- SINGLE POST -->
+        <div class="col-lg-8">
+            <! -- Blog Post  -->
+			<!--
+            <p><img class="img-responsive" src="/assets/img/blog/"></p>
+			-->
+            <a href="/blog/gitlab/jenkins-gitlab-ci"><h3 class="ctitle">Jenkins + gitlab做持续集成</h3></a>
+            <p><csmall>Dec 17, 2015. | By: 任怀林</csmall></p>
+
+            <div id="main_content"><p>jenkins  2核  2G  系统 ubuntu 14.04
+registry
+chef server 1 核  2G
+gitlab 1核  2G</p>
+
+<p>node1 最终部署节点　1 核  2G</p>
+
+<h1 id="jenkins">安装Jenkins</h1>
+
+<h2 id="jdk">配置jdk</h2>
+
+<h1 id="antmaven">安装 ant,maven</h1>
+
+<h1 id="jenkins-1">配置Jenkins的安全策略</h1>
+
+<p>#插件管理</p>
+
+<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：
+<code class="highlighter-rouge">
+$ git config --global http.sslverify false
+</code>
+另一个办法就是设置环境变量
+<code class="highlighter-rouge">
+GIT_SSL_NO_VERIFY=1
+</code>
+我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
+
+<p>那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？</p>
+
+<p>在项目的“配置”里勾先上“参数化构建过程”，然后添加一个字符型的参数，把这环境变量添加上。</p>
+
+<p>GitLab 8.3以後，GitLab Hook Plugin 已經不推薦了”deprecated”.推薦使用’Jenkins CI’ project 。</p>
+
+<p>#错误处理</p>
+
+<p>我一不小心点击了反选，把overall/read权限弄没有了，登录上来什么用不了。</p>
+
+<p>搜了一下网上，简单的做法是把config.xml里的useSecurity设置为false,把<code class="highlighter-rouge">authorizationStrategy</code>，完全删除。再重启Jenkins就可以了。</p>
+
+<p>#</p>
+
+<p>在源码管理下勾选上<code class="highlighter-rouge">git</code>,然后从gitlab里复制项目的clone地址过来，填到Repository URL文本框里。</p>
+
+<p><img src="/assets/img/blog/2016/03/01/git_repo_config.png" alt="git_repo_config.png" /></p>
+
+<p>下一步<code class="highlighter-rouge">Additional Behaviours</code>中选择<code class="highlighter-rouge">Merge before build</code>.</p>
+
+<p><code class="highlighter-rouge">Name of repository</code>中填入<code class="highlighter-rouge">origin</code></p>
+
+<p><code class="highlighter-rouge">Branch to merge to</code>中填入<code class="highlighter-rouge">${gitlabTargetBranch}</code>
+<img src="/assets/img/blog/2016/03/01/Additional_Behaviours.png" alt="Additional_Behaviours.png" /></p>
+
+<p>接下来配置<code class="highlighter-rouge">构建触发器</code>，配置<code class="highlighter-rouge">Rebuild open Merge Requests</code>为　<code class="highlighter-rouge">On push to source or target branch</code>.
+<img src="/assets/img/blog/2016/03/01/build_trigger.png" alt="build_trigger.png" /></p>
+
+<p>下面是配置mvn build时的参数，这个大家应该比较熟悉了，不多说。</p>
+
+<p>接下我们要配置一下gitlab里项目，为项目添加一个webhook,这个webhook是Jenkins的gitlab插件触发build的URL.</p>
+
+<p>在gitlab你的项目主页里点击<code class="highlighter-rouge">Settings</code>,然后点击左侧菜单的<code class="highlighter-rouge">Web hooks</code>.</p>
+
+<p>在URL文本框里，我们要填写上你的项目在Jenkins里URL.</p>
+
+<p>假设你的项目在Jenkins里的构建job的URL地址为：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/job/edesktop-manager
+</code></pre>
+</div>
+
+<p>把URL中的<code class="highlighter-rouge">/job</code>换成<code class="highlighter-rouge">/project/</code>就是这个job的build触发URL，把它填到gilab项目设置的Web hooks　URL里。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/project/edesktop-manager
+</code></pre>
+</div>
+
+<p><img src="/assets/img/blog/2016/03/01/gitlab_webhooks.png" alt="gitlab_webhooks.png" /></p>
+
+<p>保存配置，然后点击<code class="highlighter-rouge">TEST HOOK</code>按钮，测试一下这个hook,如果系统显示没有问题，系统会提示：hook已经成功执行。
+你在Jenkins里会看到有一个新build执行了。</p>
+
+<p>要想让Jenkins能运行docker,我们要jenkins用户加到docker这个组里来。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># usermod -a -G docker jenkins
+</code></pre>
+</div>
+
+<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.
+<code class="highlighter-rouge">
+Cannot connect to the Docker daemon. Is the docker daemon running on this host?
+</code></p>
+
+<p>可以参考这个<a href="https://github.com/docker/docker/issues/5314">issue</a></p>
+
+<h1 id="section">参考文档</h1>
+<p>http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu</p>
+
+<p>http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html</p>
+</div>
+
+            <div class="spacing"></div>
+            <!-- <h6>SHARE:</h6>
+            <p class="share">
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-tumblr"></i></a>
+                <a href="#"><i class="fa fa-google-plus"></i></a>
+            </p> -->
+        </div><! --/col-lg-8 -->
+
+        <div class="col-lg-4">
+   <!--  <h4>Search</h4>
+    <div class="hline"></div>
+        <p>
+            <br/>
+            <input type="text" class="form-control" placeholder="Search something">
+        </p>
+    <div class="spacing"></div> -->
+
+    <!-- fdsaf  -->
+    <div id="tocNavigator" class="directory-nav" >
+        <div id="navmain">
+        <span class="c-top"></span>
+        <span class="c-bottom"></span>
+        <span class="line"></span>
+
+        <div class="right-wrap">
+            <a class="go-up" href="javascript:void(0);"></a>
+            <a class="go-down disable" href="javascript:void(0);"></a>
+        </div>
+        </div>
+        <div class="bottom-wrap">
+            <a class="toggle-button" href="javascript:void(0);"></a>
+            <a class="gotop-button" href="javascript:void(0);"></a>
+        </div>
+    </div>
+
+    <h4>Categories</h4>
+    <div class="hline"></div>
+    
+        <p>
+            <a href="/category/#other"><i class="fa fa-angle-right"></i> Other</a>
+            <span class="badge badge-theme pull-right">3</span>
+        </p>
+    
+        <p>
+            <a href="/category/#Java"><i class="fa fa-angle-right"></i> Java</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
+        <p>
+            <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
+            <span class="badge badge-theme pull-right">2</span>
+        </p>
+    
+        <p>
+            <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
+            <span class="badge badge-theme pull-right">5</span>
+        </p>
+    
+        <p>
+            <a href="/category/#gitlab"><i class="fa fa-angle-right"></i> Gitlab</a>
+            <span class="badge badge-theme pull-right">2</span>
+        </p>
+    
+        <p>
+            <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
+
+    <div class="spacing"></div>
+
+    <h4>Recent Posts</h4>
+    <div class="hline"></div>
+        <ul class="popular-posts">
+            
+                <li>
+                    <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-chef">安装chef</a></p>
+                <em>Posted on 22 Feb 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
+                <em>Posted on 05 Jan 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/docker/docker-user-mapping"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/docker-user-mapping">Docker容器用戶映射</a></p>
+                <em>Posted on 30 Dec 2015</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
+                <em>Posted on 30 Dec 2015</em>
+            </li>
+            
+        </ul>
+
+    <div class="spacing"></div>
+
+    <h4>Popular Tags</h4>
+    <div class="hline"></div>
+    <p>
+    
+            <a class="btn btn-theme" href="/category/#other" role="button">Other (3)</a>
+        
+            <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
+        
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
+        
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+        
+            <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
+        
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (1)</a>
+        
+    </p>
+
+    <h4>Subscribe</h4>
+    <div class="hline"></div>
+        <p>
+            <p class="rss-subscribe">Subscribe to this blog <a href="/feed.xml">via RSS</a>.</p>
+        </p>
+    <div class="spacing"></div>
+</div>
+
+
+        <script type="text/javascript">
+
+        $('#main_content').toc({
+            displayBox:"navmain",
+            showAlways:true,
+            showText:'展開',
+            contentsText: "目錄",
+            hideText:"隱藏",
+            saveShowStatus:false
+        });
+
+        /*
+         * 懒人建站 http://www.51xuediannao.com/
+         * 仿百度百科右侧导航代码 - 页面目录结构导航 v0.01
+         * 只写了两级，无限级别也可以，是逻辑上的级别，html结构全是同一级别
+         * 滑标动画用的css3过渡动画，不支持的浏览器就没动画效果了
+         * 和百度百科比起来还是比较弱，没有实现右边也可以滚动的功能
+         */
+        function DirectoryNav($h, config) {
+            this.opts = $.extend(true, {
+                scrollThreshold: 0.5, //滚动检测阀值 0.5在浏览器窗口中间部位
+                scrollSpeed: 700, //滚动到指定位置的动画时间
+                scrollTopBorder: 500, //滚动条距离顶部多少的时候显示导航，如果为0，则一直显示
+                easing: 'swing', //不解释
+                delayDetection: 50, //延时检测，避免滚动的时候检测过于频繁
+                scrollChange: function() {}
+            }, config);
+            this.$win = $(window);
+            this.$h = $h;
+            this.$pageNavList = "";
+            this.$pageNavListLis = "";
+            this.$curTag = "";
+            this.$pageNavListLiH = "";
+            this.offArr = [];
+            this.curIndex = 0;
+            this.scrollIng = false;
+            this.init();
+            this.$goUpButton = "";
+            this.$goDownButton = "";
+            this.$tocContainer;
+            this.$oldCurLi;
+        }
+
+        DirectoryNav.prototype = {
+            init: function() {
+                this.make();
+                this.setArr();
+                this.bindEvent();
+            },
+            make: function() {
+
+                $directoryNav = $("#tocNavigator")
+
+                //设置变量
+                this.$pageNavList = $directoryNav;
+                this.$pageNavListLis = this.$pageNavList.find("li");
+                this.$curTag = this.$pageNavList.find(".cur-tag");
+                this.$pageNavListLiH = this.$pageNavListLis.eq(0).height();
+                this.$goUpButton = $("#tocNavigator a.go-up");
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                this.$tocContainer = $("#toc-container");
+
+                // $("#toc-container").scroll(function() {
+                //     HandlingScrollingStuff();
+                // });
+
+                if (!this.opts.scrollTopBorder) {
+                    this.$pageNavList.show();
+                }
+            },
+            setArr: function() {
+                var This = this;
+                var i = 0;
+                this.$h.each(function() {
+                    var $this = $(this);
+                    var offT = Math.round($this.offset().top);
+                    var info = {"index":i,"top":offT,"bottom":0};
+                    This.offArr.push(info);
+                    if(i > 0) {
+                        This.offArr[i - 1].bottom = offT;
+                    }
+                    i++;
+                });
+                This.offArr[--i].bottom = $(document).height();
+            },
+            posTag: function(top) {
+                this.$curTag.css({
+                    top: top + 'px'
+                });
+            },
+
+            ifPos: function(st) {
+                var offArr = this.offArr;
+                //console.log(st);
+
+                this.$pageNavListLis = this.$pageNavList.find("li");
+
+                var windowHeight = Math.round(this.$win.height() * this.opts.scrollThreshold);
+
+                var $curLi;
+                var indexNearTop;
+                var indexNearMiddle;
+                for (var i = 0; i < offArr.length; i++) {
+
+                    if(offArr[i].top <= (st)  && (st) < offArr[i].bottom) {
+                        indexNearMiddle = offArr[i].index;
+                        break;
+                    }
+                }
+
+                if (this.$oldCurLi != indexNearMiddle) {
+                    $curLi = this.$pageNavListLis.eq(indexNearMiddle);
+
+                    var tagTop = $curLi.position().top;
+
+                    var newTop = $("#toc-container").scrollTop() + tagTop -  $("#toc-container").eq(0).height() / 2;
+
+                    if (newTop < 0) {
+                        newTop = 0;
+                    }
+
+                    $("#toc-container").scrollTop(newTop);
+
+                    this.opts.scrollChange.call(this);
+
+                    this.$pageNavList.find("span.cur-tag").removeClass("cur-tag").addClass("c-dot");
+                    this.$pageNavList.find("li").removeClass("cur");
+                    $curLi.addClass("cur");
+                    $curLi.find("span.c-dot").removeClass("c-dot").addClass("cur-tag");
+                    this.$oldCurLi = indexNearMiddle;
+                }
+
+            },
+            bindEvent: function() {
+                var This = this,
+                    show = false,
+                    timer = 0;
+
+                this.$pageNavList.on("mouseout",function () {
+                    $("div.right-wrap").hide();
+                });
+
+                this.$pageNavList.on("mouseover",function () {
+                    $("div.right-wrap").show();
+                });
+
+                this.$goUpButton.on("click",function () {
+                    var $this = $(this);
+                    if($this.hasClass("disable")) {
+                        return;
+                    }
+
+                    var newTop = $("#toc-container").scrollTop() - 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    } else {
+                        $("#toc-container").scrollTop(0);
+                    }
+                });
+
+                this.$goDownButton.on("click",function () {
+                    var newTop = $("#toc-container").scrollTop() + 40;
+                    if(newTop > 0) {
+                        $("#toc-container").scrollTop(newTop);
+                    }
+                });
+
+                $("a.toggle-button").on("click",function () {
+                    if ($("#tocNavigator").hasClass("collapse")) {
+                        $("#tocNavigator").removeClass("collapse");
+                    } else {
+                        $("#tocNavigator").addClass("collapse");
+                    }
+                    $("#tocNavigator #navmain").toggle();
+                })
+
+                $("a.gotop-button").on("click",function () {
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                })
+
+                this.$goDownButton = $("#tocNavigator a.go-down");
+
+                $("#toc-container").on("scroll",function (data,event) {
+                    var $this = $(this);
+                    $goUpButton = $("#tocNavigator a.go-up");
+                    $goDownButton = $("#tocNavigator a.go-down");
+
+                    var newTop = $this.scrollTop();
+                    if(newTop > 0) {
+                        $goUpButton.removeClass("disable");
+                        $goUpButton.prop('disabled',false);
+                    } else {
+                        $goUpButton.addClass("disable");
+                        $goUpButton.prop('disabled',true);
+                    }
+
+                    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight){
+                        $goDownButton.addClass("disable");
+                        $goDownButton.prop('disabled',true);
+                    } else {
+                        $goDownButton.removeClass("disable");
+                        $goDownButton.prop('disabled',false);
+                    }
+
+                });
+
+
+                this.$win.on("scroll", function(event) {
+                    // console.log(event);
+
+                    var $this = $(this);
+                    clearTimeout(timer);
+                    timer = setTimeout(function() {
+                        This.scrollIng = true;
+                        if ($this.scrollTop() > This.opts.scrollTopBorder) {
+                            if (!This.$pageNavListLiH) {
+                                This.$pageNavListLiH = This.$pageNavListLis.eq(0).height();
+                            }
+
+                            if (!show) {
+                                This.$pageNavList.fadeIn();
+                                show = true;
+                            }
+
+                            This.ifPos($(this).scrollTop());
+                        } else {
+                            if (show) {
+                                This.$pageNavList.fadeOut();
+                                show = false;
+                            }
+                        }
+
+                        //This.$goUpButton.eq(0).prop('disabled', This.$tocContainer.scrollTop() < This.$tocContainer.eq(0).height());
+
+                    }, This.opts.delayDetection);
+                });
+
+                this.$pageNavList.on("click", "li", function() {
+                    var $this = $(this);
+                    var index = $this.index();
+                    // This.scrollTo(This.offArr[index]);
+                })
+            },
+            scrollTo: function(offset, callback) {
+                var This = this;
+                $('html,body').animate({
+                    scrollTop: offset
+                }, this.opts.scrollSpeed, this.opts.easing, function() {
+                    This.scrollIng = false;
+                    //修正弹两次回调 蛋疼
+                    callback && this.tagName.toLowerCase() == 'body' && callback();
+                });
+            }
+        };
+
+        //实例化
+        var directoryNav = new DirectoryNav($("h1,h2"), {
+            scrollTopBorder: 650 //滚动条距离顶部多少的时候显示导航，如果为0，则一直显示
+        });
+        </script>
+
+        <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="/blog/gitlab/jenkins-gitlab-ci" data-title="Jenkins + gitlab做持续集成" data-url="http://www.renhl.com/blog/gitlab/jenkins-gitlab-ci "></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"renhl"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+<!-- 多说公共JS代码 end -->
+
+
+    </div><! --/row -->
+</div><! --/container -->
+
+
+        <div id="footerwrap">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <h4>About me</h4>
+                <div class="hline-w"></div>
+                <p>我是一名程序员，我喜欢编程，学过几门语言，最喜欢java和ruby，目前主要靠java混饭吃。同时我也是一名佛教徒，虽然我现在还没有皈依。</p>
+            </div>
+            <div class="col-lg-4">
+                <h4>Social Links</h4>
+                <div class="hline-w"></div>
+                <p>
+                    
+                        <a href="http://www.weibo.com/xiaopaozi" target="_blank" class="btn-social btn-outline"><i class="fa fa-weibo"></i></a>
+                    
+                        <a href="https://www.facebook.com/renhuailin" target="_blank" class="btn-social btn-outline"><i class="fa fa-facebook"></i></a>
+                    
+                        <a href="https://twitter.com/xiaopaozi" target="_blank" class="btn-social btn-outline"><i class="fa fa-twitter"></i></a>
+                    
+                </p>
+            </div>
+            <div class="col-lg-4">
+                <h4>Links</h4>
+                <div class="hline-w"></div>
+                <p>
+                    
+                        <a href="http://www.zhanglihai.com" target="_blank"> 张利海 </a>
+                    
+                </p>
+            </div>
+        </div><! --/row -->
+    </div><! --/container -->
+</div><! --/footerwrap -->
+        <script src="/assets/js/jquery-1.11.1.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/retina-1.1.0.js"></script>
+<script src="/assets/js/jquery.hoverdir.js"></script>
+<script src="/assets/js/jquery.hoverex.min.js"></script>
+<script src="/assets/js/jquery.prettyPhoto.js"></script>
+<script src="/assets/js/jquery.isotope.min.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-71158870-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script>
+// Portfolio
+(function($) {
+	"use strict";
+	var $container = $('.portfolio'),
+		$items = $container.find('.portfolio-item'),
+		portfolioLayout = 'fitRows';
+		
+		if( $container.hasClass('portfolio-centered') ) {
+			portfolioLayout = 'masonry';
+		}
+				
+		$container.isotope({
+			filter: '*',
+			animationEngine: 'best-available',
+			layoutMode: portfolioLayout,
+			animationOptions: {
+			duration: 750,
+			easing: 'linear',
+			queue: false
+		},
+		masonry: {
+		}
+		}, refreshWaypoints());
+		
+		function refreshWaypoints() {
+			setTimeout(function() {
+			}, 1000);   
+		}
+				
+		$('nav.portfolio-filter ul a').on('click', function() {
+				var selector = $(this).attr('data-filter');
+				$container.isotope({ filter: selector }, refreshWaypoints());
+				$('nav.portfolio-filter ul a').removeClass('active');
+				$(this).addClass('active');
+				return false;
+		});
+		
+		function getColumnNumber() { 
+			var winWidth = $(window).width(), 
+			columnNumber = 1;
+		
+			if (winWidth > 1200) {
+				columnNumber = 5;
+			} else if (winWidth > 950) {
+				columnNumber = 4;
+			} else if (winWidth > 600) {
+				columnNumber = 3;
+			} else if (winWidth > 400) {
+				columnNumber = 2;
+			} else if (winWidth > 250) {
+				columnNumber = 1;
+			}
+				return columnNumber;
+			}       
+			
+			function setColumns() {
+				var winWidth = $(window).width(), 
+				columnNumber = getColumnNumber(), 
+				itemWidth = Math.floor(winWidth / columnNumber);
+				
+				$container.find('.portfolio-item').each(function() { 
+					$(this).css( { 
+					width : itemWidth + 'px' 
+				});
+			});
+		}
+		
+		function setPortfolio() { 
+			setColumns();
+			$container.isotope('reLayout');
+		}
+			
+		$container.imagesLoaded(function () { 
+			setPortfolio();
+		});
+		
+		$(window).on('resize', function () { 
+		setPortfolio();          
+	});
+})(jQuery);
+</script>
+    </body>
+</html>
