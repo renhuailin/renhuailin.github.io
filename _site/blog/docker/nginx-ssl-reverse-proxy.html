@@ -114,80 +114,80 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 
 <p>编辑<code class="highlighter-rouge">/etc/nginx/sites-available/default</code>,加入如下内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>upstream wiki  {
-	server 172.168.100.47:80; # wiki.renhl.com
-}
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
+	<span class="kn">server</span> <span class="nf">172.168.100.47</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span> <span class="c1"># wiki.renhl.com
+</span><span class="p">}</span>
 
-upstream hub  {
-	server 172.168.100.48; # hub.renhl.com
-}
+<span class="k">upstream</span> <span class="s">hub</span>  <span class="p">{</span>
+	<span class="kn">server</span> <span class="mi">172</span><span class="s">.168.100.48</span><span class="p">;</span> <span class="c1"># hub.renhl.com
+</span><span class="p">}</span>
 
-## Start wiki.renhl.com ##
-server {
+<span class="c1">## Start wiki.renhl.com ##
+</span><span class="k">server</span> <span class="p">{</span>
 
-    listen 80;
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
 
-    listen 443 ssl;
+    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
 
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+    <span class="kn">ssl_certificate</span> <span class="n">/etc/nginx/ssl/nginx.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="n">/etc/nginx/ssl/nginx.key</span><span class="p">;</span>
 
-	server_name  wiki.ecloud.com.cn;
+	<span class="kn">server_name</span>  <span class="s">wiki.ecloud.com.cn</span><span class="p">;</span>
 
-    access_log  /var/log/nginx/wiki.renhl.access.log;
-    error_log  /var/log/nginx/wiki.renhl.error.log;
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
+    <span class="kn">access_log</span>  <span class="n">/var/log/nginx/wiki.renhl.access.log</span><span class="p">;</span>
+    <span class="kn">error_log</span>  <span class="n">/var/log/nginx/wiki.renhl.error.log</span><span class="p">;</span>
+    <span class="kn">root</span>   <span class="n">/usr/share/nginx/html</span><span class="p">;</span>
+    <span class="kn">index</span>  <span class="s">index.html</span> <span class="s">index.htm</span><span class="p">;</span>
 
-    ## send request back to apache1 ##
-    location / {
-     proxy_pass  http://wiki;
-     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-     proxy_redirect off;
-     proxy_buffering off;
-     proxy_set_header        Host            $host;
-     proxy_set_header        X-Real-IP       $remote_addr;
-     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-   }
-}
-## End wiki.renhl.com ##
+    <span class="c1">## send request back to apache1 ##
+</span>    <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+     <span class="kn">proxy_pass</span>  <span class="s">http://wiki</span><span class="p">;</span>
+     <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
+     <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+     <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">## End wiki.renhl.com ##
+</span>
+<span class="c1">## START hub.renhl.com ##
+</span><span class="k">server</span> <span class="p">{</span>
+   	<span class="kn">server_name</span> <span class="s">hub.renhl.com</span><span class="p">;</span>
 
-## START hub.renhl.com ##
-server {
-   	server_name hub.renhl.com;
+	<span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
 
-	listen 80;
-    listen 443 ssl;
+    <span class="kn">ssl_certificate</span> <span class="n">/etc/nginx/ssl/nginx.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="n">/etc/nginx/ssl/nginx.key</span><span class="p">;</span>
 
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+   <span class="kn">access_log</span>  <span class="n">/var/log/nginx/hub.renhl.access.log</span><span class="p">;</span>
+   <span class="kn">error_log</span>   <span class="n">/var/log/nginx/hub.renhl.error.log</span><span class="p">;</span>
+   <span class="kn">root</span>        <span class="n">/usr/local/nginx/html</span><span class="p">;</span>
+   <span class="kn">index</span>       <span class="s">index.html</span><span class="p">;</span>
 
-   access_log  /var/log/nginx/hub.renhl.access.log;
-   error_log   /var/log/nginx/hub.renhl.error.log;
-   root        /usr/local/nginx/html;
-   index       index.html;
-
-   location / {
-        proxy_pass  https://hub;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-        proxy_redirect off;
-        proxy_buffering off;
-        proxy_set_header        Host           $host;
-        proxy_set_header        X-Real-IP       $remote_addr;
-        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-## END hub.renhl.com  ##
-
+   <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+        <span class="kn">proxy_pass</span>  <span class="s">https://hub</span><span class="p">;</span>
+        <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
+        <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+        <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">Host</span>           <span class="nv">$host</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">## END hub.renhl.com  ##
+</span>
 </code></pre>
 </div>
 
 <h1 id="ip">IP限制</h1>
 <p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>allow 111.206.238.12;
-allow 111.206.238.94;
-deny all;
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
+<span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
+<span class="k">deny</span> <span class="s">all</span><span class="p">;</span>
 </code></pre>
 </div>
 

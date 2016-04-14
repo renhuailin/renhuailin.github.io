@@ -18,11 +18,11 @@ kramdown:
 permalink: /:categories/:title
 excerpt_separator: <!--more--> #use this in posts to define how long the excerpt of the post (that is shown on the Blog page) is
 
-redcarpet:
-  extensions: ["smart","fenced_code","gh_blockcode","autolink", "tables", "with_toc_data"]
+# redcarpet:
+#   extensions: ["smart","fenced_code","gh_blockcode","autolink", "tables", "with_toc_data"]
 
 
-#highlighter: Rouge
+#highlighter: rouge
 # rouge:
 #   line_numbers: true
 

@@ -32,7 +32,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 
 编辑`/etc/nginx/sites-available/default`,加入如下内容：
 
-```
+```nginx
 upstream wiki  {
 	server 172.168.100.47:80; # wiki.renhl.com
 }
@@ -103,7 +103,7 @@ server {
 # IP限制
 出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：
 
-```
+```nginx
 allow 111.206.238.12;
 allow 111.206.238.94;
 deny all;

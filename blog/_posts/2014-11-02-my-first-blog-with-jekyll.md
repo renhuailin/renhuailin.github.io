@@ -12,8 +12,8 @@ thumb: thumb01.jpg
 
 2016-04-14:    
 更新jekyll到3.1.2版本，因为[Github决定使用单一markdown引擎](https://github.com/blog/2136-a-look-behind-our-decision-to-standardize-on-a-single-markdown-engine-for-github-pages)    
-方法高亮使用：[Rouge](https://github.com/jneen/rouge),[它支持的语法列表](http://rouge.jneen.net/)。
-
+方法高亮使用：[Rouge](https://github.com/jneen/rouge),[它支持的语法列表](http://rouge.jneen.net/)。    
+加上了首行缩进。
 
 
 
