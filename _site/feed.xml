@@ -5,15 +5,16 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 04 May 2016 12:17:25 +0800</pubDate>
-    <lastBuildDate>Wed, 04 May 2016 12:17:25 +0800</lastBuildDate>
+    <pubDate>Fri, 06 May 2016 17:50:25 +0800</pubDate>
+    <lastBuildDate>Fri, 06 May 2016 17:50:25 +0800</lastBuildDate>
     <generator>Jekyll v3.1.3</generator>
     
       <item>
         <title>Blog: 安装kubernetes</title>
         <description>&lt;h1 id=&quot;section&quot;&gt;系统配置&lt;/h1&gt;
 &lt;p&gt;两台主机,运行ubuntu 14.04&lt;br /&gt;
-182.168.56.101   kube-master&lt;br /&gt;
+192.168.56.1     workstation，也就是我工作的主机。&lt;br /&gt;
+182.168.56.101   kube-master`   master/minion 一体机&lt;br /&gt;
 182.168.56.102   kube-slave&lt;/p&gt;
 
 &lt;p&gt;kubernetes版本：1.2.0&lt;/p&gt;
@@ -37,23 +38,428 @@
 &lt;p&gt;The hyperkube binary is an all in one binary&lt;br /&gt;
 hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.&lt;/p&gt;
 
-&lt;p&gt;把下面的这行注释掉 comment out this line:&lt;br /&gt;
-trap cleanup SIGHUP SIGINT SIGTERM&lt;/p&gt;
+&lt;p&gt;modify &lt;code class=&quot;highlighter-rouge&quot;&gt;download-release.sh&lt;/code&gt;&lt;/p&gt;
 
-&lt;h1 id=&quot;configuring-and-installing-base-software-on-nodes&quot;&gt;Configuring and Installing Base Software on Nodes&lt;/h1&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
 
-&lt;p&gt;You should run three daemons on every node:&lt;br /&gt;
-1. docker or rkt&lt;br /&gt;
-2. kubelet&lt;br /&gt;
-3. kube-proxy&lt;/p&gt;
+&lt;span class=&quot;c&quot;&gt;# Copyright 2015 The Kubernetes Authors All rights reserved.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# you may not use this file except in compliance with the License.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# You may obtain a copy of the License at&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#     http://www.apache.org/licenses/LICENSE-2.0&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Unless required by applicable law or agreed to in writing, software&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# See the License for the specific language governing permissions and&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# limitations under the License.&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Download the etcd, flannel, and K8s binaries automatically and stored in binaries directory&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Run as root only&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# author @resouer @WIZARD-CXY&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; -e
+
+&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;cleanup &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# cleanup work&lt;/span&gt;
+  rm -rf flannel&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; kubernetes&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; etcd&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; binaries
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#trap cleanup SIGHUP SIGINT SIGTERM&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;pushd&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;dirname &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+mkdir -p binaries/master
+mkdir -p binaries/minion
+
+&lt;span class=&quot;c&quot;&gt;# flannel&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0.5.5&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Prepare flannel &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; release ...&quot;&lt;/span&gt;
+grep -q &lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; binaries/.flannel 2&amp;gt;/dev/null &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  curl -L  https://github.com/coreos/flannel/releases/download/v&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/flannel-&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;-linux-amd64.tar.gz -o flannel.tar.gz
+  tar xzf flannel.tar.gz
+  cp flannel-&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/flanneld binaries/master
+  cp flannel-&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/flanneld binaries/minion
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;FLANNEL_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &amp;gt; binaries/.flannel
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# ectd&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2.2.1&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;ETCD&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;etcd-v&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-linux-amd64&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Prepare etcd &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; release ...&quot;&lt;/span&gt;
+grep -q &lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; binaries/.etcd 2&amp;gt;/dev/null &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  curl -L https://github.com/coreos/etcd/releases/download/v&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;.tar.gz -o etcd.tar.gz
+  tar xzf etcd.tar.gz
+  cp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/etcd &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/etcdctl binaries/master
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ETCD_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &amp;gt; binaries/.etcd
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# k8s&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.2.0&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Prepare kubernetes &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; release ...&quot;&lt;/span&gt;
+grep -q &lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; binaries/.kubernetes 2&amp;gt;/dev/null &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#tar xzf kubernetes.tar.gz&lt;/span&gt;
+
+  cp ../../server/kubernetes-server-linux-amd64.tar.gz .
+  cp ../../server/kubernetes-salt.tar.gz .
+
+  &lt;span class=&quot;c&quot;&gt;#pushd kubernetes/server&lt;/span&gt;
+  tar xzf kubernetes-server-linux-amd64.tar.gz
+  tar xzf kubernetes-salt.tar.gz .
+  &lt;span class=&quot;c&quot;&gt;#popd&lt;/span&gt;
+  cp kubernetes/server/bin/kube-apiserver &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+     kubernetes/server/bin/kube-controller-manager &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+     kubernetes/server/bin/kube-scheduler binaries/master
+  cp kubernetes/server/bin/kubelet &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+     kubernetes/server/bin/kube-proxy binaries/minion
+  cp kubernetes/server/bin/kubectl binaries/
+  cp -r kubernetes/saltbase .
+
+
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &amp;gt; binaries/.kubernetes
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+rm -rf flannel&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; kubernetes&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; etcd&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Done! All your binaries locate in kubernetes/cluster/ubuntu/binaries directory&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;popd&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Download easy rsa package.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;登录到kube-master这台机器上,创建相关目录。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ mkdir -p ~/kube/default
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Back to workstation,and copy files to kube-master.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cd kubernetes/cluster/ubuntu
+$ pwd
+/home/harley/Software/kubernetes/cluster/ubuntu
+$ scp -r \
+    saltbase/salt/generate-cert/make-ca-cert.sh \
+    easy-rsa.tar.gz \
+    config-default.sh \
+    util.sh \
+    minion/* \
+    master/* \
+    reconfDocker.sh \
+    binaries/master/ \
+    binaries/minion \
+    &quot;192.168.56.101:~/kube&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们要用flannel来实现overlay的网络，要把相关的配置copy到kube-master上。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ scp -r minion-flannel/* master-flannel/* &quot;192.168.56.101:~/kube&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们回到kube-master上，看看kube目录有哪些内容了。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ tree kube
+kube
+├── config-default.sh
+├── default
+├── easy-rsa.tar.gz
+├── init_conf
+│   ├── etcd.conf
+│   ├── flanneld.conf
+│   ├── kube-apiserver.conf
+│   ├── kube-controller-manager.conf
+│   ├── kubelet.conf
+│   ├── kube-proxy.conf
+│   └── kube-scheduler.conf
+├── init_scripts
+│   ├── etcd
+│   ├── flanneld
+│   ├── kube-apiserver
+│   ├── kube-controller-manager
+│   ├── kubelet
+│   ├── kube-proxy
+│   └── kube-scheduler
+├── make-ca-cert.sh
+├── master
+│   ├── etcd
+│   ├── etcdctl
+│   ├── flanneld
+│   ├── kube-apiserver
+│   ├── kube-controller-manager
+│   └── kube-scheduler
+├── minion
+│   ├── flanneld
+│   ├── kubelet
+│   └── kube-proxy
+├── reconfDocker.sh
+└── util.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;看来flannel的配置文件只保留了一分 master-flannel下的内容。&lt;/p&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/etcd&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ETCD_OPTS=&quot;
+ -name infra
+ -listen-client-urls http://127.0.0.1:4001,http://192.168.56.101:4001
+ -advertise-client-urls http://192.168.56.101:4001&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/kube-apiserver&lt;/code&gt; with following contents.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KUBE_APISERVER_OPTS=&quot;
+ --insecure-bind-address=0.0.0.0
+ --insecure-port=8080
+ --etcd-servers=http://127.0.0.1:4001
+ --logtostderr=true
+ --service-cluster-ip-range=192.168.3.0/24
+ --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,SecurityContextDeny
+ --service-node-port-range=30000-32767
+ --advertise-address=192.168.56.101
+ --client-ca-file=/srv/kubernetes/ca.crt
+ --tls-cert-file=/srv/kubernetes/server.cert
+ --tls-private-key-file=/srv/kubernetes/server.key&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/kube-controller-manager&lt;/code&gt; with following contents.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KUBE_CONTROLLER_MANAGER_OPTS=&quot;
+ --master=127.0.0.1:8080
+ --root-ca-file=/srv/kubernetes/ca.crt
+ --service-account-private-key-file=/srv/kubernetes/server.key
+ --logtostderr=true&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/kubelet&lt;/code&gt; with following contents.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KUBELET_OPTS=&quot;
+ --hostname-override=192.168.56.101
+ --api-servers=http://192.168.56.101:8080
+ --logtostderr=true
+ --cluster-dns=192.168.3.10
+ --cluster-domain=cluster.local
+ --config=&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/kube-proxy&lt;/code&gt; with following contents.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KUBE_PROXY_OPTS=&quot;
+ --hostname-override=192.168.56.101
+ --master=http://192.168.56.101:8080
+ --logtostderr=true&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kube/default/flanneld&lt;/code&gt; with following contents.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;FLANNEL_OPTS=&quot;--etcd-endpoints=http://127.0.0.1:4001
+ --ip-masq
+ --iface=192.168.56.101&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;现在文件树结构是这样的：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.
+├── kube
+│   ├── config-default.sh
+│   ├── default
+│   │   ├── etcd
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   ├── kubelet
+│   │   └── kube-proxy
+│   ├── easy-rsa.tar.gz
+│   ├── init_conf
+│   │   ├── etcd.conf
+│   │   ├── flanneld.conf
+│   │   ├── kube-apiserver.conf
+│   │   ├── kube-controller-manager.conf
+│   │   ├── kubelet.conf
+│   │   ├── kube-proxy.conf
+│   │   └── kube-scheduler.conf
+│   ├── init_scripts
+│   │   ├── etcd
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   ├── kubelet
+│   │   ├── kube-proxy
+│   │   └── kube-scheduler
+│   ├── make-ca-cert.sh
+│   ├── master
+│   │   ├── etcd
+│   │   ├── etcdctl
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   └── kube-scheduler
+│   ├── minion
+│   │   ├── flanneld
+│   │   ├── kubelet
+│   │   └── kube-proxy
+│   ├── reconfDocker.sh
+│   └── util.sh
+└── kubernetes.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo cp ~/kube/default/* /etc/default/
+$ sudo cp ~/kube/init_conf/* /etc/init/
+$ sudo cp ~/kube/init_scripts/* /etc/init.d/
+
+$ sudo groupadd -f -r kube-cert
+
+$ sudo ~/kube/make-ca-cert.sh &quot;192.168.56.101&quot; &quot;IP:192.168.56.101,IP:192.168.3.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local&quot;
+
+$ sudo mkdir -p /opt/bin/
+$ sudo cp ~/kube/master/* /opt/bin/
+$ sudo cp ~/kube/minion/* /opt/bin/
+
+
+$ sudo service etcd start
+
+#因为我们使用的是flannel + VxLAN,所以我们需要重新配置docker.
+$ sudo FLANNEL_NET=&quot;172.16.0.0/16&quot; KUBE_CONFIG_FILE=&quot;config-default.sh&quot; DOCKER_OPTS=&quot;&quot;  ~/kubeeconfDocker.sh ai
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;接下来验证一下我们的安装是否成功，从&lt;code class=&quot;highlighter-rouge&quot;&gt;uitl.sh&lt;/code&gt;来看，验证方法就是ssh登录上去，然后查看指定的进程有没有运行起来。&lt;/p&gt;
+
+&lt;p&gt;kube master上要运行这些进程：”kube-apiserver” “kube-controller-manager” “kube-scheduler”。&lt;/p&gt;
+
+&lt;p&gt;kube minion上要运行这些进程：”kube-proxy” “kubelet” “docker”。&lt;/p&gt;
+
+&lt;p&gt;vi &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.kube/config&lt;/code&gt; ,input following contents.&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v1&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;clusters&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cluster&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;insecure-skip-tls-verify&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;true&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://192.168.56.101:8080&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;contexts&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;cluster&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;current-context&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Config&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;preferences&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ubuntu&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;P9Ez40tyITBdJnPf&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;admin&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;验证我们的安装是否成功。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cd cluster/ubuntu
+$ binaries/kubectl get nodes
+NAME             STATUS    AGE
+192.168.56.101   Ready     2h
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;参考资料：&lt;/strong&gt;&lt;br /&gt;
-http://dockone.io/article/622&lt;br /&gt;
-http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html&lt;/p&gt;
+1. http://dockone.io/article/622&lt;br /&gt;
+2. http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html&lt;br /&gt;
+3. http://linux.die.net/man/1/bash&lt;br /&gt;
+4. &lt;a href=&quot;http://blog.csdn.net/leexide/article/details/17252369&quot;&gt;Linux/UNIX下使用ssh-keygen设置SSH无密码登录&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 03 May 2016 23:35:21 +0800</pubDate>
         <link>http://yourdomain.com/blog/docker/install-kubernetes</link>
         <guid isPermaLink="true">http://yourdomain.com/blog/docker/install-kubernetes</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>docker</category>
+        
+      </item>
+    
+      <item>
+        <title>Blog: 实现SSH无密码登录远程主机</title>
+        <description>&lt;p&gt;两台主机,运行ubuntu 14.04&lt;br /&gt;
+192.168.56.1     本机&lt;br /&gt;
+182.168.56.102   远程主机&lt;/p&gt;
+
+&lt;p&gt;远程主机的登录用户为ubuntu,我们希望用这个用户登录182.168.56.102时，不提示密码，主要是为了实现一些自动化运维的操作。&lt;/p&gt;
+
+&lt;p&gt;请在本机执行下面的命令：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/harley/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/harley/.ssh/id_rsa.
+Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
+The key&#39;s randomart image is:
++---[RSA 2048]----+
+|        .+..+..  |
+|       ......E oo|
+|    .   . .. .+=*|
+|   = . . ..  .=**|
+|  + * o S. .++.+=|
+| . . B .  o.ooo .|
+|    o o  . o .   |
+|       .  + o    |
+|        .. o     |
++----[SHA256]-----+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;copy public key to remote host.&lt;br /&gt;
+```&lt;br /&gt;
+$ scp ~/.ssh/id_rsa.pub  ubuntu@182.168.56.102:/home/ubuntu&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+接下来请登录到远程主机上完成下面的操作。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;$ cat id_dsa.pub » ~/.ssh/authorized_keys&lt;br /&gt;
+```&lt;br /&gt;
+如果目录不存在，请自行创建相关目录。&lt;/p&gt;
+
+&lt;p&gt;你不是感觉这样操作太麻烦，还需要登录到行程的主机上，你可以在本机用一条命令搞定。&lt;br /&gt;
+```&lt;br /&gt;
+$ ssh-copy-id -i ubuntu@192.168.56.101&lt;br /&gt;
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: “/home/harley/.ssh/id_rsa.pub”&lt;br /&gt;
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed&lt;br /&gt;
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed – if you are prompted now it is to install the new keys&lt;br /&gt;
+ubuntu@192.168.56.102’s password:&lt;/p&gt;
+
+&lt;p&gt;Number of key(s) added: 1&lt;/p&gt;
+
+&lt;p&gt;Now try logging into the machine, with:   “ssh ‘ubuntu@192.168.56.102’”&lt;br /&gt;
+and check to make sure that only the key(s) you wanted were added.&lt;br /&gt;
+```&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;参考资料：&lt;/strong&gt;&lt;br /&gt;
+* http://www.linuxproblem.org/art_9.html&lt;br /&gt;
+* &lt;a href=&quot;http://blog.csdn.net/leexide/article/details/17252369&quot;&gt;Linux/UNIX下使用ssh-keygen设置SSH无密码登录&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 02 May 2016 23:35:21 +0800</pubDate>
+        <link>http://yourdomain.com/blog/docker/ssh-login-without-password</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/docker/ssh-login-without-password</guid>
         
         
         <category>blog</category>
@@ -1305,65 +1711,6 @@ password: 5iveL!fe&lt;/p&gt;
         <category>blog</category>
         
         <category>docker</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: XenServer的虚拟机里安装配置两块网卡</title>
-        <description>&lt;p&gt;在安装OpenStack时，我的network节点只配置了一个nic，所以当&lt;code class=&quot;highlighter-rouge&quot;&gt;配置Open vSwitch (OVS) 服务&lt;/code&gt;时，在运行完命令&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# service openvswitch-switch restart&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ovs-vsctl add-br br-ex&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ovs-vsctl add-port br-ex eth0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;之后，我就无法通过eth0上的那个external IP来访问它了，管理IP也无法访问，所以官方的文档是要求network节点要有3个nic。&lt;/p&gt;
-
-&lt;p&gt;没有办法，我只能新建一个vm来安装network,这个过程还是碰到了问题。&lt;/p&gt;
-
-&lt;p&gt;因为我的XenServer有两卡网卡，我就创建了两个虚拟网卡，分别映射到这两块网卡上。vm启动后，我配置网络如下：&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# The primary network interface&lt;/span&gt;
-auto eth0
-iface eth0 inet static
-address 192.168.234.205
-netmask 255.255.255.0
-gateway 192.168.234.1
-
-&lt;span class=&quot;c&quot;&gt;#management interface&lt;/span&gt;
-auto eth1
-iface eth1 inet static
-address 10.0.0.21
-netmask 255.255.255.0
-&lt;span class=&quot;c&quot;&gt;#gateway 10.0.0.1&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;#Instance tunnels interface.&lt;/span&gt;
-auto eth1:1
-iface eth1:1 inet static
-address 10.0.1.21
-netmask 255.255.255.0&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;也就是外网IP设置在eth0上，管理IP和tunnels IP设置在eth1上。 可是我发现，我无法通过eth1上的管理来访问vm，折腾了好久，我才意识到，XenServer上的网卡2应该没插网线。这提醒了我，如果宿主机上有两块网卡，一定要确定都能工作才行。&lt;/p&gt;
-
-&lt;p&gt;知道问题了就好解决，两块虚拟网卡都映射到同一块物理网卡就没问题了。&lt;/p&gt;
-
-&lt;p&gt;当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，&lt;br /&gt;
-&lt;a href=&quot;http://www.gossamer-threads.com/lists/openstack/operators/34627&quot;&gt;这个帖子&lt;/a&gt;里讲了解决方案，那就是清除eth0的IP,把外网的IP绑定到br-ex上．&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;ifconfig eth0 0.0.0.0 
-ifconfig br-ex 192.168.234.205 &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;你会问，我已经无法连接这台虚拟机了，怎么执行这个操作？&lt;/p&gt;
-
-&lt;p&gt;当然是用的network节点的管理段IP啊，它就是干这个用的，：）。&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Mar 2015 20:30:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/openstack/xenserver-vm-multi-nic</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/openstack/xenserver-vm-multi-nic</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>OpenStack</category>
         
       </item>
     

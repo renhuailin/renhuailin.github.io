@@ -81,7 +81,8 @@
 
             <div id="main_content"><h1 id="section">系统配置</h1>
 <p>两台主机,运行ubuntu 14.04<br />
-182.168.56.101   kube-master<br />
+192.168.56.1     workstation，也就是我工作的主机。<br />
+182.168.56.101   kube-master`   master/minion 一体机<br />
 182.168.56.102   kube-slave</p>
 
 <p>kubernetes版本：1.2.0</p>
@@ -105,19 +106,349 @@
 <p>The hyperkube binary is an all in one binary<br />
 hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
 
-<p>把下面的这行注释掉 comment out this line:<br />
-trap cleanup SIGHUP SIGINT SIGTERM</p>
+<p>modify <code class="highlighter-rouge">download-release.sh</code></p>
 
-<h1 id="configuring-and-installing-base-software-on-nodes">Configuring and Installing Base Software on Nodes</h1>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
-<p>You should run three daemons on every node:<br />
-1. docker or rkt<br />
-2. kubelet<br />
-3. kube-proxy</p>
+<span class="c"># Copyright 2015 The Kubernetes Authors All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c"># See the License for the specific language governing permissions and</span>
+<span class="c"># limitations under the License.</span>
+
+<span class="c"># Download the etcd, flannel, and K8s binaries automatically and stored in binaries directory</span>
+<span class="c"># Run as root only</span>
+
+<span class="c"># author @resouer @WIZARD-CXY</span>
+<span class="nb">set</span> -e
+
+<span class="k">function </span>cleanup <span class="o">{</span>
+  <span class="c"># cleanup work</span>
+  rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span> binaries
+<span class="o">}</span>
+<span class="c">#trap cleanup SIGHUP SIGINT SIGTERM</span>
+
+<span class="nb">pushd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span>
+mkdir -p binaries/master
+mkdir -p binaries/minion
+
+<span class="c"># flannel</span>
+<span class="nv">FLANNEL_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">:-</span><span class="s2">"0.5.5"</span><span class="k">}</span>
+<span class="nb">echo</span> <span class="s2">"Prepare flannel </span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
+grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.flannel 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
+  curl -L  https://github.com/coreos/flannel/releases/download/v<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>-linux-amd64.tar.gz -o flannel.tar.gz
+  tar xzf flannel.tar.gz
+  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/master
+  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/minion
+  <span class="nb">echo</span> <span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span> &gt; binaries/.flannel
+<span class="o">}</span>
+
+<span class="c"># ectd</span>
+<span class="nv">ETCD_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">:-</span><span class="s2">"2.2.1"</span><span class="k">}</span>
+<span class="nv">ETCD</span><span class="o">=</span><span class="s2">"etcd-v</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2">-linux-amd64"</span>
+<span class="nb">echo</span> <span class="s2">"Prepare etcd </span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
+grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.etcd 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
+  curl -L https://github.com/coreos/etcd/releases/download/v<span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span>/<span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>.tar.gz -o etcd.tar.gz
+  tar xzf etcd.tar.gz
+  cp <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcd <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcdctl binaries/master
+  <span class="nb">echo</span> <span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span> &gt; binaries/.etcd
+<span class="o">}</span>
+
+<span class="c"># k8s</span>
+<span class="nv">KUBE_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">:-</span><span class="s2">"1.2.0"</span><span class="k">}</span>
+<span class="nb">echo</span> <span class="s2">"Prepare kubernetes </span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
+grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.kubernetes 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
+
+  <span class="c">#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz</span>
+  <span class="c">#tar xzf kubernetes.tar.gz</span>
+
+  cp ../../server/kubernetes-server-linux-amd64.tar.gz .
+  cp ../../server/kubernetes-salt.tar.gz .
+
+  <span class="c">#pushd kubernetes/server</span>
+  tar xzf kubernetes-server-linux-amd64.tar.gz
+  tar xzf kubernetes-salt.tar.gz .
+  <span class="c">#popd</span>
+  cp kubernetes/server/bin/kube-apiserver <span class="se">\</span>
+     kubernetes/server/bin/kube-controller-manager <span class="se">\</span>
+     kubernetes/server/bin/kube-scheduler binaries/master
+  cp kubernetes/server/bin/kubelet <span class="se">\</span>
+     kubernetes/server/bin/kube-proxy binaries/minion
+  cp kubernetes/server/bin/kubectl binaries/
+  cp -r kubernetes/saltbase .
+
+
+  <span class="nb">echo</span> <span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span> &gt; binaries/.kubernetes
+<span class="o">}</span>
+
+rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span>
+
+<span class="nb">echo</span> <span class="s2">"Done! All your binaries locate in kubernetes/cluster/ubuntu/binaries directory"</span>
+<span class="nb">popd</span>
+</code></pre>
+</div>
+
+<p>Download easy rsa package.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
+</code></pre>
+</div>
+
+<p>登录到kube-master这台机器上,创建相关目录。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ mkdir -p ~/kube/default
+</code></pre>
+</div>
+
+<p>Back to workstation,and copy files to kube-master.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cd kubernetes/cluster/ubuntu
+$ pwd
+/home/harley/Software/kubernetes/cluster/ubuntu
+$ scp -r \
+    saltbase/salt/generate-cert/make-ca-cert.sh \
+    easy-rsa.tar.gz \
+    config-default.sh \
+    util.sh \
+    minion/* \
+    master/* \
+    reconfDocker.sh \
+    binaries/master/ \
+    binaries/minion \
+    "192.168.56.101:~/kube"
+</code></pre>
+</div>
+
+<p>我们要用flannel来实现overlay的网络，要把相关的配置copy到kube-master上。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ scp -r minion-flannel/* master-flannel/* "192.168.56.101:~/kube"
+</code></pre>
+</div>
+
+<p>我们回到kube-master上，看看kube目录有哪些内容了。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ tree kube
+kube
+├── config-default.sh
+├── default
+├── easy-rsa.tar.gz
+├── init_conf
+│   ├── etcd.conf
+│   ├── flanneld.conf
+│   ├── kube-apiserver.conf
+│   ├── kube-controller-manager.conf
+│   ├── kubelet.conf
+│   ├── kube-proxy.conf
+│   └── kube-scheduler.conf
+├── init_scripts
+│   ├── etcd
+│   ├── flanneld
+│   ├── kube-apiserver
+│   ├── kube-controller-manager
+│   ├── kubelet
+│   ├── kube-proxy
+│   └── kube-scheduler
+├── make-ca-cert.sh
+├── master
+│   ├── etcd
+│   ├── etcdctl
+│   ├── flanneld
+│   ├── kube-apiserver
+│   ├── kube-controller-manager
+│   └── kube-scheduler
+├── minion
+│   ├── flanneld
+│   ├── kubelet
+│   └── kube-proxy
+├── reconfDocker.sh
+└── util.sh
+</code></pre>
+</div>
+<p>看来flannel的配置文件只保留了一分 master-flannel下的内容。</p>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/etcd</code>。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ETCD_OPTS="
+ -name infra
+ -listen-client-urls http://127.0.0.1:4001,http://192.168.56.101:4001
+ -advertise-client-urls http://192.168.56.101:4001"
+</code></pre>
+</div>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/kube-apiserver</code> with following contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_APISERVER_OPTS="
+ --insecure-bind-address=0.0.0.0
+ --insecure-port=8080
+ --etcd-servers=http://127.0.0.1:4001
+ --logtostderr=true
+ --service-cluster-ip-range=192.168.3.0/24
+ --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,SecurityContextDeny
+ --service-node-port-range=30000-32767
+ --advertise-address=192.168.56.101
+ --client-ca-file=/srv/kubernetes/ca.crt
+ --tls-cert-file=/srv/kubernetes/server.cert
+ --tls-private-key-file=/srv/kubernetes/server.key"
+</code></pre>
+</div>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/kube-controller-manager</code> with following contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_CONTROLLER_MANAGER_OPTS="
+ --master=127.0.0.1:8080
+ --root-ca-file=/srv/kubernetes/ca.crt
+ --service-account-private-key-file=/srv/kubernetes/server.key
+ --logtostderr=true"
+</code></pre>
+</div>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/kubelet</code> with following contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>KUBELET_OPTS="
+ --hostname-override=192.168.56.101
+ --api-servers=http://192.168.56.101:8080
+ --logtostderr=true
+ --cluster-dns=192.168.3.10
+ --cluster-domain=cluster.local
+ --config="
+</code></pre>
+</div>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/kube-proxy</code> with following contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_PROXY_OPTS="
+ --hostname-override=192.168.56.101
+ --master=http://192.168.56.101:8080
+ --logtostderr=true"
+</code></pre>
+</div>
+
+<p>Create <code class="highlighter-rouge">~/kube/default/flanneld</code> with following contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>FLANNEL_OPTS="--etcd-endpoints=http://127.0.0.1:4001
+ --ip-masq
+ --iface=192.168.56.101"
+</code></pre>
+</div>
+
+<p>现在文件树结构是这样的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>.
+├── kube
+│   ├── config-default.sh
+│   ├── default
+│   │   ├── etcd
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   ├── kubelet
+│   │   └── kube-proxy
+│   ├── easy-rsa.tar.gz
+│   ├── init_conf
+│   │   ├── etcd.conf
+│   │   ├── flanneld.conf
+│   │   ├── kube-apiserver.conf
+│   │   ├── kube-controller-manager.conf
+│   │   ├── kubelet.conf
+│   │   ├── kube-proxy.conf
+│   │   └── kube-scheduler.conf
+│   ├── init_scripts
+│   │   ├── etcd
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   ├── kubelet
+│   │   ├── kube-proxy
+│   │   └── kube-scheduler
+│   ├── make-ca-cert.sh
+│   ├── master
+│   │   ├── etcd
+│   │   ├── etcdctl
+│   │   ├── flanneld
+│   │   ├── kube-apiserver
+│   │   ├── kube-controller-manager
+│   │   └── kube-scheduler
+│   ├── minion
+│   │   ├── flanneld
+│   │   ├── kubelet
+│   │   └── kube-proxy
+│   ├── reconfDocker.sh
+│   └── util.sh
+└── kubernetes.tar.gz
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo cp ~/kube/default/* /etc/default/
+$ sudo cp ~/kube/init_conf/* /etc/init/
+$ sudo cp ~/kube/init_scripts/* /etc/init.d/
+
+$ sudo groupadd -f -r kube-cert
+
+$ sudo ~/kube/make-ca-cert.sh "192.168.56.101" "IP:192.168.56.101,IP:192.168.3.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
+
+$ sudo mkdir -p /opt/bin/
+$ sudo cp ~/kube/master/* /opt/bin/
+$ sudo cp ~/kube/minion/* /opt/bin/
+
+
+$ sudo service etcd start
+
+#因为我们使用的是flannel + VxLAN,所以我们需要重新配置docker.
+$ sudo FLANNEL_NET="172.16.0.0/16" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh ai
+</code></pre>
+</div>
+<p>接下来验证一下我们的安装是否成功，从<code class="highlighter-rouge">uitl.sh</code>来看，验证方法就是ssh登录上去，然后查看指定的进程有没有运行起来。</p>
+
+<p>kube master上要运行这些进程：”kube-apiserver” “kube-controller-manager” “kube-scheduler”。</p>
+
+<p>kube minion上要运行这些进程：”kube-proxy” “kubelet” “docker”。</p>
+
+<p>vi <code class="highlighter-rouge">~/.kube/config</code> ,input following contents.</p>
+
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="s">clusters</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">cluster</span><span class="pi">:</span>
+    <span class="s">insecure-skip-tls-verify</span><span class="pi">:</span> <span class="s">true</span>
+    <span class="s">server</span><span class="pi">:</span> <span class="s">http://192.168.56.101:8080</span>
+  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
+<span class="s">contexts</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">context</span><span class="pi">:</span>
+    <span class="s">cluster</span><span class="pi">:</span> <span class="s">ubuntu</span>
+    <span class="s">user</span><span class="pi">:</span> <span class="s">ubuntu</span>
+  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
+<span class="s">current-context</span><span class="pi">:</span> <span class="s">ubuntu</span>
+<span class="s">kind</span><span class="pi">:</span> <span class="s">Config</span>
+<span class="s">preferences</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="s">users</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
+  <span class="s">user</span><span class="pi">:</span>
+    <span class="s">password</span><span class="pi">:</span> <span class="s">P9Ez40tyITBdJnPf</span>
+    <span class="s">username</span><span class="pi">:</span> <span class="s">admin</span>
+</code></pre>
+</div>
+
+<p>验证我们的安装是否成功。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cd cluster/ubuntu
+$ binaries/kubectl get nodes
+NAME             STATUS    AGE
+192.168.56.101   Ready     2h
+</code></pre>
+</div>
 
 <p><strong>参考资料：</strong><br />
-http://dockone.io/article/622<br />
-http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
+1. http://dockone.io/article/622<br />
+2. http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html<br />
+3. http://linux.die.net/man/1/bash<br />
+4. <a href="http://blog.csdn.net/leexide/article/details/17252369">Linux/UNIX下使用ssh-keygen设置SSH无密码登录</a></p>
 </div>
 
             <div class="spacing"></div>
@@ -177,7 +508,7 @@ http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">6</span>
+            <span class="badge badge-theme pull-right">7</span>
         </p>
     
         <p>
@@ -204,6 +535,12 @@ http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
             </li>
             
                 <li>
+                    <a href="/blog/docker/ssh-login-without-password"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/ssh-login-without-password">实现SSH无密码登录远程主机</a></p>
+                <em>Posted on 02 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -213,12 +550,6 @@ http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
                     <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
                 <em>Posted on 05 Jan 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/docker-user-mapping"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/docker-user-mapping">Docker容器用戶映射</a></p>
-                <em>Posted on 30 Dec 2015</em>
             </li>
             
         </ul>
@@ -235,7 +566,7 @@ http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

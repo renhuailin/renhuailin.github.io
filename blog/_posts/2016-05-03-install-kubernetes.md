@@ -38,8 +38,7 @@ $ docker pull quay.io/coreos/etcd:v2.2.1
 The hyperkube binary is an all in one binary
 hyperkube kubelet ... runs the kubelet, hyperkube apiserver ... runs an apiserver, etc.
 
-modify `download-release.sh`
-
+modify `download-release.sh`      
 
 ``` bash
 #!/bin/bash
@@ -129,13 +128,15 @@ echo "Done! All your binaries locate in kubernetes/cluster/ubuntu/binaries direc
 popd
 ```
 
-Download easy rsa package.
+Download easy rsa package.   
+
 ```
 curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
 ```
 
 
 登录到kube-master这台机器上,创建相关目录。
+
 ```
 $ mkdir -p ~/kube/default
 ```
@@ -160,11 +161,13 @@ $ scp -r \
 ```
 
 我们要用flannel来实现overlay的网络，要把相关的配置copy到kube-master上。
+
 ```
 $ scp -r minion-flannel/* master-flannel/* "192.168.56.101:~/kube"
 ```
 
 我们回到kube-master上，看看kube目录有哪些内容了。
+
 ```
 $ tree kube
 kube
@@ -206,6 +209,7 @@ kube
 
 
 Create `~/kube/default/etcd`。
+
 ```
 ETCD_OPTS="
  -name infra
@@ -214,6 +218,7 @@ ETCD_OPTS="
 ```
 
 Create `~/kube/default/kube-apiserver` with following contents.
+
 ```
 KUBE_APISERVER_OPTS="
  --insecure-bind-address=0.0.0.0
@@ -240,6 +245,7 @@ KUBE_CONTROLLER_MANAGER_OPTS="
 ```
 
 Create `~/kube/default/kubelet` with following contents.
+
 ```
 KUBELET_OPTS="
  --hostname-override=192.168.56.101
@@ -251,6 +257,7 @@ KUBELET_OPTS="
 ```
 
 Create `~/kube/default/kube-proxy` with following contents.
+
 ```
 KUBE_PROXY_OPTS="
  --hostname-override=192.168.56.101
@@ -259,11 +266,13 @@ KUBE_PROXY_OPTS="
 ```
 
 Create `~/kube/default/flanneld` with following contents.
+
 ```
 FLANNEL_OPTS="--etcd-endpoints=http://127.0.0.1:4001
  --ip-masq
  --iface=192.168.56.101"
 ```
+
 现在文件树结构是这样的：
 
 
@@ -366,6 +375,7 @@ users:
 ```
 
 验证我们的安装是否成功。
+
 ```
 $ cd cluster/ubuntu
 $ binaries/kubectl get nodes
