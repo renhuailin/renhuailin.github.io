@@ -77,6 +77,59 @@
             
                 <! -- Blog Post -->
 				<!-- 
+                <a href="/blog/docker/install-kubernetes">
+                    <img class="img-responsive" src="/assets/img/blog/">
+                </a> 
+				-->   
+                <a href="/blog/docker/install-kubernetes"><h3 class="ctitle">安装kubernetes</h3></a>
+                <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
+                <h1 id="section">系统配置</h1>
+<p>两台主机,运行ubuntu 14.04<br />
+182.168.56.101   kube-master<br />
+182.168.56.102   kube-slave</p>
+
+<p>kubernetes版本：1.2.0</p>
+
+<p>从github上下载kubernetes 1.2.0的二进制安装包，上传到kubernetes包到kube-master节点上并解压。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> $ sudo cp kubernetes/server/kubernetes-server-linux-amd64.tar.gz /opt
+ # tar xzvf kubernetes-server-linux-amd64.tar.gz
+</code></pre>
+</div>
+<p>然后把<code class="highlighter-rouge">/opt/kubernetes/server/bin</code>加入到PATH里。</p>
+
+<p>You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.</p>
+
+<p><code class="highlighter-rouge">kubelet</code>,<code class="highlighter-rouge">kube-proxy</code>不放在容器里。 <code class="highlighter-rouge">etcd</code>, <code class="highlighter-rouge">kube-apiserver</code>, <code class="highlighter-rouge">kube-controller-manager</code>, <code class="highlighter-rouge">kube-scheduler</code> 放在容器里运行。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ docker pull quay.io/coreos/etcd:v2.2.1
+</code></pre>
+</div>
+
+<p>The hyperkube binary is an all in one binary<br />
+hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
+
+<p>把下面的这行注释掉 comment out this line:<br />
+trap cleanup SIGHUP SIGINT SIGTERM</p>
+
+<h1 id="configuring-and-installing-base-software-on-nodes">Configuring and Installing Base Software on Nodes</h1>
+
+<p>You should run three daemons on every node:<br />
+1. docker or rkt<br />
+2. kubelet<br />
+3. kube-proxy</p>
+
+<p><strong>参考资料：</strong><br />
+http://dockone.io/article/622<br />
+http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
+
+                <p><a href="/blog/docker/install-kubernetes">[Read More]</a></p>
+                <div class="hline"></div>
+
+                <div class="spacing"></div>
+            
+                <! -- Blog Post -->
+				<!-- 
                 <a href="/blog/docker/install-chef">
                     <img class="img-responsive" src="/assets/img/blog/">
                 </a> 
@@ -84,23 +137,23 @@
                 <a href="/blog/docker/install-chef"><h3 class="ctitle">安装chef</h3></a>
                 <p><csmall>Feb 22, 2016. | By: 任怀林</csmall></p>
                 <h1 id="why-chef">1 why chef</h1>
-<p>为什么选择chef,而不是puppet,ansible或salt.
-说到配置管理大家首先想到应该是puppet, 为什么不用puppet有以下几点原因：
+<p>为什么选择chef,而不是puppet,ansible或salt.<br />
+说到配置管理大家首先想到应该是puppet, 为什么不用puppet有以下几点原因：<br />
 １　puppet的配置都集中在puppet master上，你只能上面编写module,class。这使得puppet与jenkins等CI/CD工具配合起来比较困难。</p>
 
-<p>chef分为三个组件，chef server,chef workstation,node。其中chef workstation是日常管理常用的，你可配置多个chef workstation,与jenkins等CI/CD工具配合起来比较容易。
-2 puppet的module和class使用的是puppet自己的一种语法，虽然跟ruby很相似，但毕竟不是一种语言，还是要有个学习的过程。
+<p>chef分为三个组件，chef server,chef workstation,node。其中chef workstation是日常管理常用的，你可配置多个chef workstation,与jenkins等CI/CD工具配合起来比较容易。<br />
+2 puppet的module和class使用的是puppet自己的一种语法，虽然跟ruby很相似，但毕竟不是一种语言，还是要有个学习的过程。<br />
 而chef直接使用了ruby语言来编写cookbook。所以chef更适合开发人员使用。</p>
 
 <p>ansible和salt没有仔细了解，我看了一下配置文件是yaml的，语法看起来非常的难受，就没再研究了。</p>
 
 <h1 id="chef">2 chef的架构</h1>
-<p>这是官方的图
+<p>这是官方的图<br />
 <img src="/assets/img/blog/2016/2/22/chef_overview.svg" alt="chef_overview" /></p>
 
-<p>chef核心组件有三个，chef server,chef workstation,node。
-chef workstation 用户在这上面编写、测试和维护cookbook，配置节点，分发配置到节点。chef的cookbook对应puppet的module,
-用户在chef workstation上编写和测试cookbook完后push到chef server上。node节点从cher server上获取cookbook并运行。
+<p>chef核心组件有三个，chef server,chef workstation,node。<br />
+chef workstation 用户在这上面编写、测试和维护cookbook，配置节点，分发配置到节点。chef的cookbook对应puppet的module,<br />
+用户在chef workstation上编写和测试cookbook完后push到chef server上。node节点从cher server上获取cookbook并运行。<br />
 这一点跟puppet不同，如果用puppet，用户大部分的时间可能都在puppet master上，因为配置都保存在puppet master上。直接在puppet　master上工作是有风险的。</p>
 
 <p>因为workstation组件,我个感觉chef在架构比puppet要好一些。</p>
@@ -126,19 +179,19 @@ chef workstation 用户在这上面编写、测试和维护cookbook，配置节�
 
 <h1 id="install-chef-workstation">Install chef workstation</h1>
 
-<p>去chef management console下载Starter.kit
+<p>去chef management console下载Starter.kit<br />
 <code class="highlighter-rouge">
 $ chef generate repo ~/chef-repo
 </code></p>
 
 <h1 id="install-chef-manage-console">install chef manage console.</h1>
 
-<p>这个应该是这样安装
+<p>这个应该是这样安装<br />
 $ chef-server-ctl install opscode-manage</p>
 
 <p>因为无法直接。</p>
 
-<p>只能下载离线包来安装
+<p>只能下载离线包来安装<br />
 $  chef-server-ctl install chef-manage –path /root</p>
 
 <p>$ chef-server-ctl reconfigure</p>
@@ -147,13 +200,13 @@ $  chef-server-ctl install chef-manage –path /root</p>
 
 <h1 id="create-the-administrator-account-and-an-organization">Create the administrator account and an organization</h1>
 
-<p>Item 	Description 	Notes and examples
-ADMIN_USER_NAME 	user name for the administrator account 	jsmith, admin
-ADMIN_PASSWORD 	password for the administrator account 	Note your password somewhere safe!
-ADMIN_FIRST_NAME 	administrator’s first name 	Joe
-ADMIN_LAST_NAME 	administrator’s last name 	Smith
-ADMIN_EMAIL 	administrator’s email address 	joe.smith@example.com
-ORG_FULL_NAME 	your organization’s full name 	Fourth Coffee, Inc.
+<p>Item 	Description 	Notes and examples<br />
+ADMIN_USER_NAME 	user name for the administrator account 	jsmith, admin<br />
+ADMIN_PASSWORD 	password for the administrator account 	Note your password somewhere safe!<br />
+ADMIN_FIRST_NAME 	administrator’s first name 	Joe<br />
+ADMIN_LAST_NAME 	administrator’s last name 	Smith<br />
+ADMIN_EMAIL 	administrator’s email address 	joe.smith@example.com<br />
+ORG_FULL_NAME 	your organization’s full name 	Fourth Coffee, Inc.<br />
 ORG_SHORT_NAME 	your organization’s abbreviated name 	4thcoffee</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>#$ sudo chef-server-ctl user-create ADMIN_USER_NAME ADMIN_FIRST_NAME ADMIN_LAST_NAME ADMIN_EMAIL ADMIN_PASSWORD --filename ADMIN_USER_NAME.pem
@@ -220,7 +273,7 @@ Adding certificate for chefmaster.china-ops.com in /root/chef-repo/.chef/trusted
 </code></pre>
 </div>
 
-<p>接下来转到workstation上。
+<p>接下来转到workstation上。<br />
 <code class="highlighter-rouge">
 $ cd ~/chef-repo
 $ chef generate cookbook cookbooks/hello_chef_server
@@ -255,18 +308,18 @@ end
 </code></pre>
 </div>
 
-<p>然后在Chef server 上看服务器端的日志
+<p>然后在Chef server 上看服务器端的日志<br />
 <code class="highlighter-rouge">
 $ chef-server-ctl tail
-</code>
-结果如下：
+</code><br />
+结果如下：<br />
 <code class="highlighter-rouge">
 2016-02-22 16:15:10.899 [error] &lt;0.694.0&gt; gen_server &lt;0.694.0&gt; terminated with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]}
 2016-02-22 16:15:10.900 [error] &lt;0.694.0&gt; CRASH REPORT Process &lt;0.694.0&gt; with 1 neighbours exited with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]} in gen_server:terminate/7 line 804
-</code>
+</code><br />
 说真的，这日志真心看不懂。</p>
 
-<p>我突然想起来了，我的Chef server的hostname没改成chefserver.china-ops.com,可能跟这个有关。
+<p>我突然想起来了，我的Chef server的hostname没改成chefserver.china-ops.com,可能跟这个有关。<br />
 于是到chef server上把hostname 改成 <code class="highlighter-rouge">chefserver.china-ops.com</code>,并在<code class="highlighter-rouge">/etc/hosts</code>里解析到本地<code class="highlighter-rouge">127.0.0.1</code>。然后再到workstation上upload cookbook,这次成功了。</p>
 
 <h1 id="bootstrap-node1">Bootstrap node1</h1>
@@ -280,8 +333,8 @@ ERROR: Error connecting to https://chefmaster.china-ops.com/organizations/chinao
 
 <p>配置完node节点的host,然后再运行OK了。</p>
 
-<p>第一次bootstrap　node时，用<code class="highlighter-rouge">knife bootstrap</code>,它会配置节点的信息，如节点的名称，run-list等。
-以后的更新用<code class="highlighter-rouge">knife ssh</code>.
+<p>第一次bootstrap　node时，用<code class="highlighter-rouge">knife bootstrap</code>,它会配置节点的信息，如节点的名称，run-list等。<br />
+以后的更新用<code class="highlighter-rouge">knife ssh</code>.<br />
 <code class="highlighter-rouge">
 $ knife ssh "name:node1" --ssh-user ecloud --ssh-password 'qwer1011' 'sudo chef-client'
 </code></p>
@@ -292,22 +345,22 @@ $ knife ssh "name:node1" --ssh-user ecloud --ssh-password 'qwer1011' 'sudo chef-
 
 <p>https://medium.com/brigade-engineering/reduce-chef-infrastructure-integration-test-times-by-75-with-test-kitchen-and-docker-bf638ab95a0a#.16pstgp4a</p>
 
-<p>这篇文章有讲到如何用docker容器来和kitchen来做开发。
+<p>这篇文章有讲到如何用docker容器来和kitchen来做开发。<br />
 http://www.timusg.com/blog/2013/10/15/testing-cookbook-with-docker-and-test-kitchen/</p>
 
-<p>主要是使用了kitchen-docker
+<p>主要是使用了kitchen-docker<br />
 https://github.com/portertech/kitchen-docker</p>
 
-<p>依据https://docs.chef.io/cookbook_repo.html
+<p>依据https://docs.chef.io/cookbook_repo.html<br />
 如果用git来管理cookbook,那么安装第三方cookbook的方式为</p>
 
 <p>$  knife cookbook site install COOKBOOK_NAME</p>
 
-<p>如果不使用git来管理cookbook，那么使用第三方cookbook的方式为：
+<p>如果不使用git来管理cookbook，那么使用第三方cookbook的方式为：<br />
 $ knife cookbook site download COOKBOOK_NAME</p>
 
-<p>以下命令用来查看 cookbook的元数据信息。
-$ knife cookbook metadata
+<p>以下命令用来查看 cookbook的元数据信息。<br />
+$ knife cookbook metadata<br />
 这个命令会生成元数据信息，并保存为json格式。</p>
 
 <h1 id="attributes">Attributes</h1>
@@ -335,7 +388,7 @@ $ knife cookbook metadata
 
 <p>Push build artifacts to production servers in real time　　，这个很重要，是实时的？</p>
 
-<p>＃　使用 docker cookbook
+<p>＃　使用 docker cookbook<br />
 要在 ubuntu 14.04上使用docker cookbook,首先要安装ruby2.1以上的版本。</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>$ sudo apt-get install software-properties-common
@@ -346,8 +399,8 @@ $ sudo apt-get update
 
 <p>然后在Node节点上安装docker.</p>
 
-<p>Create a new cookbook on workstation.
-# cd ~/chef-repo
+<p>Create a new cookbook on workstation.<br />
+# cd ~/chef-repo<br />
 # knife cookbook create COOKBOOK_NAME</p>
 
 <p>Add <code class="highlighter-rouge">depends 'docker', '~&gt; 2.0'</code> to metadata.rb</p>
@@ -364,18 +417,18 @@ $ sudo apt-get update
 </code></pre>
 </div>
 
-<p>要在node节点上把默认的rubygem源换成淘宝的,将来可以考虑把这一步也做成一个recipe.
-```
-$ gem sources –add https://ruby.taobao.org/ –remove https://rubygems.org/
-$ gem sources -l
+<p>要在node节点上把默认的rubygem源换成淘宝的,将来可以考虑把这一步也做成一个recipe.<br />
+```<br />
+$ gem sources –add https://ruby.taobao.org/ –remove https://rubygems.org/<br />
+$ gem sources -l<br />
 <em>** CURRENT SOURCES **</em></p>
 
-<p>https://ruby.taobao.org
-# 请确保只有 ruby.taobao.org
-$ gem install rails
+<p>https://ruby.taobao.org<br />
+# 请确保只有 ruby.taobao.org<br />
+$ gem install rails<br />
 ```</p>
 
-<p><strong>参考资料：</strong>
+<p><strong>参考资料：</strong><br />
 http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
 
                 <p><a href="/blog/docker/install-chef">[Read More]</a></p>
@@ -391,12 +444,12 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
 				-->   
                 <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><h3 class="ctitle">为docker私有registry配置nginx反向代理</h3></a>
                 <p><csmall>Jan 5, 2016. | By: 任怀林</csmall></p>
-                <p>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。
+                <p>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。<br />
 我的<a href="http://www.renhl.com/blog/docker/nginx-ssl-reverse-proxy/">上一篇blog</a> 讲了如何配置nginx反向代理。所以本文主要是讲我在使用中遇到的问题及解决方法。</p>
 
 <p>这是我最初的nginx配置</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
     <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
 </span><span class="p">}</span>
 
@@ -440,7 +493,7 @@ v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certific
 </div>
 <p>我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书<code class="highlighter-rouge">/etc/nginx/ssl/nginx.crt</code>。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1"># 使用私有registry的ssl证书
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="c1"># 使用私有registry的ssl证书
 </span><span class="k">ssl_certificate</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.crt</span><span class="p">;</span>
 <span class="k">ssl_certificate_key</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.key</span><span class="p">;</span>
 </code></pre>
@@ -456,7 +509,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>原因很清楚，反向代理把my_docker_registry，做为host发到了客户端了，要让反向代理设置正确的host。把下面的一行加到nginx配置里。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
 </code></pre>
 </div>
 
@@ -468,7 +521,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>我push的imgage太大，被nginx拒绝了。问了Google以后，在nginx的配置加入下面的两行：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
 # required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
 </span><span class="k">chunked_transfer_encoding</span> <span class="no">on</span><span class="p">;</span>
 </code></pre>
@@ -476,7 +529,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>再push image，成功了！这是最后的配置：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
     <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
 </span><span class="p">}</span>
 
@@ -521,7 +574,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>如果你在配置docker的私有registry时碰到了同样的问题，希望这篇博客能帮到你，：）</p>
 
-<p><strong>参考资料：</strong>
+<p><strong>参考资料：</strong><br />
 http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
 
                 <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">[Read More]</a></p>
@@ -599,7 +652,7 @@ ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 COPY plugins.sh /usr/local/bin/plugins.sh
 </code></pre>
 
-<p>請注意這一行：
+<p>請注意這一行：<br />
 <code class="highlighter-rouge">
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
 </code></p>
@@ -635,10 +688,10 @@ drwxr-xr-x  2 root root  4096 Dec 30 03:11 jenkins_home/
 
 <p>2 運行時通過<code class="highlighter-rouge">-u</code>指定一個用戶</p>
 
-<p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。  <br />
+<p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。    <br />
 如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則沒有這個限制。</p>
 
-<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：
+<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：<br />
 <code class="highlighter-rouge">
 ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
 </code></p>
@@ -647,7 +700,7 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
 
 <p>總結：image的製作者可以指定容器的默認用戶，因爲作者認爲容器內的進程無需使用root用戶來運行。通常作者指定的用戶的uid都會爲1000（如果image是基於ubuntu或debian的），以保證有本地用戶可以映射。</p>
 
-<p>如果在運行時不想使用作者指定的用戶，可以通過<code class="highlighter-rouge">-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。  <br />
+<p>如果在運行時不想使用作者指定的用戶，可以通過<code class="highlighter-rouge">-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。    <br />
 如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則這個用戶在容器裏可以不存在。</p>
 
                 <p><a href="/blog/docker/docker-user-mapping">[Read More]</a></p>
@@ -679,7 +732,7 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
 
 <p>所以在ubuntu或debian系統裏的第一個普通用戶的uid肯定是1000，也是因爲這個，很多docker images裏要求的uid都是1000，因爲這個uid的用戶在host主機上應該是肯定存在的。</p>
 
-<p>参考文档
+<p>参考文档<br />
 http://www.linfo.org/uid.html</p>
 
                 <p><a href="/blog/linux/linux-ubuntu-uid-1000">[Read More]</a></p>
@@ -695,9 +748,9 @@ http://www.linfo.org/uid.html</p>
 				-->   
                 <a href="/blog/gitlab/jenkins-gitlab-ci"><h3 class="ctitle">Jenkins + gitlab做持续集成</h3></a>
                 <p><csmall>Dec 17, 2015. | By: 任怀林</csmall></p>
-                <p>jenkins  2核  2G  系统 ubuntu 14.04
-registry
-chef server 1 核  2G
+                <p>jenkins  2核  2G  系统 ubuntu 14.04<br />
+registry<br />
+chef server 1 核  2G<br />
 gitlab 1核  2G</p>
 
 <p>node1 最终部署节点　1 核  2G</p>
@@ -712,14 +765,14 @@ gitlab 1核  2G</p>
 
 <p>#插件管理</p>
 
-<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：
+<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：<br />
 <code class="highlighter-rouge">
 $ git config --global http.sslverify false
-</code>
-另一个办法就是设置环境变量
+</code><br />
+另一个办法就是设置环境变量<br />
 <code class="highlighter-rouge">
 GIT_SSL_NO_VERIFY=1
-</code>
+</code><br />
 我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
 
 <p>那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？</p>
@@ -744,10 +797,10 @@ GIT_SSL_NO_VERIFY=1
 
 <p><code class="highlighter-rouge">Name of repository</code>中填入<code class="highlighter-rouge">origin</code></p>
 
-<p><code class="highlighter-rouge">Branch to merge to</code>中填入<code class="highlighter-rouge">${gitlabTargetBranch}</code>
+<p><code class="highlighter-rouge">Branch to merge to</code>中填入<code class="highlighter-rouge">${gitlabTargetBranch}</code><br />
 <img src="/assets/img/blog/2016/03/01/Additional_Behaviours.png" alt="Additional_Behaviours.png" /></p>
 
-<p>接下来配置<code class="highlighter-rouge">构建触发器</code>，配置<code class="highlighter-rouge">Rebuild open Merge Requests</code>为　<code class="highlighter-rouge">On push to source or target branch</code>.
+<p>接下来配置<code class="highlighter-rouge">构建触发器</code>，配置<code class="highlighter-rouge">Rebuild open Merge Requests</code>为　<code class="highlighter-rouge">On push to source or target branch</code>.<br />
 <img src="/assets/img/blog/2016/03/01/build_trigger.png" alt="build_trigger.png" /></p>
 
 <p>下面是配置mvn build时的参数，这个大家应该比较熟悉了，不多说。</p>
@@ -772,7 +825,7 @@ GIT_SSL_NO_VERIFY=1
 
 <p><img src="/assets/img/blog/2016/03/01/gitlab_webhooks.png" alt="gitlab_webhooks.png" /></p>
 
-<p>保存配置，然后点击<code class="highlighter-rouge">TEST HOOK</code>按钮，测试一下这个hook,如果系统显示没有问题，系统会提示：hook已经成功执行。
+<p>保存配置，然后点击<code class="highlighter-rouge">TEST HOOK</code>按钮，测试一下这个hook,如果系统显示没有问题，系统会提示：hook已经成功执行。<br />
 你在Jenkins里会看到有一个新build执行了。</p>
 
 <p>要想让Jenkins能运行docker,我们要jenkins用户加到docker这个组里来。</p>
@@ -781,7 +834,7 @@ GIT_SSL_NO_VERIFY=1
 </code></pre>
 </div>
 
-<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.
+<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.<br />
 <code class="highlighter-rouge">
 Cannot connect to the Docker daemon. Is the docker daemon running on this host?
 </code></p>
@@ -807,7 +860,7 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
                 <a href="/blog/docker/nginx-ssl-reverse-proxy"><h3 class="ctitle">Nginx自签名https和反向代理</h3></a>
                 <p><csmall>Dec 11, 2015. | By: 任怀林</csmall></p>
                 <h1 id="section">场景</h1>
-<p>公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，
+<p>公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，<br />
 只能通过一个公网IP来访问，所以需要用Nginx做个反向代理来访问些服务器。另外，这些服务都要以https来访问。</p>
 
 <table>
@@ -841,80 +894,80 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 
 <p>编辑<code class="highlighter-rouge">/etc/nginx/sites-available/default</code>,加入如下内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>upstream wiki  {
-	server 172.168.100.47:80; # wiki.renhl.com
-}
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
+	<span class="kn">server</span> <span class="nf">172.168.100.47</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span> <span class="c1"># wiki.renhl.com
+</span><span class="p">}</span>
 
-upstream hub  {
-	server 172.168.100.48; # hub.renhl.com
-}
+<span class="k">upstream</span> <span class="s">hub</span>  <span class="p">{</span>
+	<span class="kn">server</span> <span class="mi">172</span><span class="s">.168.100.48</span><span class="p">;</span> <span class="c1"># hub.renhl.com
+</span><span class="p">}</span>
 
-## Start wiki.renhl.com ##
-server {
+<span class="c1">## Start wiki.renhl.com ##
+</span><span class="k">server</span> <span class="p">{</span>
 
-    listen 80;
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
 
-    listen 443 ssl;
+    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
 
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+    <span class="kn">ssl_certificate</span> <span class="n">/etc/nginx/ssl/nginx.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="n">/etc/nginx/ssl/nginx.key</span><span class="p">;</span>
 
-	server_name  wiki.ecloud.com.cn;
+	<span class="kn">server_name</span>  <span class="s">wiki.ecloud.com.cn</span><span class="p">;</span>
 
-    access_log  /var/log/nginx/wiki.renhl.access.log;
-    error_log  /var/log/nginx/wiki.renhl.error.log;
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
+    <span class="kn">access_log</span>  <span class="n">/var/log/nginx/wiki.renhl.access.log</span><span class="p">;</span>
+    <span class="kn">error_log</span>  <span class="n">/var/log/nginx/wiki.renhl.error.log</span><span class="p">;</span>
+    <span class="kn">root</span>   <span class="n">/usr/share/nginx/html</span><span class="p">;</span>
+    <span class="kn">index</span>  <span class="s">index.html</span> <span class="s">index.htm</span><span class="p">;</span>
 
-    ## send request back to apache1 ##
-    location / {
-     proxy_pass  http://wiki;
-     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-     proxy_redirect off;
-     proxy_buffering off;
-     proxy_set_header        Host            $host;
-     proxy_set_header        X-Real-IP       $remote_addr;
-     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-   }
-}
-## End wiki.renhl.com ##
+    <span class="c1">## send request back to apache1 ##
+</span>    <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+     <span class="kn">proxy_pass</span>  <span class="s">http://wiki</span><span class="p">;</span>
+     <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
+     <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+     <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
+     <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">## End wiki.renhl.com ##
+</span>
+<span class="c1">## START hub.renhl.com ##
+</span><span class="k">server</span> <span class="p">{</span>
+   	<span class="kn">server_name</span> <span class="s">hub.renhl.com</span><span class="p">;</span>
 
-## START hub.renhl.com ##
-server {
-   	server_name hub.renhl.com;
+	<span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
 
-	listen 80;
-    listen 443 ssl;
+    <span class="kn">ssl_certificate</span> <span class="n">/etc/nginx/ssl/nginx.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="n">/etc/nginx/ssl/nginx.key</span><span class="p">;</span>
 
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+   <span class="kn">access_log</span>  <span class="n">/var/log/nginx/hub.renhl.access.log</span><span class="p">;</span>
+   <span class="kn">error_log</span>   <span class="n">/var/log/nginx/hub.renhl.error.log</span><span class="p">;</span>
+   <span class="kn">root</span>        <span class="n">/usr/local/nginx/html</span><span class="p">;</span>
+   <span class="kn">index</span>       <span class="s">index.html</span><span class="p">;</span>
 
-   access_log  /var/log/nginx/hub.renhl.access.log;
-   error_log   /var/log/nginx/hub.renhl.error.log;
-   root        /usr/local/nginx/html;
-   index       index.html;
-
-   location / {
-        proxy_pass  https://hub;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-        proxy_redirect off;
-        proxy_buffering off;
-        proxy_set_header        Host           $host;
-        proxy_set_header        X-Real-IP       $remote_addr;
-        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-## END hub.renhl.com  ##
-
+   <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+        <span class="kn">proxy_pass</span>  <span class="s">https://hub</span><span class="p">;</span>
+        <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
+        <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+        <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">Host</span>           <span class="nv">$host</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">X-Real-IP</span>       <span class="nv">$remote_addr</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span>        <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">## END hub.renhl.com  ##
+</span>
 </code></pre>
 </div>
 
 <h1 id="ip">IP限制</h1>
 <p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>allow 111.206.238.12;
-allow 111.206.238.94;
-deny all;
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
+<span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
+<span class="k">deny</span> <span class="s">all</span><span class="p">;</span>
 </code></pre>
 </div>
 
@@ -943,10 +996,10 @@ deny all;
 <div class="highlighter-rouge"><pre class="highlight"><code>$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 </code></pre>
 </div>
-<p>到gitlab的data/backups目錄，把最近的備份copy出來。
+<p>到gitlab的data/backups目錄，把最近的備份copy出來。<br />
 gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup.tar</code>这样的文件名，请注意下划线前面的数字，我们将在恢复的时候用到。</p>
 
-<p>查看當前的版本
+<p>查看當前的版本<br />
 查看當前的版本，進入gitlab，在左側的菜單欄裏選<code class="highlighter-rouge">help</code>,可以看到當前版本。我們要先運行舊版本的container,然後pull新版本的gitlab image回來升級。</p>
 
 <p>OK，看了一下我現在的版本7.9.4</p>
@@ -985,7 +1038,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <p>docker-compose.yml</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:7.9.4</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -1029,7 +1082,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.2</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -1078,16 +1131,16 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <h1 id="pull-gitlab-820-image-from-docker-hub">pull gitlab 8.2.0 image from docker hub.</h1>
 
-<p>docker pull sameersbn/gitlab:8.2.0
-docker pull mysql:5.7
+<p>docker pull sameersbn/gitlab:8.2.0<br />
+docker pull mysql:5.7<br />
 docker pull sameersbn/redis:latest</p>
 
-<p>mkdir -p /opt/data/gitlab/data
+<p>mkdir -p /opt/data/gitlab/data<br />
 mkdir -p /opt/data/mysql</p>
 
 <p>$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
   <span class="s">environment</span><span class="pi">:</span>
@@ -1098,7 +1151,7 @@ mkdir -p /opt/data/mysql</p>
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -1109,7 +1162,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.0</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
   <span class="s">ports</span><span class="pi">:</span>
@@ -1161,9 +1214,9 @@ mkdir -p /opt/data/mysql</p>
 
 <h1 id="section">1 规划</h1>
 
-<p>规划：   <br />
-一个容器运行gitlab  <br />
-一个容器运行MySQL,然后 link到gitlab上。 <br />
+<p>规划：     <br />
+一个容器运行gitlab    <br />
+一个容器运行MySQL,然后 link到gitlab上。   <br />
 一个容器运行Redis,然后 link到gitlab上。</p>
 
 <h1 id="gitlab">2 安装gitlab</h1>
@@ -1190,13 +1243,13 @@ mkdir -p /opt/data/mysql</p>
 
 <p>连接到MySQL上，修改授权信息</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
 </code></pre>
 </div>
 
 <p>创建数据库并授权。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -1207,11 +1260,11 @@ mkdir -p /opt/data/mysql</p>
 
 <p>Pull image</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
 </code></pre>
 </div>
 
-<p>run redis   <br />
+<p>run redis     <br />
 <code class="highlighter-rouge">sh
 $ sudo docker run --name=redis -d sameersbn/redis:latest
 </code></p>
@@ -1220,20 +1273,20 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 
 <p>Pull 先把老版的imagepull回来</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
 </code></pre>
 </div>
 
 <p>创建数据目录</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
 </code></pre>
 </div>
 <p>这个目录会映像到窗口的<code class="highlighter-rouge">/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
 
 <p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
   -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
   -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
   -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
@@ -1267,7 +1320,7 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 <span class="gp">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
 <span class="gp">$ </span><span class="nb">exit</span></code></pre></figure>
 
-<p>这个样数据就全部到新的gitlab上了。
+<p>这个样数据就全部到新的gitlab上了。<br />
 你会发现跟原来的一样。</p>
 
 <p>下面我们来升级gitlab到新版。</p>
@@ -1286,8 +1339,8 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker commit -m <span class="s2">"update gitlab.yml ,change host,set timezone to BeiJing"</span> -a <span class="s2">"china-ops gitlab v7.9.4"</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></figure>
 
-<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
+<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。<br />
+后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，<br />
 hostname等是通过环境变量来控制的。</p>
 
 <p>用这个镜像来启动一个container</p>
@@ -1307,13 +1360,13 @@ hostname等是通过环境变量来控制的。</p>
 
 <p>参数<code class="highlighter-rouge">-e 'GITLAB_BACKUPS=daily'</code> 是备份策略，我们设置为每天</p>
 
-<p>默认的密码：  <br />
-username: admin@local.host  <br />
+<p>默认的密码：    <br />
+username: admin@local.host    <br />
 password: 5iveL!fe</p>
 
-<p>参考：　<br />
-<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
-<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>  <br />
+<p>参考：　  <br />
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>      <br />
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>    <br />
 <a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
 
                 <p><a href="/blog/docker/move-gitlab-to-docker-container">[Read More]</a></p>
@@ -1365,7 +1418,7 @@ netmask 255.255.255.0</code></pre></figure>
 
 <p>知道问题了就好解决，两块虚拟网卡都映射到同一块物理网卡就没问题了。</p>
 
-<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，
+<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，<br />
 <a href="http://www.gossamer-threads.com/lists/openstack/operators/34627">这个帖子</a>里讲了解决方案，那就是清除eth0的IP,把外网的IP绑定到br-ex上．</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh">ifconfig eth0 0.0.0.0 
@@ -1390,8 +1443,8 @@ ifconfig br-ex 192.168.234.205 </code></pre></figure>
                 <p><csmall>Mar 11, 2015. | By: 任怀林</csmall></p>
                 <h1 id="section">1 规划</h1>
 
-<p>192.168.234.202   Openstack controller node   <br />
-192.168.234.205   Openstack network node   <br />
+<p>192.168.234.202   Openstack controller node     <br />
+192.168.234.205   Openstack network node     <br />
 192.168.234.204   Openstack compute node</p>
 
 <p>networ node必须有三个NIC(network interface card),也就是网卡．</p>
@@ -1629,7 +1682,7 @@ character-set-server <span class="o">=</span> utf8</code></pre></figure>
 
 <p>RabbitMQ在安装时创建了一个用户<code class="highlighter-rouge">guest</code>,我们就用这个用户了，只是把他的密码修改为<code class="highlighter-rouge">openstack</code></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># rabbitmqctl change_password guest openstack</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c"># rabbitmqctl change_password guest openstack</span>
 </code></pre>
 </div>
 
@@ -1653,7 +1706,7 @@ character-set-server <span class="o">=</span> utf8</code></pre></figure>
 
 <ul>
   <li>记录用户和他们的权限</li>
-  <li>提供OpenStack可用服务的API列表
+  <li>提供OpenStack可用服务的API列表<br />
 所有的服务在安装后都要向Identity service注册自己。Identity service知道当前安装了哪些服务和他们在网络中的位置。</li>
 </ul>
 
@@ -1714,10 +1767,10 @@ character-set-server <span class="o">=</span> utf8</code></pre></figure>
 <h2 id="tenants-users-and-roles">5.2 创建tenants, users, and roles</h2>
 
 <h3 id="section-6">5.2.1 准备工作</h3>
-<p>在安装完Identity service后，你要创建tenants租户(也就是projects)、用户和角色。
+<p>在安装完Identity service后，你要创建tenants租户(也就是projects)、用户和角色。<br />
 你要用我们上一节创建的临时的管理员token，在你运行<code class="highlighter-rouge">keystone</code>命令前，手动配置Identity service endpoint。</p>
 
-<p>你可以把管理员token用–os-token这个参数传给keystone命令，也可以设置环境变量OS_SERVICE_TOKEN。一样的，你可以把管理员token用 Identity service的endpoint用命令行参数–os-endpoint传给keystone,也可以设置环境变量–os-endpoint。   <br />
+<p>你可以把管理员token用–os-token这个参数传给keystone命令，也可以设置环境变量OS_SERVICE_TOKEN。一样的，你可以把管理员token用 Identity service的endpoint用命令行参数–os-endpoint传给keystone,也可以设置环境变量–os-endpoint。     <br />
 我们采用环境变量的方式</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span><span class="nb">export </span><span class="nv">OS_SERVICE_TOKEN</span><span class="o">=</span>7212bf54588f88818b52
@@ -1863,7 +1916,7 @@ character-set-server <span class="o">=</span> utf8</code></pre></figure>
 <p>上面的命令<code class="highlighter-rouge">keystone service-list | awk '/ identity / {print $2}'</code>返回的其实就是我创建的Identity service实体的id.</p>
 
 <ul>
-  <li>Note
+  <li>Note<br />
 Each service that you add to your OpenStack environment requires adding information such as API endpoints to the Identity service. The sections of this guide that cover service installation include steps to add the appropriate information to the Identity service</li>
 </ul>
 
@@ -1952,7 +2005,7 @@ Each service that you add to your OpenStack environment requires adding informat
 You are not authorized to perform the requested action: admin_required <span class="o">(</span>HTTP 403<span class="o">)</span></code></pre></figure>
 
 <h2 id="openstack">5.5 创建OpenStack客户端环境脚本</h2>
-<p>上一节我们用环境变量加命令行参数的方式用keystone这个命令来与Identity service来交互。为了提高客户端的操作效率，OpenStack支持<code class="highlighter-rouge">简单客户端环境脚本</code>- OpenRC文件。这些脚本包含所有客户端共用的一些选项，当然也可以包含特定选项。
+<p>上一节我们用环境变量加命令行参数的方式用keystone这个命令来与Identity service来交互。为了提高客户端的操作效率，OpenStack支持<code class="highlighter-rouge">简单客户端环境脚本</code>- OpenRC文件。这些脚本包含所有客户端共用的一些选项，当然也可以包含特定选项。<br />
 更多信息请参考<a href="http://docs.openstack.org/user-guide/content/cli_openrc.html">OpenStack用户指南</a>。</p>
 
 <p>编辑admin-openrc.sh，键入以下内容：</p>
@@ -1974,10 +2027,10 @@ You are not authorized to perform the requested action: admin_required <span cla
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></figure>
 
 <h1 id="image">6 安装image服务</h1>
-<p>OpenStack Image Service(glance)允许用户发现、注册和检索虚拟机的映像。它提供了一个REST API，你可以用它来查询映像的元信息和检索映像。
+<p>OpenStack Image Service(glance)允许用户发现、注册和检索虚拟机的映像。它提供了一个REST API，你可以用它来查询映像的元信息和检索映像。<br />
 你可以把映像放在安装image service本地文件系统里，也可以选择放在对象存储系统里，如 OpenStack Object Storage。</p>
 
-<p><em>重要</em> 本文将把Image Service(glance)安装在控制节点上，并使用本地文件保存映像，默认目录为/var/lib/glance/images/,请确保控制节点有足够的存储空间。
+<p><em>重要</em> 本文将把Image Service(glance)安装在控制节点上，并使用本地文件保存映像，默认目录为/var/lib/glance/images/,请确保控制节点有足够的存储空间。<br />
 如果想了解Image Service(glance)所使用的后端存储的信息更多信息，请参考<a href="http://docs.openstack.org/trunk/config-reference/content/ch_configuring-openstack-image-service.html">Configuration Reference</a>。</p>
 
 <h2 id="openstack-1">6.1 OpenStack映像服务</h2>
@@ -1990,26 +2043,26 @@ You are not authorized to perform the requested action: admin_required <span cla
 
 <ul>
   <li>
-    <p>glance-api
+    <p>glance-api<br />
 接受映像发现、检索和存储的API调用。</p>
   </li>
   <li>
-    <p>glance-registry
-Stores, processes, and retrieves metadata about images. Metadata includes items such as size and type.
+    <p>glance-registry<br />
+Stores, processes, and retrieves metadata about images. Metadata includes items such as size and type.<br />
 存储、处理和检索映像的元数据，元数据包含它的大小和类型。</p>
   </li>
 </ul>
 
-<p><strong>Note</strong>	安全备注 <br />
+<p><strong>Note</strong>	安全备注   <br />
 glance-registry是内部私有服务，只向OpenStack映像服务提供服务，不要把它暴露给用户。</p>
 
 <ul>
   <li>
-    <p>数据库
+    <p>数据库<br />
 用来保存映像的元数据。</p>
   </li>
   <li>
-    <p>映像存储仓库
+    <p>映像存储仓库<br />
 支持各种存储仓库，包括一般文件系统，对象存储系统，RADOS块设备，HTTP和Amazon S3。</p>
   </li>
 </ul>
@@ -2017,8 +2070,8 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 <h2 id="openstack-2">6.2 安装和配置OpenStack映像服务</h2>
 
 <h3 id="section-14">6.2.1 安装准备</h3>
-<p>在安装前，你必须创建数据库，服务凭证和API端点。
-1. 配置数据库
+<p>在安装前，你必须创建数据库，服务凭证和API端点。<br />
+1. 配置数据库<br />
 数据库安装在控制节点上。</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>mysql -u root -p</code></pre></figure>
@@ -2237,7 +2290,7 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 
 <h3 id="section-18">7.1.1 准备工作</h3>
 
-<p>1 配置数据库
+<p>1 配置数据库<br />
 数据库安装在控制节点上。</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>mysql -u root -p</code></pre></figure>
@@ -2315,7 +2368,7 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install nova-api nova-cert nova-conductor nova-consoleauth \</span>
   nova-novncproxy nova-scheduler python-novaclient</code></pre></figure>
 
-<p>2 编辑 /etc/nova/nova.conf 加入下面的内容  <br />
+<p>2 编辑 /etc/nova/nova.conf 加入下面的内容    <br />
 默认安装nova.conf内容好少，你要手动添加下面的内容。</p>
 
 <figure class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="nn">[database]</span>
@@ -2369,7 +2422,7 @@ glance-registry是内部私有服务，只向OpenStack映像服务提供服务�
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install nova-compute sysfsutils</span></code></pre></figure>
 
-<p>2 编辑 /etc/nova/nova.conf 加入下面的内容  <br />
+<p>2 编辑 /etc/nova/nova.conf 加入下面的内容    <br />
 默认安装nova.conf内容好少，你要手动添加下面的内容。</p>
 
 <figure class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="nn">[DEFAULT]</span>
@@ -2454,7 +2507,7 @@ virt_type <span class="o">=</span> qemu</code></pre></figure>
 
 <h2 id="section-25">8.1 安装配置控制节点</h2>
 
-<p>1 配置数据库
+<p>1 配置数据库<br />
 数据库安装在控制节点上。</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>mysql -u root -p</code></pre></figure>
@@ -2527,7 +2580,7 @@ virt_type <span class="o">=</span> qemu</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># apt-get install neutron-server neutron-plugin-ml2 python-neutronclient</span></code></pre></figure>
 
-<p>5 配置网络服务组件
+<p>5 配置网络服务组件<br />
 编辑  /etc/neutron/neutron.conf  加入下面的内容</p>
 
 <figure class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="nn">[DEFAULT]</span>
@@ -2662,10 +2715,10 @@ virt_type <span class="o">=</span> qemu</code></pre></figure>
 | dvr                   | Distributed Virtual Router                    |
 +-----------------------+-----------------------------------------------+</code></pre></figure>
 
-<p>如果你运行这个命令是报下面的错误
+<p>如果你运行这个命令是报下面的错误<br />
 <code class="highlighter-rouge">
 unsupported locale setting
-</code>
+</code><br />
 请设置LC_ALL为en_US.UTF-8</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nb">export </span><span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8</code></pre></figure>
@@ -2819,7 +2872,7 @@ metadata_proxy_shared_secret <span class="o">=</span> openstack</code></pre></fi
 <span class="c"># ovs-vsctl add-br br-ex</span>
 <span class="c"># ovs-vsctl add-port br-ex eth0</span></code></pre></figure>
 
-<p>如果你的network节点只配置了1个NIC,那你就会无法连接到这台network节点上，除非你通过方式如XenServer的console。
+<p>如果你的network节点只配置了1个NIC,那你就会无法连接到这台network节点上，除非你通过方式如XenServer的console。<br />
 请看<a href="/blog/openstack/xenserver-vm-multi-nic">我的在这一步遇到的问题</a>。</p>
 
 <h3 id="section-30">8.２.8 完成安装</h3>
@@ -2985,11 +3038,11 @@ metadata_proxy_shared_secret <span class="o">=</span> openstack</code></pre></fi
 
 <h2 id="section-39">8.4 创建初始网络</h2>
 
-<p>在启动虚拟机之前，你要先创建虚拟网络基本架构，实例会连接到它上。这个虚拟网络包含一个外部网络和租户网络。
+<p>在启动虚拟机之前，你要先创建虚拟网络基本架构，实例会连接到它上。这个虚拟网络包含一个外部网络和租户网络。<br />
 <img src="/assets/img/blog/installguide-neutron-initialnetworks.png" alt="installguide-neutron-initialnetworks.png" /></p>
 
 <h3 id="section-40">8.4.1 外部网络</h3>
-<p>外部网络向实例提供互联网访问支持。默认它允许实例以Network Address Translation (NAT)方式访问互联网。
+<p>外部网络向实例提供互联网访问支持。默认它允许实例以Network Address Translation (NAT)方式访问互联网。<br />
 使用浮动IP和适当安全规则组，你可以使单个实例访问Internet。管理员租户会拥有这个网络，因为它向所有的租户提供外部网络。</p>
 
 <p><strong>注意</strong> 请在控制节点上运行下面的命令</p>
@@ -3018,7 +3071,7 @@ Created a new network:
 | tenant_id                 | 357abecb4def441eb7a36e7cf5d173c4     |
 +---------------------------+--------------------------------------+</code></pre></figure>
 
-<p>我们创建的这个外网，它跟网络节点的那个绑定外网地址的网卡在一个子网，共享网关。
+<p>我们创建的这个外网，它跟网络节点的那个绑定外网地址的网卡在一个子网，共享网关。<br />
 跟物理网一样，我们需要给它创建一个子网。</p>
 
 <p>2 在外网上创建子网</p>
@@ -3105,7 +3158,7 @@ Created a new subnet:
 | tenant_id         | 6245a74d882e451c8d7663a46103b8b2             |
 +-------------------+----------------------------------------------+</code></pre></figure>
 
-<p>3 创建路由器
+<p>3 创建路由器<br />
 路由器用来连接租户网络和外部网络</p>
 
 <p>创建路由器</p>
@@ -3217,7 +3270,7 @@ connecting to: controller:27017/test
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span><span class="nb">source </span>admin-openrc.sh</code></pre></figure>
 
-<p>５　
+<p>５　<br />
 创建　ceilometer　用户</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>keystone user-create --name ceilometer --pass openstack
@@ -3608,7 +3661,7 @@ Deleted agent: b18cf8ae-3893-436f-beef-315274d837b2
 <span class="o">[</span>Tue Mar 24 17:31:32.201238 2015] <span class="o">[</span>:error] <span class="o">[</span>pid 23314:tid 140209584568064]     setattr<span class="o">(</span>self, k, v<span class="o">)</span>
 <span class="o">[</span>Tue Mar 24 17:31:32.201244 2015] <span class="o">[</span>:error] <span class="o">[</span>pid 23314:tid 140209584568064] UnicodeEncodeError: <span class="s1">'ascii'</span> codec can<span class="s1">'t encode characters in position 10-11: ordinal not in range(128)</span></code></pre></figure>
 
-<p>在看了python对unicode的支持后，修改了源代码　　　
+<p>在看了python对unicode的支持后，修改了源代码　　　<br />
 “/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py”</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'UTF-8'</span><span class="p">),</span> <span class="n">v</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'UTF-8'</span><span class="p">))</span>
@@ -3622,7 +3675,7 @@ Deleted agent: b18cf8ae-3893-436f-beef-315274d837b2
 
 <h3 id="section-58">12.1.1 安装准备</h3>
 <ol>
-  <li>配置数据库
+  <li>配置数据库<br />
 数据库安装在控制节点上。</li>
 </ol>
 
@@ -3666,7 +3719,7 @@ Deleted agent: b18cf8ae-3893-436f-beef-315274d837b2
 
 <p>创建 cinder 服务实体:</p>
 
-<p><strong>注意</strong>
+<p><strong>注意</strong><br />
 块存储服务需要两个不同的实体以支持v1和v2版本的API．</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>keystone service-create --name cinder --type volume <span class="se">\</span>
@@ -3858,7 +3911,7 @@ Disk identifier: 0x00000000
 
 Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn<span class="s1">'t contain a valid partition table</span></code></pre></figure>
 
-<p>可以看到新加的disk没有分区，我们来把它分成lvm的分区,具体请参考<a href="/blog/other/config-lvm/">我的这篇blog</a>.
+<p>可以看到新加的disk没有分区，我们来把它分成lvm的分区,具体请参考<a href="/blog/other/config-lvm/">我的这篇blog</a>.<br />
 分区完成后我们再看看分区表</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># fdisk -l</span>
@@ -3915,10 +3968,10 @@ Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn'</span>t contain a valid part
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># vgcreate cinder-volumes /dev/xvdb1</span>
   Volume group <span class="s2">"cinder-volumes"</span> successfully created</code></pre></figure>
 
-<p><code class="highlighter-rouge">cinder-volumes</code>是cinder默认使用的卷组，如果你的卷组不叫这个也没关系，可以在cinder.conf中修改．
+<p><code class="highlighter-rouge">cinder-volumes</code>是cinder默认使用的卷组，如果你的卷组不叫这个也没关系，可以在cinder.conf中修改．<br />
 创建完卷组就OK了，创建逻辑卷的工作就交给OpenStack了．</p>
 
-<p>有一项非常重要的工作要做．
+<p>有一项非常重要的工作要做．<br />
 默认的lvm卷扫描工具会扫描 <code class="highlighter-rouge">/dev</code>目录来查看包含逻辑卷的设备，如果tenant创建了一个lvm的卷的话，那存储节点上的lvm会发现并缓存他们，会导致存储节点和tenant的主机都有问题．所以我们要限制lvm只扫描包含”cinder-volumes”的设备</p>
 
 <p>编辑　 /etc/lvm/lvm.conf</p>
@@ -3927,7 +3980,7 @@ Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn'</span>t contain a valid part
 <span class="err">...</span>
 <span class="py">filter</span> <span class="p">=</span> <span class="s">[ "a/xvda/","a/xvdb/", "r/.*/"]</span></code></pre></figure>
 
-<p>我为什么会把”a/xvda/”这个加到过滤器里，是因为我的节点的操作系统ubuntu是装在lvm上的，所以我必须允许lvm扫描这个设备.
+<p>我为什么会把”a/xvda/”这个加到过滤器里，是因为我的节点的操作系统ubuntu是装在lvm上的，所以我必须允许lvm扫描这个设备.<br />
 你可以使用<code class="highlighter-rouge">vgs -vvvv</code>来测试你的过滤器．</p>
 
 <p>如果你的计算节点也使用了lvm，你也要同时设置扫描过滤器．</p>
@@ -4034,7 +4087,7 @@ Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn'</span>t contain a valid part
 |  service_id |      a18a1b887b484ed6a1130174ccb8eb5f      |
 +-------------+--------------------------------------------+</code></pre></figure>
 
-<p>$EC2_SERVICE就是上一条命令创建的<code class="highlighter-rouge">a18a1b887b484ed6a1130174ccb8eb5f</code>   <br />
+<p>$EC2_SERVICE就是上一条命令创建的<code class="highlighter-rouge">a18a1b887b484ed6a1130174ccb8eb5f</code>     <br />
 本文中$CONTROLLER_PUBLIC_ADDRESS为：192.168.234.202,$CONTROLLER_ADMIN_ADDRESS为:10.0.0.11</p>
 
 <p>重启服务</p>
@@ -4090,8 +4143,8 @@ Disk /dev/mapper/ubuntu1404server--vg-swap_1 doesn'</span>t contain a valid part
 <span class="nb">export </span><span class="nv">EC2_SECRET_KEY</span><span class="o">=</span>6cdaaa769e3c4fb58aeac0de49b01658
 <span class="nb">export </span><span class="nv">EC2_URL</span><span class="o">=</span>http://controller:8773/services/Cloud</code></pre></figure>
 
-<p>参考：　
-<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
+<p>参考：　<br />
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>      <br />
 <a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
 
                 <p><a href="/blog/openstack/deploy-openstack-on-ubuntu-14.04">[Read More]</a></p>
@@ -4427,7 +4480,7 @@ none                            100M     0  100M   0% /run/user
 </code></pre>
 </div>
 
-<p>回到银丰后，把这个配置删除掉：   <br />
+<p>回到银丰后，把这个配置删除掉：     <br />
 <code class="highlighter-rouge">
 # ifconfig wlan0:0 192.168.234.249 down
 </code></p>
@@ -4461,9 +4514,10 @@ none                            100M     0  100M   0% /run/user
 				-->   
                 <a href="/blog/other/my-first-blog-with-jekyll"><h3 class="ctitle">我的第一篇博客</h3></a>
                 <p><csmall>Nov 2, 2014. | By: 任怀林</csmall></p>
-                <p>2016-04-14:  <br />
-更新jekyll到3.1.2版本，因为<a href="https://github.com/blog/2136-a-look-behind-our-decision-to-standardize-on-a-single-markdown-engine-for-github-pages">Github决定使用单一markdown引擎</a>  <br />
-方法高亮使用：<a href="https://github.com/jneen/rouge">Rouge</a>,它支持的语法列表：<a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a></p>
+                <p>2016-04-14:    <br />
+更新jekyll到3.1.2版本，因为<a href="https://github.com/blog/2136-a-look-behind-our-decision-to-standardize-on-a-single-markdown-engine-for-github-pages">Github决定使用单一markdown引擎</a>    <br />
+方法高亮使用：<a href="https://github.com/jneen/rouge">Rouge</a>,<a href="http://rouge.jneen.net/">它支持的语法列表</a>。    <br />
+加上了首行缩进。</p>
 
 <p>我的博客是用<a href="http://jekyllrb.com/">jekyll</a>搭建的。</p>
 
@@ -4477,7 +4531,7 @@ none                            100M     0  100M   0% /run/user
 
 <p>我用的jekyll theme 是<a href="https://github.com/st4ple/solid-jekyll">solid jekyll</a></p>
 
-<p>参考：
+<p>参考：<br />
 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog—-github Pages和Jekyll入门</a></p>
 
                 <p><a href="/blog/other/my-first-blog-with-jekyll">[Read More]</a></p>
@@ -4535,7 +4589,7 @@ none                            100M     0  100M   0% /run/user
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -4556,6 +4610,12 @@ none                            100M     0  100M   0% /run/user
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -4573,12 +4633,6 @@ none                            100M     0  100M   0% /run/user
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -4593,7 +4647,7 @@ none                            100M     0  100M   0% /run/user
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

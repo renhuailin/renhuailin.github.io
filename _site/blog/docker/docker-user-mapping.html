@@ -141,7 +141,7 @@ ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 COPY plugins.sh /usr/local/bin/plugins.sh
 </code></pre>
 
-<p>請注意這一行：
+<p>請注意這一行：<br />
 <code class="highlighter-rouge">
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
 </code></p>
@@ -177,10 +177,10 @@ drwxr-xr-x  2 root root  4096 Dec 30 03:11 jenkins_home/
 
 <p>2 運行時通過<code class="highlighter-rouge">-u</code>指定一個用戶</p>
 
-<p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。  <br />
+<p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。    <br />
 如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則沒有這個限制。</p>
 
-<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：
+<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：<br />
 <code class="highlighter-rouge">
 ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
 </code></p>
@@ -189,7 +189,7 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
 
 <p>總結：image的製作者可以指定容器的默認用戶，因爲作者認爲容器內的進程無需使用root用戶來運行。通常作者指定的用戶的uid都會爲1000（如果image是基於ubuntu或debian的），以保證有本地用戶可以映射。</p>
 
-<p>如果在運行時不想使用作者指定的用戶，可以通過<code class="highlighter-rouge">-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。  <br />
+<p>如果在運行時不想使用作者指定的用戶，可以通過<code class="highlighter-rouge">-u</code>這個選項來指定一個用戶。選項的值可以是用戶名，也可以是uid。    <br />
 如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則這個用戶在容器裏可以不存在。</p>
 </div>
 
@@ -250,7 +250,7 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -271,6 +271,12 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -288,12 +294,6 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -308,7 +308,7 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

@@ -85,10 +85,10 @@
 <div class="highlighter-rouge"><pre class="highlight"><code>$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 </code></pre>
 </div>
-<p>到gitlab的data/backups目錄，把最近的備份copy出來。
+<p>到gitlab的data/backups目錄，把最近的備份copy出來。<br />
 gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup.tar</code>这样的文件名，请注意下划线前面的数字，我们将在恢复的时候用到。</p>
 
-<p>查看當前的版本
+<p>查看當前的版本<br />
 查看當前的版本，進入gitlab，在左側的菜單欄裏選<code class="highlighter-rouge">help</code>,可以看到當前版本。我們要先運行舊版本的container,然後pull新版本的gitlab image回來升級。</p>
 
 <p>OK，看了一下我現在的版本7.9.4</p>
@@ -127,7 +127,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <p>docker-compose.yml</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:7.9.4</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -171,7 +171,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.2</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -220,16 +220,16 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <h1 id="pull-gitlab-820-image-from-docker-hub">pull gitlab 8.2.0 image from docker hub.</h1>
 
-<p>docker pull sameersbn/gitlab:8.2.0
-docker pull mysql:5.7
+<p>docker pull sameersbn/gitlab:8.2.0<br />
+docker pull mysql:5.7<br />
 docker pull sameersbn/redis:latest</p>
 
-<p>mkdir -p /opt/data/gitlab/data
+<p>mkdir -p /opt/data/gitlab/data<br />
 mkdir -p /opt/data/mysql</p>
 
 <p>$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
   <span class="s">environment</span><span class="pi">:</span>
@@ -240,7 +240,7 @@ mkdir -p /opt/data/mysql</p>
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -251,7 +251,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.0</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
   <span class="s">ports</span><span class="pi">:</span>
@@ -344,7 +344,7 @@ mkdir -p /opt/data/mysql</p>
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -365,6 +365,12 @@ mkdir -p /opt/data/mysql</p>
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -382,12 +388,6 @@ mkdir -p /opt/data/mysql</p>
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -402,7 +402,7 @@ mkdir -p /opt/data/mysql</p>
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

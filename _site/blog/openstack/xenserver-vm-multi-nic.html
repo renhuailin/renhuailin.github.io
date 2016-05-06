@@ -115,7 +115,7 @@ netmask 255.255.255.0</code></pre></figure>
 
 <p>知道问题了就好解决，两块虚拟网卡都映射到同一块物理网卡就没问题了。</p>
 
-<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，
+<p>当然在运行完上面的命令后，你还是无法通过eth0上的IP来访问，<br />
 <a href="http://www.gossamer-threads.com/lists/openstack/operators/34627">这个帖子</a>里讲了解决方案，那就是清除eth0的IP,把外网的IP绑定到br-ex上．</p>
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh">ifconfig eth0 0.0.0.0 
@@ -183,7 +183,7 @@ ifconfig br-ex 192.168.234.205 </code></pre></figure>
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -204,6 +204,12 @@ ifconfig br-ex 192.168.234.205 </code></pre></figure>
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -221,12 +227,6 @@ ifconfig br-ex 192.168.234.205 </code></pre></figure>
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -241,7 +241,7 @@ ifconfig br-ex 192.168.234.205 </code></pre></figure>
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

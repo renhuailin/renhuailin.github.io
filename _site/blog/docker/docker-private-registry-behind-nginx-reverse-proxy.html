@@ -79,12 +79,12 @@
             <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><h3 class="ctitle">为docker私有registry配置nginx反向代理</h3></a>
             <p><csmall>Jan 5, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。
+            <div id="main_content"><p>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它放出来，以便在外网可以访问。<br />
 我的<a href="http://www.renhl.com/blog/docker/nginx-ssl-reverse-proxy/">上一篇blog</a> 讲了如何配置nginx反向代理。所以本文主要是讲我在使用中遇到的问题及解决方法。</p>
 
 <p>这是我最初的nginx配置</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
     <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
 </span><span class="p">}</span>
 
@@ -128,7 +128,7 @@ v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certific
 </div>
 <p>我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书<code class="highlighter-rouge">/etc/nginx/ssl/nginx.crt</code>。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1"># 使用私有registry的ssl证书
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="c1"># 使用私有registry的ssl证书
 </span><span class="k">ssl_certificate</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.crt</span><span class="p">;</span>
 <span class="k">ssl_certificate_key</span> <span class="n">/opt/renhl_com_docker_registry/certs/registry_renhl_com.key</span><span class="p">;</span>
 </code></pre>
@@ -144,7 +144,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>原因很清楚，反向代理把my_docker_registry，做为host发到了客户端了，要让反向代理设置正确的host。把下面的一行加到nginx配置里。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">proxy_set_header</span>        <span class="s">Host</span>            <span class="nv">$host</span><span class="p">;</span>
 </code></pre>
 </div>
 
@@ -156,7 +156,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>我push的imgage太大，被nginx拒绝了。问了Google以后，在nginx的配置加入下面的两行：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">client_max_body_size</span> <span class="mi">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads
 # required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
 </span><span class="k">chunked_transfer_encoding</span> <span class="no">on</span><span class="p">;</span>
 </code></pre>
@@ -164,7 +164,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>再push image，成功了！这是最后的配置：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">my_docker_registry</span>  <span class="p">{</span>
     <span class="kn">server</span> <span class="nf">192.168.100.48</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span> <span class="c1"># registry.renhl.com
 </span><span class="p">}</span>
 
@@ -209,7 +209,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 <p>如果你在配置docker的私有registry时碰到了同样的问题，希望这篇博客能帮到你，：）</p>
 
-<p><strong>参考资料：</strong>
+<p><strong>参考资料：</strong><br />
 http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
 </div>
 
@@ -270,7 +270,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -291,6 +291,12 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -308,12 +314,6 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -328,7 +328,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         

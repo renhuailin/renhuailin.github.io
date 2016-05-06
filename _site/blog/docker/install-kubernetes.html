@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - Jenkins + gitlab做持续集成</title>
+    <title>念西堂 - 安装kubernetes</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,106 +76,48 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/gitlab/jenkins-gitlab-ci"><h3 class="ctitle">Jenkins + gitlab做持续集成</h3></a>
-            <p><csmall>Dec 17, 2015. | By: 任怀林</csmall></p>
+            <a href="/blog/docker/install-kubernetes"><h3 class="ctitle">安装kubernetes</h3></a>
+            <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>jenkins  2核  2G  系统 ubuntu 14.04<br />
-registry<br />
-chef server 1 核  2G<br />
-gitlab 1核  2G</p>
+            <div id="main_content"><h1 id="section">系统配置</h1>
+<p>两台主机,运行ubuntu 14.04<br />
+182.168.56.101   kube-master<br />
+182.168.56.102   kube-slave</p>
 
-<p>node1 最终部署节点　1 核  2G</p>
+<p>kubernetes版本：1.2.0</p>
 
-<h1 id="jenkins">安装Jenkins</h1>
+<p>从github上下载kubernetes 1.2.0的二进制安装包，上传到kubernetes包到kube-master节点上并解压。</p>
 
-<h2 id="jdk">配置jdk</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code> $ sudo cp kubernetes/server/kubernetes-server-linux-amd64.tar.gz /opt
+ # tar xzvf kubernetes-server-linux-amd64.tar.gz
+</code></pre>
+</div>
+<p>然后把<code class="highlighter-rouge">/opt/kubernetes/server/bin</code>加入到PATH里。</p>
 
-<h1 id="antmaven">安装 ant,maven</h1>
+<p>You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.</p>
 
-<h1 id="jenkins-1">配置Jenkins的安全策略</h1>
+<p><code class="highlighter-rouge">kubelet</code>,<code class="highlighter-rouge">kube-proxy</code>不放在容器里。 <code class="highlighter-rouge">etcd</code>, <code class="highlighter-rouge">kube-apiserver</code>, <code class="highlighter-rouge">kube-controller-manager</code>, <code class="highlighter-rouge">kube-scheduler</code> 放在容器里运行。</p>
 
-<p>#插件管理</p>
-
-<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：<br />
-<code class="highlighter-rouge">
-$ git config --global http.sslverify false
-</code><br />
-另一个办法就是设置环境变量<br />
-<code class="highlighter-rouge">
-GIT_SSL_NO_VERIFY=1
-</code><br />
-我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
-
-<p>那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？</p>
-
-<p>在项目的“配置”里勾先上“参数化构建过程”，然后添加一个字符型的参数，把这环境变量添加上。</p>
-
-<p>GitLab 8.3以後，GitLab Hook Plugin 已經不推薦了”deprecated”.推薦使用’Jenkins CI’ project 。</p>
-
-<p>#错误处理</p>
-
-<p>我一不小心点击了反选，把overall/read权限弄没有了，登录上来什么用不了。</p>
-
-<p>搜了一下网上，简单的做法是把config.xml里的useSecurity设置为false,把<code class="highlighter-rouge">authorizationStrategy</code>，完全删除。再重启Jenkins就可以了。</p>
-
-<p>#</p>
-
-<p>在源码管理下勾选上<code class="highlighter-rouge">git</code>,然后从gitlab里复制项目的clone地址过来，填到Repository URL文本框里。</p>
-
-<p><img src="/assets/img/blog/2016/03/01/git_repo_config.png" alt="git_repo_config.png" /></p>
-
-<p>下一步<code class="highlighter-rouge">Additional Behaviours</code>中选择<code class="highlighter-rouge">Merge before build</code>.</p>
-
-<p><code class="highlighter-rouge">Name of repository</code>中填入<code class="highlighter-rouge">origin</code></p>
-
-<p><code class="highlighter-rouge">Branch to merge to</code>中填入<code class="highlighter-rouge">${gitlabTargetBranch}</code><br />
-<img src="/assets/img/blog/2016/03/01/Additional_Behaviours.png" alt="Additional_Behaviours.png" /></p>
-
-<p>接下来配置<code class="highlighter-rouge">构建触发器</code>，配置<code class="highlighter-rouge">Rebuild open Merge Requests</code>为　<code class="highlighter-rouge">On push to source or target branch</code>.<br />
-<img src="/assets/img/blog/2016/03/01/build_trigger.png" alt="build_trigger.png" /></p>
-
-<p>下面是配置mvn build时的参数，这个大家应该比较熟悉了，不多说。</p>
-
-<p>接下我们要配置一下gitlab里项目，为项目添加一个webhook,这个webhook是Jenkins的gitlab插件触发build的URL.</p>
-
-<p>在gitlab你的项目主页里点击<code class="highlighter-rouge">Settings</code>,然后点击左侧菜单的<code class="highlighter-rouge">Web hooks</code>.</p>
-
-<p>在URL文本框里，我们要填写上你的项目在Jenkins里URL.</p>
-
-<p>假设你的项目在Jenkins里的构建job的URL地址为：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/job/edesktop-manager
+<div class="highlighter-rouge"><pre class="highlight"><code>$ docker pull quay.io/coreos/etcd:v2.2.1
 </code></pre>
 </div>
 
-<p>把URL中的<code class="highlighter-rouge">/job</code>换成<code class="highlighter-rouge">/project/</code>就是这个job的build触发URL，把它填到gilab项目设置的Web hooks　URL里。</p>
+<p>The hyperkube binary is an all in one binary<br />
+hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>http://192.168.50.55:8080/project/edesktop-manager
-</code></pre>
-</div>
+<p>把下面的这行注释掉 comment out this line:<br />
+trap cleanup SIGHUP SIGINT SIGTERM</p>
 
-<p><img src="/assets/img/blog/2016/03/01/gitlab_webhooks.png" alt="gitlab_webhooks.png" /></p>
+<h1 id="configuring-and-installing-base-software-on-nodes">Configuring and Installing Base Software on Nodes</h1>
 
-<p>保存配置，然后点击<code class="highlighter-rouge">TEST HOOK</code>按钮，测试一下这个hook,如果系统显示没有问题，系统会提示：hook已经成功执行。<br />
-你在Jenkins里会看到有一个新build执行了。</p>
+<p>You should run three daemons on every node:<br />
+1. docker or rkt<br />
+2. kubelet<br />
+3. kube-proxy</p>
 
-<p>要想让Jenkins能运行docker,我们要jenkins用户加到docker这个组里来。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># usermod -a -G docker jenkins
-</code></pre>
-</div>
-
-<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.<br />
-<code class="highlighter-rouge">
-Cannot connect to the Docker daemon. Is the docker daemon running on this host?
-</code></p>
-
-<p>可以参考这个<a href="https://github.com/docker/docker/issues/5314">issue</a></p>
-
-<h1 id="section">参考文档</h1>
-<p>http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu</p>
-
-<p>http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html</p>
+<p><strong>参考资料：</strong><br />
+http://dockone.io/article/622<br />
+http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</p>
 </div>
 
             <div class="spacing"></div>
@@ -573,7 +515,7 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/gitlab/jenkins-gitlab-ci" data-title="Jenkins + gitlab做持续集成" data-url="http://www.renhl.com/blog/gitlab/jenkins-gitlab-ci "></div>
+<div class="ds-thread" data-thread-key="/blog/docker/install-kubernetes" data-title="安装kubernetes" data-url="http://www.renhl.com/blog/docker/install-kubernetes "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

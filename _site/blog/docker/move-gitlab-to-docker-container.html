@@ -83,9 +83,9 @@
 
 <h1 id="section">1 规划</h1>
 
-<p>规划：   <br />
-一个容器运行gitlab  <br />
-一个容器运行MySQL,然后 link到gitlab上。 <br />
+<p>规划：     <br />
+一个容器运行gitlab    <br />
+一个容器运行MySQL,然后 link到gitlab上。   <br />
 一个容器运行Redis,然后 link到gitlab上。</p>
 
 <h1 id="gitlab">2 安装gitlab</h1>
@@ -112,13 +112,13 @@
 
 <p>连接到MySQL上，修改授权信息</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
 </code></pre>
 </div>
 
 <p>创建数据库并授权。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -129,11 +129,11 @@
 
 <p>Pull image</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
 </code></pre>
 </div>
 
-<p>run redis   <br />
+<p>run redis     <br />
 <code class="highlighter-rouge">sh
 $ sudo docker run --name=redis -d sameersbn/redis:latest
 </code></p>
@@ -142,20 +142,20 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 
 <p>Pull 先把老版的imagepull回来</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
 </code></pre>
 </div>
 
 <p>创建数据目录</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
 </code></pre>
 </div>
 <p>这个目录会映像到窗口的<code class="highlighter-rouge">/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
 
 <p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
   -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
   -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
   -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
@@ -189,7 +189,7 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 <span class="gp">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
 <span class="gp">$ </span><span class="nb">exit</span></code></pre></figure>
 
-<p>这个样数据就全部到新的gitlab上了。
+<p>这个样数据就全部到新的gitlab上了。<br />
 你会发现跟原来的一样。</p>
 
 <p>下面我们来升级gitlab到新版。</p>
@@ -208,8 +208,8 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 
 <figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker commit -m <span class="s2">"update gitlab.yml ,change host,set timezone to BeiJing"</span> -a <span class="s2">"china-ops gitlab v7.9.4"</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></figure>
 
-<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，
+<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。<br />
+后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，<br />
 hostname等是通过环境变量来控制的。</p>
 
 <p>用这个镜像来启动一个container</p>
@@ -229,13 +229,13 @@ hostname等是通过环境变量来控制的。</p>
 
 <p>参数<code class="highlighter-rouge">-e 'GITLAB_BACKUPS=daily'</code> 是备份策略，我们设置为每天</p>
 
-<p>默认的密码：  <br />
-username: admin@local.host  <br />
+<p>默认的密码：    <br />
+username: admin@local.host    <br />
 password: 5iveL!fe</p>
 
-<p>参考：　<br />
-<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>    <br />
-<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>  <br />
+<p>参考：　  <br />
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>      <br />
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>    <br />
 <a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
 </div>
 
@@ -296,7 +296,7 @@ password: 5iveL!fe</p>
     
         <p>
             <a href="/category/#docker"><i class="fa fa-angle-right"></i> Docker</a>
-            <span class="badge badge-theme pull-right">5</span>
+            <span class="badge badge-theme pull-right">6</span>
         </p>
     
         <p>
@@ -317,6 +317,12 @@ password: 5iveL!fe</p>
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
+                <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
@@ -334,12 +340,6 @@ password: 5iveL!fe</p>
                 <em>Posted on 30 Dec 2015</em>
             </li>
             
-                <li>
-                    <a href="/blog/linux/linux-ubuntu-uid-1000"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/linux-ubuntu-uid-1000">Linux uid备忘</a></p>
-                <em>Posted on 30 Dec 2015</em>
-            </li>
-            
         </ul>
 
     <div class="spacing"></div>
@@ -354,7 +354,7 @@ password: 5iveL!fe</p>
         
             <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
         
-            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (5)</a>
+            <a class="btn btn-theme" href="/category/#docker" role="button">Docker (6)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
