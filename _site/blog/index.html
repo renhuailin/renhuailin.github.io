@@ -499,31 +499,33 @@ The key's randomart image is:
 </code></pre>
 </div>
 
-<p>copy public key to remote host.<br />
-```<br />
-$ scp ~/.ssh/id_rsa.pub  ubuntu@182.168.56.102:/home/ubuntu</p>
+<p>copy public key to remote host.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
-接下来请登录到远程主机上完成下面的操作。
+<div class="highlighter-rouge"><pre class="highlight"><code>$ scp ~/.ssh/id_rsa.pub  ubuntu@182.168.56.102:/home/ubuntu
 </code></pre>
 </div>
-<p>$ cat id_dsa.pub » ~/.ssh/authorized_keys<br />
-```<br />
-如果目录不存在，请自行创建相关目录。</p>
 
-<p>你不是感觉这样操作太麻烦，还需要登录到行程的主机上，你可以在本机用一条命令搞定。<br />
-```<br />
-$ ssh-copy-id -i ubuntu@192.168.56.101<br />
-/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: “/home/harley/.ssh/id_rsa.pub”<br />
-/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed<br />
-/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed – if you are prompted now it is to install the new keys<br />
-ubuntu@192.168.56.102’s password:</p>
+<p>接下来请登录到远程主机上完成下面的操作。</p>
 
-<p>Number of key(s) added: 1</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cat id_dsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</code></pre>
+</div>
+<p>如果目录不存在，请自行创建相关目录。</p>
 
-<p>Now try logging into the machine, with:   “ssh ‘ubuntu@192.168.56.102’”<br />
-and check to make sure that only the key(s) you wanted were added.<br />
-```</p>
+<p>你不是感觉这样操作太麻烦，还需要登录到行程的主机上，你可以在本机用一条命令搞定。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-copy-id -i ubuntu@192.168.56.101
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/harley/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ubuntu@192.168.56.102's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'ubuntu@192.168.56.102'"
+and check to make sure that only the key(s) you wanted were added.
+</code></pre>
+</div>
 
 <p><strong>参考资料：</strong><br />
 * http://www.linuxproblem.org/art_9.html<br />

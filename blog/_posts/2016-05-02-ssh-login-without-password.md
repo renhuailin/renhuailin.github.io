@@ -43,18 +43,20 @@ The key's randomart image is:
 ```
 
 copy public key to remote host.
+
 ```
 $ scp ~/.ssh/id_rsa.pub  ubuntu@182.168.56.102:/home/ubuntu
-
 ```
 
 接下来请登录到远程主机上完成下面的操作。
+
 ```
 $ cat id_dsa.pub >> ~/.ssh/authorized_keys
 ```
 如果目录不存在，请自行创建相关目录。
 
 你不是感觉这样操作太麻烦，还需要登录到行程的主机上，你可以在本机用一条命令搞定。
+
 ```
 $ ssh-copy-id -i ubuntu@192.168.56.101
 /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/harley/.ssh/id_rsa.pub"
