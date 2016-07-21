@@ -127,7 +127,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <p>docker-compose.yml</p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
+<div class="highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:7.9.4</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -171,7 +171,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 </code></pre>
 </div>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
+<div class="highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.2</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -229,7 +229,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
   <span class="s">environment</span><span class="pi">:</span>
@@ -240,7 +240,7 @@ mkdir -p /opt/data/mysql</p>
 </code></pre>
 </div>
 
-<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -251,7 +251,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.0</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
   <span class="s">ports</span><span class="pi">:</span>
@@ -354,7 +354,7 @@ mkdir -p /opt/data/mysql</p>
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">1</span>
+            <span class="badge badge-theme pull-right">2</span>
         </p>
     
 
@@ -363,6 +363,12 @@ mkdir -p /opt/data/mysql</p>
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+            
+                <li>
+                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
+                <em>Posted on 05 Jul 2016</em>
+            </li>
             
                 <li>
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
@@ -380,12 +386,6 @@ mkdir -p /opt/data/mysql</p>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
-                <em>Posted on 05 Jan 2016</em>
             </li>
             
         </ul>
@@ -406,7 +406,7 @@ mkdir -p /opt/data/mysql</p>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (1)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
         
     </p>
 

@@ -5,17 +5,149 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 06 May 2016 17:56:50 +0800</pubDate>
-    <lastBuildDate>Fri, 06 May 2016 17:56:50 +0800</lastBuildDate>
-    <generator>Jekyll v3.1.3</generator>
+    <pubDate>Thu, 21 Jul 2016 17:19:24 +0800</pubDate>
+    <lastBuildDate>Thu, 21 Jul 2016 17:19:24 +0800</lastBuildDate>
+    <generator>Jekyll v3.0.3</generator>
+    
+      <item>
+        <title>Blog: 安装Ceph</title>
+        <description>&lt;h1 id=&quot;section&quot;&gt;系统配置&lt;/h1&gt;
+
+&lt;p&gt;4台主机,运行ubuntu 16.04&lt;br /&gt;
+192.168.99.50    Ceph Monitor    &lt;br /&gt;
+192.168.99.51    Ceph OSD1&lt;br /&gt;
+192.168.99.52    Ceph OSD2&lt;br /&gt;
+192.168.99.53    Ceph Deploy&lt;/p&gt;
+
+&lt;p&gt;选用的Ceph版本：&lt;/p&gt;
+
+&lt;p&gt;V10.2.2 JEWEL RELEASED&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-deploy1921689953&quot;&gt;Ceph Deploy节点192.168.99.53的安装&lt;/h2&gt;
+&lt;p&gt;For Ubuntu ,Debian.&lt;br /&gt;
+Add the release key:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget -q -O- &#39;https://download.ceph.com/keys/release.asc&#39; | sudo apt-key add -
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;echo deb http://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;更新源，安装&lt;code class=&quot;highlighter-rouge&quot;&gt;ceph-deploy&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install ceph-deploy
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-node&quot;&gt;Ceph node设置&lt;/h2&gt;
+
+&lt;p&gt;安装ntp server.  包括monitor和两个osd节点。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get install ntp
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;安装 SSH Server,要确保所有节点都安装了SSH Server。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get install openssh-server
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;创建一个用于部署ceph的用户&lt;br /&gt;
+ceph-deploy这个工具必须能登录到节点上，而且要可以无需密码地运行sudo。最新版的ceph-deploy 支持&lt;code class=&quot;highlighter-rouge&quot;&gt;--username&lt;/code&gt;这个选项，可以指定一个用户，也可以是&lt;code class=&quot;highlighter-rouge&quot;&gt;root&lt;/code&gt;(not recommended),为了方便我们就用&lt;code class=&quot;highlighter-rouge&quot;&gt;harley&lt;/code&gt;吧。&lt;/p&gt;
+
+&lt;p&gt;在每个节点上执行这个命令，让harleyr无需密码地运行sudo。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+echo &quot;harley ALL = (root) NOPASSWD:ALL&quot; | sudo tee /etc/sudoers.d/harley
+sudo chmod 0440 /etc/sudoers.d/harley
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-deploylogin-to-nodes-without-password&quot;&gt;Ceph Deploy节点配置Login to nodes without password&lt;/h2&gt;
+&lt;p&gt;ceph-deploy没有用expect,所以不能输入密码，要求ceph-deploy用harley这个用户登录到各个节点时，不能提示输入密码。&lt;br /&gt;
+ 我们要在Ceph Deploy节点上生成证书然后分发到相关的节点上。&lt;/p&gt;
+
+&lt;p&gt;add to ceph deploy node&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vi /etc/hosts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;添加下列内容：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+192.168.99.50 ceph_monitor
+192.168.99.51 ceph_osd1
+192.168.99.52 ceph_osd2
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;复制ssh key到各个节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-copy-id harley@ceph_monitor
+ssh-copy-id harley@ceph_osd1
+ssh-copy-id harley@ceph_osd2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;ENSURE CONNECTIVITY&lt;br /&gt;
+要能Ping通相关的节点？？？&lt;/p&gt;
+
+&lt;p&gt;开放相关的端口&lt;br /&gt;
+如果你用的CentOS等，他默认的防火墙是很严格的，你需要配置防火墙打开相关的端口。&lt;/p&gt;
+
+&lt;h1 id=&quot;section-1&quot;&gt;开始创建一个集群！&lt;/h1&gt;
+
+&lt;p&gt;在ceph-deploy节点上&lt;br /&gt;
+```&lt;br /&gt;
+mkdir my-cluster&lt;br /&gt;
+cd my-cluster&lt;/p&gt;
+
+&lt;p&gt;```&lt;/p&gt;
+
+&lt;h2 id=&quot;create-a-cluster&quot;&gt;CREATE A CLUSTER&lt;/h2&gt;
+
+&lt;p&gt;ceph-deploy –user harley new  ceph_monitor&lt;/p&gt;
+
+&lt;p&gt;[ceph_deploy][ERROR ] RuntimeError: connecting to host: harley@ceph_monitor resulted in errors: IOError cannot send (already closed?)&lt;/p&gt;
+
+&lt;p&gt;原因是ubuntu 16.04上没有python这个命令，默认是python3. 登录到各个节点，cd到/usr/bin做个软链接就行了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;参考资料：&lt;/strong&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 05 Jul 2016 20:35:21 +0800</pubDate>
+        <link>http://yourdomain.com/blog/linux/install-ceph</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/linux/install-ceph</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>linux</category>
+        
+      </item>
     
       <item>
         <title>Blog: 安装kubernetes</title>
         <description>&lt;h1 id=&quot;section&quot;&gt;系统配置&lt;/h1&gt;
-&lt;p&gt;两台主机,运行ubuntu 14.04&lt;br /&gt;
-192.168.56.1     workstation，也就是我工作的主机。&lt;br /&gt;
-182.168.56.101   kube-master`   master/minion 一体机&lt;br /&gt;
-182.168.56.102   kube-slave&lt;/p&gt;
+&lt;p&gt;两台主机,运行ubuntu 14.04&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Default aligned&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Left aligned&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;192.168.56.1&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;workstation，也就是我工作的主机。&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;182.168.56.101&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;kube-master   master/minion 一体机&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;182.168.56.102&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;kube-slave&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;p&gt;kubernetes版本：1.2.0&lt;/p&gt;
 
@@ -40,7 +172,7 @@ hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserve
 
 &lt;p&gt;modify &lt;code class=&quot;highlighter-rouge&quot;&gt;download-release.sh&lt;/code&gt;&lt;/p&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
 
 &lt;span class=&quot;c&quot;&gt;# Copyright 2015 The Kubernetes Authors All rights reserved.&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
@@ -345,7 +477,7 @@ $ sudo FLANNEL_NET=&quot;172.16.0.0/16&quot; KUBE_CONFIG_FILE=&quot;config-defau
 
 &lt;p&gt;vi &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.kube/config&lt;/code&gt; ,input following contents.&lt;/p&gt;
 
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v1&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v1&lt;/span&gt;
 &lt;span class=&quot;s&quot;&gt;clusters&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
 &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cluster&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
     &lt;span class=&quot;s&quot;&gt;insecure-skip-tls-verify&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;true&lt;/span&gt;
@@ -785,7 +917,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
 
 &lt;p&gt;这是我最初的nginx配置&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;my_docker_registry&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;my_docker_registry&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kn&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;192.168.100.48&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8443&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# registry.renhl.com
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
@@ -829,7 +961,7 @@ v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certific
 &lt;/div&gt;
 &lt;p&gt;我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/ssl/nginx.crt&lt;/code&gt;。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# 使用私有registry的ssl证书
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# 使用私有registry的ssl证书
 &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;ssl_certificate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/opt/renhl_com_docker_registry/certs/registry_renhl_com.crt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;ssl_certificate_key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/opt/renhl_com_docker_registry/certs/registry_renhl_com.key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -845,7 +977,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 &lt;p&gt;原因很清楚，反向代理把my_docker_registry，做为host发到了客户端了，要让反向代理设置正确的host。把下面的一行加到nginx配置里。&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;Host&lt;/span&gt;            &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;Host&lt;/span&gt;            &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -857,7 +989,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 &lt;p&gt;我push的imgage太大，被nginx拒绝了。问了Google以后，在nginx的配置加入下面的两行：&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;client_max_body_size&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# disable any limits to avoid HTTP 413 for large image uploads
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;client_max_body_size&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# disable any limits to avoid HTTP 413 for large image uploads
 # required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
 &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chunked_transfer_encoding&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -865,7 +997,7 @@ dial tcp: lookup my_docker_registry: no such host
 
 &lt;p&gt;再push image，成功了！这是最后的配置：&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;my_docker_registry&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;my_docker_registry&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kn&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;192.168.100.48&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8443&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# registry.renhl.com
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
@@ -1230,7 +1362,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 
 &lt;p&gt;编辑&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/sites-available/default&lt;/code&gt;,加入如下内容：&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;wiki&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;wiki&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
 	&lt;span class=&quot;kn&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;172.168.100.47&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# wiki.renhl.com
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
@@ -1301,7 +1433,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 &lt;h1 id=&quot;ip&quot;&gt;IP限制&lt;/h1&gt;
 &lt;p&gt;出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：&lt;/p&gt;
 
-&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;allow&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;111&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.206.238.12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;allow&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;111&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.206.238.12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;allow&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;111&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.206.238.94&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;deny&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -1374,7 +1506,7 @@ gitlab的备份是类似&lt;code class=&quot;highlighter-rouge&quot;&gt;14498065
 
 &lt;p&gt;docker-compose.yml&lt;/p&gt;
 
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
 &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:7.9.4&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app:start&lt;/span&gt;
@@ -1418,7 +1550,7 @@ gitlab的备份是类似&lt;code class=&quot;highlighter-rouge&quot;&gt;14498065
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
 &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:8.2.2&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app:start&lt;/span&gt;
@@ -1476,7 +1608,7 @@ mkdir -p /opt/data/mysql&lt;/p&gt;
 
 &lt;p&gt;$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag&lt;/p&gt;
 
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:5.7&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
@@ -1487,7 +1619,7 @@ mkdir -p /opt/data/mysql&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;COLLATE&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8_unicode_ci`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;COLLATE&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8_unicode_ci`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;LOCK&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TABLES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;UPDATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DROP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;gitlab&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;172.17.%.%&#39;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;dbpassword&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;FLUSH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -1498,7 +1630,7 @@ mkdir -p /opt/data/mysql&lt;/p&gt;
 
 &lt;p&gt;fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&lt;/p&gt;
 
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:8.2.0&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;
   &lt;span class=&quot;s&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
@@ -1541,178 +1673,6 @@ mkdir -p /opt/data/mysql&lt;/p&gt;
         <category>blog</category>
         
         <category>gitlab</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: 把Gitlab迁移到Docker容器里</title>
-        <description>&lt;p&gt;公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。&lt;/p&gt;
-
-&lt;h1 id=&quot;section&quot;&gt;1 规划&lt;/h1&gt;
-
-&lt;p&gt;规划：     &lt;br /&gt;
-一个容器运行gitlab    &lt;br /&gt;
-一个容器运行MySQL,然后 link到gitlab上。   &lt;br /&gt;
-一个容器运行Redis,然后 link到gitlab上。&lt;/p&gt;
-
-&lt;h1 id=&quot;gitlab&quot;&gt;2 安装gitlab&lt;/h1&gt;
-
-&lt;p&gt;我们先运行MySQL，&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo docker pull sameersbn/mysql:latest
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;在host主机上创建mysql的数据目录。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo mkdir -p /opt/mysql/data
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;启动MySQL容器。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo docker run --name mysql -d \
-    -v /opt/mysql/data:/var/lib/mysql \
-    sameersbn/mysql:latest
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;连接到MySQL上，修改授权信息&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; -it mysql bash
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;创建数据库并授权。&lt;/p&gt;
-
-&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;COLLATE&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8_unicode_ci`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;LOCK&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TABLES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;UPDATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DROP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;gitlab&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;172.17.%.%&#39;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;dbpassword&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;FLUSH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h1 id=&quot;redis&quot;&gt;3 配置redis&lt;/h1&gt;
-
-&lt;p&gt;Pull image&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker pull sameersbn/redis:latest
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;run redis     &lt;br /&gt;
-&lt;code class=&quot;highlighter-rouge&quot;&gt;sh
-$ sudo docker run --name=redis -d sameersbn/redis:latest
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;gitlab-1&quot;&gt;4 Gitlab&lt;/h1&gt;
-
-&lt;p&gt;Pull 先把老版的imagepull回来&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker pull sameersbn/gitlab:6.7.5
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;创建数据目录&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo mkdir -p /opt/gitlab/data
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这个目录会映像到窗口的&lt;code class=&quot;highlighter-rouge&quot;&gt;/home/git/data&lt;/code&gt;目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。&lt;/p&gt;
-
-&lt;p&gt;运行gitlab容器,进行设置，容器会进行数据库的migration等操作。&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -i -t --rm --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_USER=gitlab&quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_PASS=dbpassword&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_NAME=gitlabhq_production&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;运行gitlab容器&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d -P --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_USER=gitlab&quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_PASS=dbpassword&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_NAME=gitlabhq_production&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:6.7.5&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 从原来gitlab里导出备份&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /home/git/gitlab
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo -u git -H bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rake gitlab:backup:create &lt;span class=&quot;nv&quot;&gt;RAILS_ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;production&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;导出的文件放在&lt;code class=&quot;highlighter-rouge&quot;&gt;/home/git/gitlab/tmp/backups&lt;/code&gt;这个目录下。&lt;/p&gt;
-
-&lt;p&gt;把这个文件 scp到 docker gitlab那台机器的&lt;code class=&quot;highlighter-rouge&quot;&gt;/opt/gitlab/data/backups&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;登录到gitlab的container&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; -it gitlab bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;在容器里执行下面的命令&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /home/git/gitlab
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo -u git -H  bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rake gitlab:backup:restore &lt;span class=&quot;nv&quot;&gt;RAILS_ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;production
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;这个样数据就全部到新的gitlab上了。&lt;br /&gt;
-你会发现跟原来的一样。&lt;/p&gt;
-
-&lt;p&gt;下面我们来升级gitlab到新版。&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker stop gitlab
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker rm gitlab
-
-&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d -P --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link redis:redisio &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_USER=gitlab&quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_PASS=dbpassword&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_NAME=gitlabhq_production&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  sameersbn/gitlab:latest&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;配置好以后，把它保存成一个镜像。&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker commit -m &lt;span class=&quot;s2&quot;&gt;&quot;update gitlab.yml ,change host,set timezone to BeiJing&quot;&lt;/span&gt; -a &lt;span class=&quot;s2&quot;&gt;&quot;china-ops gitlab v7.9.4&quot;&lt;/span&gt; 6af1d0739ae0 china-ops/gitlab:7.9.4&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。&lt;br /&gt;
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，&lt;br /&gt;
-hostname等是通过环境变量来控制的。&lt;/p&gt;
-
-&lt;p&gt;用这个镜像来启动一个container&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo docker run --name gitlab -d  &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -p 80:80  -p 8443:443 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link mysql:mysql &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  --link redis:redisio &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_USER=gitlab&quot;&lt;/span&gt; -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_PASS=dbpassword&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;DB_NAME=gitlabhq_production&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;GITLAB_HOST=gitlab.china-ops.com&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;GITLAB_TIMEZONE=Beijing&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s1&quot;&gt;&#39;GITLAB_BACKUPS=daily&#39;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -e &lt;span class=&quot;s2&quot;&gt;&quot;GITLAB_GRAVATAR_ENABLED=false&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  -v /opt/gitlab/data:/home/git/data &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  china-ops/gitlab:7.9.4&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;参数&lt;code class=&quot;highlighter-rouge&quot;&gt;-e &#39;GITLAB_BACKUPS=daily&#39;&lt;/code&gt; 是备份策略，我们设置为每天&lt;/p&gt;
-
-&lt;p&gt;默认的密码：    &lt;br /&gt;
-username: admin@local.host    &lt;br /&gt;
-password: 5iveL!fe&lt;/p&gt;
-
-&lt;p&gt;参考：　  &lt;br /&gt;
-&lt;a href=&quot;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&quot;&gt;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&lt;/a&gt;      &lt;br /&gt;
-&lt;a href=&quot;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&quot;&gt;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&lt;/a&gt;    &lt;br /&gt;
-&lt;a href=&quot;http://dockerpool.com/article/1413082493&quot;&gt;Docker FAQ —— Docker 使用常见问题（持续更新中）&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 09 Apr 2015 20:30:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/docker/move-gitlab-to-docker-container</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/docker/move-gitlab-to-docker-container</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>docker</category>
         
       </item>
     

@@ -114,7 +114,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 
 <p>编辑<code class="highlighter-rouge">/etc/nginx/sites-available/default</code>,加入如下内容：</p>
 
-<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
 	<span class="kn">server</span> <span class="nf">172.168.100.47</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span> <span class="c1"># wiki.renhl.com
 </span><span class="p">}</span>
 
@@ -185,7 +185,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 <h1 id="ip">IP限制</h1>
 <p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
 
-<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
 <span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
 <span class="k">deny</span> <span class="s">all</span><span class="p">;</span>
 </code></pre>
@@ -265,7 +265,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">1</span>
+            <span class="badge badge-theme pull-right">2</span>
         </p>
     
 
@@ -274,6 +274,12 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+            
+                <li>
+                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
+                <em>Posted on 05 Jul 2016</em>
+            </li>
             
                 <li>
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
@@ -291,12 +297,6 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
-                <em>Posted on 05 Jan 2016</em>
             </li>
             
         </ul>
@@ -317,7 +317,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (1)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
         
     </p>
 

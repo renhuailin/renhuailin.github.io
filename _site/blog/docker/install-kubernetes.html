@@ -80,10 +80,30 @@
             <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
 
             <div id="main_content"><h1 id="section">系统配置</h1>
-<p>两台主机,运行ubuntu 14.04<br />
-192.168.56.1     workstation，也就是我工作的主机。<br />
-182.168.56.101   kube-master`   master/minion 一体机<br />
-182.168.56.102   kube-slave</p>
+<p>两台主机,运行ubuntu 14.04</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Default aligned</th>
+      <th style="text-align: left">Left aligned</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>192.168.56.1</td>
+      <td style="text-align: left">workstation，也就是我工作的主机。</td>
+    </tr>
+    <tr>
+      <td>182.168.56.101</td>
+      <td style="text-align: left">kube-master   master/minion 一体机</td>
+    </tr>
+    <tr>
+      <td>182.168.56.102</td>
+      <td style="text-align: left">kube-slave</td>
+    </tr>
+  </tbody>
+</table>
 
 <p>kubernetes版本：1.2.0</p>
 
@@ -108,7 +128,7 @@ hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserve
 
 <p>modify <code class="highlighter-rouge">download-release.sh</code></p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="c"># Copyright 2015 The Kubernetes Authors All rights reserved.</span>
 <span class="c">#</span>
@@ -413,7 +433,7 @@ $ sudo FLANNEL_NET="172.16.0.0/16" KUBE_CONFIG_FILE="config-default.sh" DOCKER_O
 
 <p>vi <code class="highlighter-rouge">~/.kube/config</code> ,input following contents.</p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="s">clusters</span><span class="pi">:</span>
 <span class="pi">-</span> <span class="s">cluster</span><span class="pi">:</span>
     <span class="s">insecure-skip-tls-verify</span><span class="pi">:</span> <span class="s">true</span>
@@ -518,7 +538,7 @@ NAME             STATUS    AGE
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">1</span>
+            <span class="badge badge-theme pull-right">2</span>
         </p>
     
 
@@ -527,6 +547,12 @@ NAME             STATUS    AGE
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+            
+                <li>
+                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
+                <em>Posted on 05 Jul 2016</em>
+            </li>
             
                 <li>
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
@@ -544,12 +570,6 @@ NAME             STATUS    AGE
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
-                <em>Posted on 05 Jan 2016</em>
             </li>
             
         </ul>
@@ -570,7 +590,7 @@ NAME             STATUS    AGE
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (1)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
         
     </p>
 

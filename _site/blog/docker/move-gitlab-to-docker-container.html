@@ -112,13 +112,13 @@
 
 <p>连接到MySQL上，修改授权信息</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
 </code></pre>
 </div>
 
 <p>创建数据库并授权。</p>
 
-<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -129,7 +129,7 @@
 
 <p>Pull image</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
 </code></pre>
 </div>
 
@@ -142,20 +142,20 @@ $ sudo docker run --name=redis -d sameersbn/redis:latest
 
 <p>Pull 先把老版的imagepull回来</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
 </code></pre>
 </div>
 
 <p>创建数据目录</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
 </code></pre>
 </div>
 <p>这个目录会映像到窗口的<code class="highlighter-rouge">/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
 
 <p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
   -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
   -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
   -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
@@ -306,7 +306,7 @@ password: 5iveL!fe</p>
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">1</span>
+            <span class="badge badge-theme pull-right">2</span>
         </p>
     
 
@@ -315,6 +315,12 @@ password: 5iveL!fe</p>
     <h4>Recent Posts</h4>
     <div class="hline"></div>
         <ul class="popular-posts">
+            
+                <li>
+                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
+                <em>Posted on 05 Jul 2016</em>
+            </li>
             
                 <li>
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
@@ -332,12 +338,6 @@ password: 5iveL!fe</p>
                     <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-chef">安装chef</a></p>
                 <em>Posted on 22 Feb 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/docker-private-registry-behind-nginx-reverse-proxy">为docker私有registry配置nginx反向代理</a></p>
-                <em>Posted on 05 Jan 2016</em>
             </li>
             
         </ul>
@@ -358,7 +358,7 @@ password: 5iveL!fe</p>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (1)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
         
     </p>
 

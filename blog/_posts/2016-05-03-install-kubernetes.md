@@ -11,9 +11,13 @@ thumb: docker.png
 
 # 系统配置
 两台主机,运行ubuntu 14.04
-192.168.56.1     workstation，也就是我工作的主机。
-182.168.56.101   kube-master`   master/minion 一体机
-182.168.56.102   kube-slave
+
+|-----------------+------------|
+| Default aligned |Left aligned|
+|-----------------|:-----------|
+| 192.168.56.1  |   workstation，也就是我工作的主机。 |
+| 182.168.56.101 |  kube-master   master/minion 一体机 |
+| 182.168.56.102  | kube-slave |
 
 
 kubernetes版本：1.2.0
