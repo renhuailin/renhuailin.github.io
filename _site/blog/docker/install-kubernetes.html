@@ -85,25 +85,64 @@
 <table>
   <thead>
     <tr>
-      <th>Default aligned</th>
-      <th style="text-align: left">Left aligned</th>
+      <th>IP</th>
+      <th style="text-align: left">说明</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>192.168.56.1</td>
-      <td style="text-align: left">workstation，也就是我工作的主机。</td>
+      <td>192.168.99.60</td>
+      <td style="text-align: left">kube-minion2</td>
     </tr>
     <tr>
-      <td>182.168.56.101</td>
-      <td style="text-align: left">kube-master   master/minion 一体机</td>
+      <td>192.168.99.61</td>
+      <td style="text-align: left">master/minion 一体机</td>
     </tr>
     <tr>
-      <td>182.168.56.102</td>
-      <td style="text-align: left">kube-slave</td>
+      <td>192.168.99.62</td>
+      <td style="text-align: left">kube-minion1</td>
     </tr>
   </tbody>
 </table>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/harley/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/harley/.ssh/id_rsa.
+Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
+The key's randomart image is:
++---[RSA 2048]----+
+|        .+..+..  |
+|       ......E oo|
+|    .   . .. .+=*|
+|   = . . ..  .=**|
+|  + * o S. .++.+=|
+| . . B .  o.ooo .|
+|    o o  . o .   |
+|       .  + o    |
+|        .. o     |
++----[SHA256]-----+
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-copy-id harley@192.168.99.60
+$ ssh-copy-id harley@192.168.99.61
+$ ssh-copy-id harley@192.168.99.62
+</code></pre>
+</div>
+
+<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。<br />
+<code class="highlighter-rouge">
+$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
+$ sudo chmod 0440 /etc/sudoers.d/harley
+</code></p>
+
+<p>因为重新配置docker需要用到<code class="highlighter-rouge">brctl</code>命令。需要先安装相关的包。<br />
+<code class="highlighter-rouge">apt-get install bridge-utils</code>.</p>
 
 <p>kubernetes版本：1.2.0</p>
 
@@ -117,6 +156,10 @@
 
 <p>You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.</p>
 
+<div class="highlighter-rouge"><pre class="highlight"><code># KUBERNETES_PROVIDER=ubuntu ./kube-up.sh 
+</code></pre>
+</div>
+
 <p><code class="highlighter-rouge">kubelet</code>,<code class="highlighter-rouge">kube-proxy</code>不放在容器里。 <code class="highlighter-rouge">etcd</code>, <code class="highlighter-rouge">kube-apiserver</code>, <code class="highlighter-rouge">kube-controller-manager</code>, <code class="highlighter-rouge">kube-scheduler</code> 放在容器里运行。</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>$ docker pull quay.io/coreos/etcd:v2.2.1
@@ -126,7 +169,13 @@
 <p>The hyperkube binary is an all in one binary<br />
 hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
 
-<p>modify <code class="highlighter-rouge">download-release.sh</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ export KUBE_VERSION=1.3.2
+$ export FLANNEL_VERSION=0.5.5
+$ export ETCD_VERSION=2.2.1
+</code></pre>
+</div>
+
+<p>modify <code class="highlighter-rouge">~/kubernetes/cluster/ubuntu/download-release.sh</code></p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
@@ -154,6 +203,8 @@ hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserve
   <span class="c"># cleanup work</span>
   rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span> binaries
 <span class="o">}</span>
+
+<span class="c"># 把下面的这一行注释掉，在国内我们经常会因网络原因导致下载进程卡死，当你手动中断时，你之前辛辛苦苦下载的东西会全部删除，就是因为这条命令。</span>
 <span class="c">#trap cleanup SIGHUP SIGINT SIGTERM</span>
 
 <span class="nb">pushd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span>
@@ -187,9 +238,11 @@ grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">ETCD
 <span class="nb">echo</span> <span class="s2">"Prepare kubernetes </span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
 grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.kubernetes 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
 
+  <span class="c"># 不要再去下载了，我们已经下载完了，请直接</span>
   <span class="c">#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz</span>
   <span class="c">#tar xzf kubernetes.tar.gz</span>
 
+  <span class="c"># 直接copy过来</span>
   cp ../../server/kubernetes-server-linux-amd64.tar.gz .
   cp ../../server/kubernetes-salt.tar.gz .
 
@@ -216,11 +269,15 @@ rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<s
 </code></pre>
 </div>
 
-<p>Download easy rsa package.</p>
+<p>Download easy rsa package.   <br />
+这时还是在cluster这个目录。<br />
+<code class="highlighter-rouge">
+$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
+</code></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
-</code></pre>
-</div>
+<p>把<code class="highlighter-rouge">kubernetes-salt.tar.gz</code>copy 到 cluster目录。<br />
+cp ../../server/kubernetes-salt.tar.gz .<br />
+把里面的目录解压出来，<code class="highlighter-rouge">kubernetes/saltbase</code> mv到 cluster目录。</p>
 
 <p>登录到kube-master这台机器上,创建相关目录。</p>
 
@@ -464,6 +521,36 @@ NAME             STATUS    AGE
 </code></pre>
 </div>
 
+<p>问题1： 不同节点上的两个Pod不能相互Ping通；<br />
+仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的<code class="highlighter-rouge">--bip</code>不一样，应该是这个原因了。<br />
+```<br />
+# docker的启动参数为<br />
+/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock –bip=172.16.3.1/24 –mtu=1450 –raw-logs</p>
+
+<h1 id="cat--runflannelsubnetenv-">cat  /run/flannel/subnet.env 显示为：</h1>
+<p>FLANNEL_NETWORK=172.16.0.0/16<br />
+FLANNEL_SUBNET=172.16.45.1/24<br />
+FLANNEL_MTU=1450<br />
+FLANNEL_IPMASQ=true<br />
+<code class="highlighter-rouge">
+应该是在安装节点时`reconfDocker.sh`,我们重新配置一下。
+</code><br />
+$ cd ~/kube<br />
+$ sudo FLANNEL_NET=”172.16.45.1/24” KUBE_CONFIG_FILE=”config-default.sh” DOCKER_OPTS=””  ~/kubeeconfDocker.sh i <br />
+```<br />
+结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>harley@k8smasterminion:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
+10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
+172.16.30.0     0.0.0.0         255.255.255.0   U     0      0        0 docker0
+192.168.99.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
+</code></pre>
+</div>
+
 <p><strong>参考资料：</strong><br />
 1. http://dockone.io/article/622<br />
 2. http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html<br />
@@ -523,7 +610,7 @@ NAME             STATUS    AGE
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">4</span>
         </p>
     
         <p>
@@ -549,6 +636,18 @@ NAME             STATUS    AGE
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
+                <em>Posted on 27 Aug 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
+                <em>Posted on 05 Jul 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
                     <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
                 <em>Posted on 05 Jul 2016</em>
@@ -558,18 +657,6 @@ NAME             STATUS    AGE
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
                 <em>Posted on 03 May 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/ssh-login-without-password"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/ssh-login-without-password">实现SSH无密码登录远程主机</a></p>
-                <em>Posted on 02 May 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-chef"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-chef">安装chef</a></p>
-                <em>Posted on 22 Feb 2016</em>
             </li>
             
         </ul>
@@ -584,7 +671,7 @@ NAME             STATUS    AGE
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (2)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         

@@ -5,9 +5,163 @@
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 21 Jul 2016 17:19:24 +0800</pubDate>
-    <lastBuildDate>Thu, 21 Jul 2016 17:19:24 +0800</lastBuildDate>
+    <pubDate>Sun, 28 Aug 2016 23:34:41 +0800</pubDate>
+    <lastBuildDate>Sun, 28 Aug 2016 23:34:41 +0800</lastBuildDate>
     <generator>Jekyll v3.0.3</generator>
+    
+      <item>
+        <title>Blog: 部署OpenStack Mitaka</title>
+        <description>&lt;h1 id=&quot;section&quot;&gt;1 规划&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0:0&lt;/th&gt;
+      &lt;th&gt;1:0&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;0:2&lt;/td&gt;
+      &lt;td&gt;1:2&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;192.168.234.202   Openstack controller node     &lt;br /&gt;
+192.168.234.205   Openstack network node     &lt;br /&gt;
+192.168.234.204   Openstack compute node&lt;/p&gt;
+
+&lt;p&gt;networ node必须有三个NIC(network interface card),也就是网卡．&lt;/p&gt;
+
+&lt;p&gt;管理网段：10.0.0.0/24&lt;/p&gt;
+
+&lt;p&gt;#参考：　&lt;br /&gt;
+&lt;a href=&quot;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&quot;&gt;https://github.com/openstack/keystone/blob/master/tools/sample_data.sh&lt;/a&gt;      &lt;br /&gt;
+&lt;a href=&quot;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&quot;&gt;https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 27 Aug 2016 20:30:00 +0800</pubDate>
+        <link>http://yourdomain.com/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>OpenStack</category>
+        
+      </item>
+    
+      <item>
+        <title>Blog: 安装Ceph1111</title>
+        <description>&lt;h1 id=&quot;section&quot;&gt;系统配置&lt;/h1&gt;
+
+&lt;p&gt;4台主机,运行ubuntu 16.04&lt;br /&gt;
+192.168.99.50    Ceph Monitor    &lt;br /&gt;
+192.168.99.51    Ceph OSD1&lt;br /&gt;
+192.168.99.52    Ceph OSD2&lt;br /&gt;
+192.168.99.53    Ceph Deploy&lt;/p&gt;
+
+&lt;p&gt;选用的Ceph版本：&lt;/p&gt;
+
+&lt;p&gt;V10.2.2 JEWEL RELEASED&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-deploy1921689953&quot;&gt;Ceph Deploy节点192.168.99.53的安装&lt;/h2&gt;
+&lt;p&gt;For Ubuntu ,Debian.&lt;br /&gt;
+Add the release key:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget -q -O- &#39;https://download.ceph.com/keys/release.asc&#39; | sudo apt-key add -
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;echo deb http://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;更新源，安装&lt;code class=&quot;highlighter-rouge&quot;&gt;ceph-deploy&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install ceph-deploy
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-node&quot;&gt;Ceph node设置&lt;/h2&gt;
+
+&lt;p&gt;安装ntp server.  包括monitor和两个osd节点。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get install ntp
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;安装 SSH Server,要确保所有节点都安装了SSH Server。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+sudo apt-get install openssh-server
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;创建一个用于部署ceph的用户&lt;br /&gt;
+ceph-deploy这个工具必须能登录到节点上，而且要可以无需密码地运行sudo。最新版的ceph-deploy 支持&lt;code class=&quot;highlighter-rouge&quot;&gt;--username&lt;/code&gt;这个选项，可以指定一个用户，也可以是&lt;code class=&quot;highlighter-rouge&quot;&gt;root&lt;/code&gt;(not recommended),为了方便我们就用&lt;code class=&quot;highlighter-rouge&quot;&gt;harley&lt;/code&gt;吧。&lt;/p&gt;
+
+&lt;p&gt;在每个节点上执行这个命令，让harleyr无需密码地运行sudo。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+echo &quot;harley ALL = (root) NOPASSWD:ALL&quot; | sudo tee /etc/sudoers.d/harley
+sudo chmod 0440 /etc/sudoers.d/harley
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ceph-deploylogin-to-nodes-without-password&quot;&gt;Ceph Deploy节点配置Login to nodes without password&lt;/h2&gt;
+&lt;p&gt;ceph-deploy没有用expect,所以不能输入密码，要求ceph-deploy用harley这个用户登录到各个节点时，不能提示输入密码。&lt;br /&gt;
+ 我们要在Ceph Deploy节点上生成证书然后分发到相关的节点上。&lt;/p&gt;
+
+&lt;p&gt;add to ceph deploy node&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vi /etc/hosts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;添加下列内容：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+192.168.99.50 ceph_monitor
+192.168.99.51 ceph_osd1
+192.168.99.52 ceph_osd2
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;复制ssh key到各个节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-copy-id harley@ceph_monitor
+ssh-copy-id harley@ceph_osd1
+ssh-copy-id harley@ceph_osd2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;ENSURE CONNECTIVITY&lt;br /&gt;
+要能Ping通相关的节点？？？&lt;/p&gt;
+
+&lt;p&gt;开放相关的端口&lt;br /&gt;
+如果你用的CentOS等，他默认的防火墙是很严格的，你需要配置防火墙打开相关的端口。&lt;/p&gt;
+
+&lt;h1 id=&quot;section-1&quot;&gt;开始创建一个集群！&lt;/h1&gt;
+
+&lt;p&gt;在ceph-deploy节点上&lt;br /&gt;
+```&lt;br /&gt;
+mkdir my-cluster&lt;br /&gt;
+cd my-cluster&lt;/p&gt;
+
+&lt;p&gt;```&lt;/p&gt;
+
+&lt;h2 id=&quot;create-a-cluster&quot;&gt;CREATE A CLUSTER&lt;/h2&gt;
+
+&lt;p&gt;ceph-deploy –user harley new  ceph_monitor&lt;/p&gt;
+
+&lt;p&gt;[ceph_deploy][ERROR ] RuntimeError: connecting to host: harley@ceph_monitor resulted in errors: IOError cannot send (already closed?)&lt;/p&gt;
+
+&lt;p&gt;原因是ubuntu 16.04上没有python这个命令，默认是python3. 登录到各个节点，cd到/usr/bin做个软链接就行了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;参考资料：&lt;/strong&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 05 Jul 2016 20:35:21 +0800</pubDate>
+        <link>http://yourdomain.com/blog/openstack/install-ceph</link>
+        <guid isPermaLink="true">http://yourdomain.com/blog/openstack/install-ceph</guid>
+        
+        
+        <category>blog</category>
+        
+        <category>OpenStack</category>
+        
+      </item>
     
       <item>
         <title>Blog: 安装Ceph</title>
@@ -129,25 +283,64 @@ cd my-cluster&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
     &lt;tr&gt;
-      &lt;th&gt;Default aligned&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Left aligned&lt;/th&gt;
+      &lt;th&gt;IP&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;说明&lt;/th&gt;
     &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
     &lt;tr&gt;
-      &lt;td&gt;192.168.56.1&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;workstation，也就是我工作的主机。&lt;/td&gt;
+      &lt;td&gt;192.168.99.60&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;kube-minion2&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
-      &lt;td&gt;182.168.56.101&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;kube-master   master/minion 一体机&lt;/td&gt;
+      &lt;td&gt;192.168.99.61&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;master/minion 一体机&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
-      &lt;td&gt;182.168.56.102&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;kube-slave&lt;/td&gt;
+      &lt;td&gt;192.168.99.62&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;kube-minion1&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/harley/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/harley/.ssh/id_rsa.
+Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
+The key&#39;s randomart image is:
++---[RSA 2048]----+
+|        .+..+..  |
+|       ......E oo|
+|    .   . .. .+=*|
+|   = . . ..  .=**|
+|  + * o S. .++.+=|
+| . . B .  o.ooo .|
+|    o o  . o .   |
+|       .  + o    |
+|        .. o     |
++----[SHA256]-----+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ssh-copy-id harley@192.168.99.60
+$ ssh-copy-id harley@192.168.99.61
+$ ssh-copy-id harley@192.168.99.62
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在每个节点上执行这个命令，让harleyr无需密码地运行sudo。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+$ echo &quot;harley ALL = (root) NOPASSWD:ALL&quot; | sudo tee /etc/sudoers.d/harley
+$ sudo chmod 0440 /etc/sudoers.d/harley
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;因为重新配置docker需要用到&lt;code class=&quot;highlighter-rouge&quot;&gt;brctl&lt;/code&gt;命令。需要先安装相关的包。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;apt-get install bridge-utils&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;kubernetes版本：1.2.0&lt;/p&gt;
 
@@ -161,6 +354,10 @@ cd my-cluster&lt;/p&gt;
 
 &lt;p&gt;You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.&lt;/p&gt;
 
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# KUBERNETES_PROVIDER=ubuntu ./kube-up.sh 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;kubelet&lt;/code&gt;,&lt;code class=&quot;highlighter-rouge&quot;&gt;kube-proxy&lt;/code&gt;不放在容器里。 &lt;code class=&quot;highlighter-rouge&quot;&gt;etcd&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;kube-apiserver&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;kube-controller-manager&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;kube-scheduler&lt;/code&gt; 放在容器里运行。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker pull quay.io/coreos/etcd:v2.2.1
@@ -170,7 +367,13 @@ cd my-cluster&lt;/p&gt;
 &lt;p&gt;The hyperkube binary is an all in one binary&lt;br /&gt;
 hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.&lt;/p&gt;
 
-&lt;p&gt;modify &lt;code class=&quot;highlighter-rouge&quot;&gt;download-release.sh&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ export KUBE_VERSION=1.3.2
+$ export FLANNEL_VERSION=0.5.5
+$ export ETCD_VERSION=2.2.1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;modify &lt;code class=&quot;highlighter-rouge&quot;&gt;~/kubernetes/cluster/ubuntu/download-release.sh&lt;/code&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
 
@@ -198,6 +401,8 @@ hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserve
   &lt;span class=&quot;c&quot;&gt;# cleanup work&lt;/span&gt;
   rm -rf flannel&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; kubernetes&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; etcd&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; binaries
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 把下面的这一行注释掉，在国内我们经常会因网络原因导致下载进程卡死，当你手动中断时，你之前辛辛苦苦下载的东西会全部删除，就是因为这条命令。&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;#trap cleanup SIGHUP SIGINT SIGTERM&lt;/span&gt;
 
 &lt;span class=&quot;nb&quot;&gt;pushd&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;dirname &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
@@ -231,9 +436,11 @@ grep -q &lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quo
 &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Prepare kubernetes &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; release ...&quot;&lt;/span&gt;
 grep -q &lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KUBE_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; binaries/.kubernetes 2&amp;gt;/dev/null &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
+  &lt;span class=&quot;c&quot;&gt;# 不要再去下载了，我们已经下载完了，请直接&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#tar xzf kubernetes.tar.gz&lt;/span&gt;
 
+  &lt;span class=&quot;c&quot;&gt;# 直接copy过来&lt;/span&gt;
   cp ../../server/kubernetes-server-linux-amd64.tar.gz .
   cp ../../server/kubernetes-salt.tar.gz .
 
@@ -260,11 +467,15 @@ rm -rf flannel&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; kubernetes&lt;span 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;Download easy rsa package.&lt;/p&gt;
+&lt;p&gt;Download easy rsa package.   &lt;br /&gt;
+这时还是在cluster这个目录。&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;p&gt;把&lt;code class=&quot;highlighter-rouge&quot;&gt;kubernetes-salt.tar.gz&lt;/code&gt;copy 到 cluster目录。&lt;br /&gt;
+cp ../../server/kubernetes-salt.tar.gz .&lt;br /&gt;
+把里面的目录解压出来，&lt;code class=&quot;highlighter-rouge&quot;&gt;kubernetes/saltbase&lt;/code&gt; mv到 cluster目录。&lt;/p&gt;
 
 &lt;p&gt;登录到kube-master这台机器上,创建相关目录。&lt;/p&gt;
 
@@ -505,6 +716,36 @@ $ sudo FLANNEL_NET=&quot;172.16.0.0/16&quot; KUBE_CONFIG_FILE=&quot;config-defau
 $ binaries/kubectl get nodes
 NAME             STATUS    AGE
 192.168.56.101   Ready     2h
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;问题1： 不同节点上的两个Pod不能相互Ping通；&lt;br /&gt;
+仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的&lt;code class=&quot;highlighter-rouge&quot;&gt;--bip&lt;/code&gt;不一样，应该是这个原因了。&lt;br /&gt;
+```&lt;br /&gt;
+# docker的启动参数为&lt;br /&gt;
+/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock –bip=172.16.3.1/24 –mtu=1450 –raw-logs&lt;/p&gt;
+
+&lt;h1 id=&quot;cat--runflannelsubnetenv-&quot;&gt;cat  /run/flannel/subnet.env 显示为：&lt;/h1&gt;
+&lt;p&gt;FLANNEL_NETWORK=172.16.0.0/16&lt;br /&gt;
+FLANNEL_SUBNET=172.16.45.1/24&lt;br /&gt;
+FLANNEL_MTU=1450&lt;br /&gt;
+FLANNEL_IPMASQ=true&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+应该是在安装节点时`reconfDocker.sh`,我们重新配置一下。
+&lt;/code&gt;&lt;br /&gt;
+$ cd ~/kube&lt;br /&gt;
+$ sudo FLANNEL_NET=”172.16.45.1/24” KUBE_CONFIG_FILE=”config-default.sh” DOCKER_OPTS=””  ~/kubeeconfDocker.sh i &lt;br /&gt;
+```&lt;br /&gt;
+结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;harley@k8smasterminion:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
+10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
+172.16.30.0     0.0.0.0         255.255.255.0   U     0      0        0 docker0
+192.168.99.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -1317,357 +1558,6 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
         <pubDate>Thu, 17 Dec 2015 18:43:06 +0800</pubDate>
         <link>http://yourdomain.com/blog/gitlab/jenkins-gitlab-ci</link>
         <guid isPermaLink="true">http://yourdomain.com/blog/gitlab/jenkins-gitlab-ci</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>gitlab</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: Nginx自签名https和反向代理</title>
-        <description>&lt;h1 id=&quot;section&quot;&gt;场景&lt;/h1&gt;
-&lt;p&gt;公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，&lt;br /&gt;
-只能通过一个公网IP来访问，所以需要用Nginx做个反向代理来访问些服务器。另外，这些服务都要以https来访问。&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;服务器&lt;/th&gt;
-      &lt;th&gt;内网IP&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;wiki.renhl.com&lt;/td&gt;
-      &lt;td&gt;172.168.100.47&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;hub.renhl.com&lt;/td&gt;
-      &lt;td&gt;172.168.100.48&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h1 id=&quot;section-1&quot;&gt;生成自签名的证书&lt;/h1&gt;
-&lt;p&gt;因为是自己公司用也就无需申请认证的证书了，自签名即可。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo mkdir -p /etc/nginx/ssl
-$ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h1 id=&quot;section-2&quot;&gt;配置反向代理&lt;/h1&gt;
-
-&lt;p&gt;编辑&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/sites-available/default&lt;/code&gt;,加入如下内容：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;wiki&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kn&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;172.168.100.47&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# wiki.renhl.com
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hub&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kn&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;172&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.168.100.48&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# hub.renhl.com
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;## Start wiki.renhl.com ##
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kn&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;kn&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;443&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ssl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;kn&quot;&gt;ssl_certificate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/etc/nginx/ssl/nginx.crt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;ssl_certificate_key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/etc/nginx/ssl/nginx.key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;kn&quot;&gt;server_name&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;wiki.ecloud.com.cn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;kn&quot;&gt;access_log&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;/var/log/nginx/wiki.renhl.access.log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;error_log&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;/var/log/nginx/wiki.renhl.error.log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;/usr/share/nginx/html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;index&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;index.html&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;index.htm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;## send request back to apache1 ##
-&lt;/span&gt;    &lt;span class=&quot;kn&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_pass&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;http://wiki&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_next_upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;timeout&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;invalid_header&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_500&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_502&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_503&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_504&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_redirect&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_buffering&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;Host&lt;/span&gt;            &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;X-Real-IP&lt;/span&gt;       &lt;span class=&quot;nv&quot;&gt;$remote_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;X-Forwarded-For&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$proxy_add_x_forwarded_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;## End wiki.renhl.com ##
-&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;## START hub.renhl.com ##
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-   	&lt;span class=&quot;kn&quot;&gt;server_name&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hub.renhl.com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;kn&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;443&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ssl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;kn&quot;&gt;ssl_certificate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/etc/nginx/ssl/nginx.crt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kn&quot;&gt;ssl_certificate_key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/etc/nginx/ssl/nginx.key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-   &lt;span class=&quot;kn&quot;&gt;access_log&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;/var/log/nginx/hub.renhl.access.log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-   &lt;span class=&quot;kn&quot;&gt;error_log&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;/var/log/nginx/hub.renhl.error.log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-   &lt;span class=&quot;kn&quot;&gt;root&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;/usr/local/nginx/html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-   &lt;span class=&quot;kn&quot;&gt;index&lt;/span&gt;       &lt;span class=&quot;s&quot;&gt;index.html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-   &lt;span class=&quot;kn&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_pass&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;https://hub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_next_upstream&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;timeout&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;invalid_header&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_500&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_502&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_503&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http_504&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_redirect&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_buffering&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;Host&lt;/span&gt;           &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;X-Real-IP&lt;/span&gt;       &lt;span class=&quot;nv&quot;&gt;$remote_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kn&quot;&gt;proxy_set_header&lt;/span&gt;        &lt;span class=&quot;s&quot;&gt;X-Forwarded-For&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$proxy_add_x_forwarded_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;## END hub.renhl.com  ##
-&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h1 id=&quot;ip&quot;&gt;IP限制&lt;/h1&gt;
-&lt;p&gt;出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;allow&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;111&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.206.238.12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;allow&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;111&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.206.238.94&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;deny&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h1 id=&quot;section-3&quot;&gt;參考文献&lt;/h1&gt;
-&lt;ul&gt;
-  &lt;li&gt;https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04&lt;/li&gt;
-  &lt;li&gt;http://www.cyberciti.biz/tips/using-nginx-as-reverse-proxy.html&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Fri, 11 Dec 2015 01:58:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/docker/nginx-ssl-reverse-proxy</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/docker/nginx-ssl-reverse-proxy</guid>
-        
-        
-        <category>blog</category>
-        
-        <category>docker</category>
-        
-      </item>
-    
-      <item>
-        <title>Blog: 升級gitlab从7.9.4到8.2.2</title>
-        <description>&lt;p&gt;公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。&lt;/p&gt;
-
-&lt;h1 id=&quot;gitlab&quot;&gt;備份原來的gitlab&lt;/h1&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;到gitlab的data/backups目錄，把最近的備份copy出來。&lt;br /&gt;
-gitlab的备份是类似&lt;code class=&quot;highlighter-rouge&quot;&gt;1449806583_gitlab_backup.tar&lt;/code&gt;这样的文件名，请注意下划线前面的数字，我们将在恢复的时候用到。&lt;/p&gt;
-
-&lt;p&gt;查看當前的版本&lt;br /&gt;
-查看當前的版本，進入gitlab，在左側的菜單欄裏選&lt;code class=&quot;highlighter-rouge&quot;&gt;help&lt;/code&gt;,可以看到當前版本。我們要先運行舊版本的container,然後pull新版本的gitlab image回來升級。&lt;/p&gt;
-
-&lt;p&gt;OK，看了一下我現在的版本7.9.4&lt;/p&gt;
-
-&lt;h1 id=&quot;pull--images&quot;&gt;Pull 各種 images&lt;/h1&gt;
-
-&lt;p&gt;Next , pull gitlab 7.9.4 image from docker hub. 哈.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# docker pull sameersbn/gitlab:7.9.4
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;把最新版本的8.2.2 pull回來。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# docker pull sameersbn/gitlab:8.2.2
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;網上說MySQL 5.7是相當重要的一個版本，支持好多令人激動的新特性，那我就5.7吧，用docker好處就是能用最新版本的軟件，：）&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# docker pull mysql:5.7
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;最後要把redis pull回來，因爲要用到。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# docker pull sameersbn/redis:latest
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;然後要把MySQL配置好，請參考&lt;a href=&quot;http://www.renhl.com/blog/openstack/move-gitlab-to-docker-container/&quot;&gt;我的上篇文章&lt;/a&gt;，這裏就不再贅述了。&lt;/p&gt;
-
-&lt;h1 id=&quot;docker-composegitlab&quot;&gt;使用docker-compose啓動舊版本gitlab&lt;/h1&gt;
-
-&lt;p&gt;爲了方便維護，我使用了docker-compose。這是我的配置文件：&lt;/p&gt;
-
-&lt;p&gt;docker-compose.yml&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:7.9.4&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app:start&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;80:80&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;8443:443&quot;&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_HOST=gitlab.renhl.com&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_USER=gitlab&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;DB_PASS=dbpass&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_NAME=gitlabhq_production&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_TIMEZONE=Beijing&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_GRAVATAR_ENABLED=false&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_BACKUPS=daily&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;NGINX_MAX_UPLOAD_SIZE=100m&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;UNICORN_TIMEOUT=120&quot;&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/gitlab:/home/git/data&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;links&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:mysql&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;redis:redisio&lt;/span&gt;
-
-&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:5.7&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
-
-&lt;span class=&quot;s&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#  container_name: redis&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;啓動gitlab container.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# docker-compose up -d
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:8.2.2&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app:start&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;80:80&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;8443:443&quot;&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_HOST=gitlab.china-ops.com&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_USER=gitlab&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;DB_PASS=1q2w3e4r&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_NAME=gitlabhq_production&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_TIMEZONE=Beijing&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_GRAVATAR_ENABLED=false&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_BACKUPS=daily&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;NGINX_MAX_UPLOAD_SIZE=100m&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;UNICORN_TIMEOUT=120&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/gitlab:/home/git/data&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;links&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:mysql&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;redis:redisio&lt;/span&gt;
-
-&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:5.7&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
-
-&lt;span class=&quot;s&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#  container_name: redis&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;恢復備份：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run --name gitlab --rm  -p 80:80  -p 8443:443   --link mysql:mysql   --link redis:redisio   -e &quot;DB_USER=gitlab&quot; -e &quot;DB_PASS=somepass&quot;   -e &quot;DB_NAME=gitlabhq_production&quot;   -e &quot;GITLAB_HOST=gitlab.china-ops.com&quot;   -e &quot;GITLAB_TIMEZONE=Beijing&quot;   -e &quot;GITLAB_GRAVATAR_ENABLED=false&quot;  -e &#39;GITLAB_BACKUPS=daily&#39; -e &quot;NGINX_MAX_UPLOAD_SIZE=100m&quot; -e &quot;UNICORN_TIMEOUT=120&quot; -e &quot;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&quot;  -v /opt/data/gitlab:/home/git/data   sameersbn/gitlab:7.9.4  app:rake gitlab:backup:restore BACKUP=1448510466
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;後面的那個數字一定要是你的備份的號。&lt;/p&gt;
-
-&lt;h1 id=&quot;pull-gitlab-820-image-from-docker-hub&quot;&gt;pull gitlab 8.2.0 image from docker hub.&lt;/h1&gt;
-
-&lt;p&gt;docker pull sameersbn/gitlab:8.2.0&lt;br /&gt;
-docker pull mysql:5.7&lt;br /&gt;
-docker pull sameersbn/redis:latest&lt;/p&gt;
-
-&lt;p&gt;mkdir -p /opt/data/gitlab/data&lt;br /&gt;
-mkdir -p /opt/data/mysql&lt;/p&gt;
-
-&lt;p&gt;$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:5.7&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;docker&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8`&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;COLLATE&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`utf8_unicode_ci`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;LOCK&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TABLES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;UPDATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DROP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;`gitlabhq_production`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;gitlab&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;172.17.%.%&#39;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;dbpassword&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;FLUSH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;pwgen -Bsv1 64&lt;/p&gt;
-
-&lt;p&gt;fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/gitlab:8.2.0&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gitlab&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;80:80&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;8443:443&quot;&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_USER=gitlab&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;DB_PASS=1q2w3e4r&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DB_NAME=gitlabhq_production&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_TIMEZONE=Beijing&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_GRAVATAR_ENABLED=false&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_BACKUPS=daily&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;NGINX_MAX_UPLOAD_SIZE=100m&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;UNICORN_TIMEOUT=120&quot;&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;GITLAB_SECRETS_DB_KEY_BASE=fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/gitlab:/home/git/data&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;links&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:mysql&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;redis:redisio&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;mysql:5.7&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;MYSQL_ROOT_PASSWORD=mysql&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/opt/data/mysql:/var/lib/mysql&lt;/span&gt;
-
-&lt;span class=&quot;s&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;redis&lt;/span&gt;
-  &lt;span class=&quot;s&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;sameersbn/redis:latest&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Wed, 25 Nov 2015 22:16:00 +0800</pubDate>
-        <link>http://yourdomain.com/blog/gitlab/backup-restore-gitlab</link>
-        <guid isPermaLink="true">http://yourdomain.com/blog/gitlab/backup-restore-gitlab</guid>
         
         
         <category>blog</category>

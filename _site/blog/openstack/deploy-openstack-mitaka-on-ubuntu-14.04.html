@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 安装chef</title>
+    <title>念西堂 - 部署OpenStack Mitaka</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,303 +76,59 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/docker/install-chef"><h3 class="ctitle">安装chef</h3></a>
-            <p><csmall>Feb 22, 2016. | By: 任怀林</csmall></p>
-
-            <div id="main_content"><h1 id="why-chef">1 why chef</h1>
-<p>为什么选择chef,而不是puppet,ansible或salt.<br />
-说到配置管理大家首先想到应该是puppet, 为什么不用puppet有以下几点原因：<br />
-１　puppet的配置都集中在puppet master上，你只能上面编写module,class。这使得puppet与jenkins等CI/CD工具配合起来比较困难。</p>
-
-<p>chef分为三个组件，chef server,chef workstation,node。其中chef workstation是日常管理常用的，你可配置多个chef workstation,与jenkins等CI/CD工具配合起来比较容易。<br />
-2 puppet的module和class使用的是puppet自己的一种语法，虽然跟ruby很相似，但毕竟不是一种语言，还是要有个学习的过程。<br />
-而chef直接使用了ruby语言来编写cookbook。所以chef更适合开发人员使用。</p>
-
-<p>ansible和salt没有仔细了解，我看了一下配置文件是yaml的，语法看起来非常的难受，就没再研究了。</p>
-
-<h1 id="chef">2 chef的架构</h1>
-<p>这是官方的图<br />
-<img src="/assets/img/blog/2016/2/22/chef_overview.svg" alt="chef_overview" /></p>
-
-<p>chef核心组件有三个，chef server,chef workstation,node。<br />
-chef workstation 用户在这上面编写、测试和维护cookbook，配置节点，分发配置到节点。chef的cookbook对应puppet的module,<br />
-用户在chef workstation上编写和测试cookbook完后push到chef server上。node节点从cher server上获取cookbook并运行。<br />
-这一点跟puppet不同，如果用puppet，用户大部分的时间可能都在puppet master上，因为配置都保存在puppet master上。直接在puppet　master上工作是有风险的。</p>
-
-<p>因为workstation组件,我个感觉chef在架构比puppet要好一些。</p>
-
-<p>chef server  官方把它比喻成信息港，它保存了cookbook，policy等信息，这些信息都workstation　push上来的。node节点访问chef server来获得配置信息。</p>
-
-<p>node　就是chef管理的主机，它可以是物理机，虚拟机，云或者是网络设备。</p>
-
-<h1 id="chef-server">3　安装　chef server</h1>
-<p>首先我们来安装chef server,chef官方提供了一个400多兆的.deb文件，你可以在<a href="https://downloads.chef.io/chef-server/">这里</a>下载</p>
-
-<p>#1 安装workstation</p>
-
-<p>就是安装chef sdk包</p>
-
-<h1 id="dpkg--i-chefdk-xxxxdeb">dpkg -i chefdk-xxxx.deb</h1>
-<p># chef verify</p>
-
-<h1 id="chef-node">2 安装chef node</h1>
-<p>就是安装chef client包</p>
-
-<h1 id="chef-generate-repo-chef-repo">chef generate repo ~/chef-repo</h1>
-
-<h1 id="install-chef-workstation">Install chef workstation</h1>
-
-<p>去chef management console下载Starter.kit<br />
-<code class="highlighter-rouge">
-$ chef generate repo ~/chef-repo
-</code></p>
-
-<h1 id="install-chef-manage-console">install chef manage console.</h1>
-
-<p>这个应该是这样安装<br />
-$ chef-server-ctl install opscode-manage</p>
-
-<p>因为无法直接。</p>
-
-<p>只能下载离线包来安装<br />
-$  chef-server-ctl install chef-manage –path /root</p>
-
-<p>$ chef-server-ctl reconfigure</p>
-
-<p>$ chef-manage-ctl reconfigure</p>
-
-<h1 id="create-the-administrator-account-and-an-organization">Create the administrator account and an organization</h1>
-
-<p>Item 	Description 	Notes and examples<br />
-ADMIN_USER_NAME 	user name for the administrator account 	jsmith, admin<br />
-ADMIN_PASSWORD 	password for the administrator account 	Note your password somewhere safe!<br />
-ADMIN_FIRST_NAME 	administrator’s first name 	Joe<br />
-ADMIN_LAST_NAME 	administrator’s last name 	Smith<br />
-ADMIN_EMAIL 	administrator’s email address 	joe.smith@example.com<br />
-ORG_FULL_NAME 	your organization’s full name 	Fourth Coffee, Inc.<br />
-ORG_SHORT_NAME 	your organization’s abbreviated name 	4thcoffee</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>#$ sudo chef-server-ctl user-create ADMIN_USER_NAME ADMIN_FIRST_NAME ADMIN_LAST_NAME ADMIN_EMAIL ADMIN_PASSWORD --filename ADMIN_USER_NAME.pem
-$ sudo chef-server-ctl user-create admin Huailin Ren renhuailin@ecloud.com.cn zxcv5678 --filename admin.pem
-</code></pre>
-</div>
-
-<p>查看生成的pem</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ls *.pem
-</code></pre>
-</div>
-
-<p>创建组织</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># sudo chef-server-ctl org-create ORG_SHORT_NAME "ORG_LONG_NAME" --association_user ADMIN_USER_NAME
-
-# sudo chef-server-ctl org-create chinaops "China OPS Inc." --association_user admin
-</code></pre>
-</div>
-
-<h1 id="workstation">现在我们切回到Workstation.</h1>
-
-<p>用浏览器打开Chef Server所在的主机的IP，如https://chefserver.china-ops.com</p>
-
-<p>切到Administrator标签</p>
-
-<p>然后下载Starter Kit.</p>
-
-<p>然后把这个解压到workstation的<code class="highlighter-rouge">~/chef-repo</code>.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ls ~/chef-repo/.chef
-admin.pem  chinaops-validator.pem  knife.rb
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd ~/chef-repo
-$ knife ssl fetch
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>WARNING: Certificates from chefmaster.china-ops.com will be fetched and placed in your trusted_cert
-directory (/root/chef-repo/.chef/trusted_certs).
-
-Knife has no means to verify these are the correct certificates. You should
-verify the authenticity of these certificates after downloading.
-
-Adding certificate for chefmaster.china-ops.com in /root/chef-repo/.chef/trusted_certs/chefmaster_china-ops_com.crt
-</code></pre>
-</div>
-
-<p>用<code class="highlighter-rouge">knife ssl check</code>来verify这个证书。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife ssl check
-	Connecting to host chefmaster.china-ops.com:443
-	Successfully verified certificates from `chefmaster.china-ops.com'
-</code></pre>
-</div>
-
-<h3 id="test-the-connection-to-chef-server--workstationchef-server">Test the connection to Chef server  测试Workstation到Chef server的连接。</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife client list
-	chinaops-validator
-</code></pre>
-</div>
-
-<p>接下来转到workstation上。<br />
-<code class="highlighter-rouge">
-$ cd ~/chef-repo
-$ chef generate cookbook cookbooks/hello_chef_server
-</code></p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># vi cookbooks/hello_chef_server/recipes/default.rb
-</code></pre>
-</div>
-
-<p>输入以下内容</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>#
-# Cookbook Name:: hello_chef_server
-# Recipe:: default
-#
-# Copyright (c) 2016 The Authors, All Rights Reserved.
-
-file "#{Chef::Config[:file_cache_path]}/hello.txt" do
-  contenet "hello chef server"
-end
-</code></pre>
-</div>
-
-<p>上传Cookbook到chef server.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook upload hello_chef_server
-</code></pre>
-</div>
-<p>报错了。看看详细日志吧</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook upload hello_chef_server -VV
-</code></pre>
-</div>
-
-<p>然后在Chef server 上看服务器端的日志<br />
-<code class="highlighter-rouge">
-$ chef-server-ctl tail
-</code><br />
-结果如下：<br />
-<code class="highlighter-rouge">
-2016-02-22 16:15:10.899 [error] &lt;0.694.0&gt; gen_server &lt;0.694.0&gt; terminated with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]}
-2016-02-22 16:15:10.900 [error] &lt;0.694.0&gt; CRASH REPORT Process &lt;0.694.0&gt; with 1 neighbours exited with reason: {empty,[{queue,get,[{[],[]}],[{file,"queue.erl"},{line,182}]},{epgsql_sock,command_tag,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,409}]},{epgsql_sock,on_message,2,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,684}]},{epgsql_sock,loop,1,[{file,"/var/cache/omnibus/src/oc_bifrost/_build/default/lib/epgsql/src/epgsql_sock.erl"},{line,334}]},{gen_server,try_dispatch,4,[{file,"gen_server.erl"},...]},...]} in gen_server:terminate/7 line 804
-</code><br />
-说真的，这日志真心看不懂。</p>
-
-<p>我突然想起来了，我的Chef server的hostname没改成chefserver.china-ops.com,可能跟这个有关。<br />
-于是到chef server上把hostname 改成 <code class="highlighter-rouge">chefserver.china-ops.com</code>,并在<code class="highlighter-rouge">/etc/hosts</code>里解析到本地<code class="highlighter-rouge">127.0.0.1</code>。然后再到workstation上upload cookbook,这次成功了。</p>
-
-<h1 id="bootstrap-node1">Bootstrap node1</h1>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife bootstrap 192.168.50.58 --ssh-user ecloud --ssh-password 'qwer1011' --sudo --use-sudo-password --node-name node1 --run-list 'recipe[hello_chef_server]'
-
-
-ERROR: Error connecting to https://chefmaster.china-ops.com/organizations/chinaops/clients, retry 1/5
-</code></pre>
-</div>
-<p>看来node节点也要配置Chef server的解析。</p>
-
-<p>配置完node节点的host,然后再运行OK了。</p>
-
-<p>第一次bootstrap　node时，用<code class="highlighter-rouge">knife bootstrap</code>,它会配置节点的信息，如节点的名称，run-list等。<br />
-以后的更新用<code class="highlighter-rouge">knife ssh</code>.<br />
-<code class="highlighter-rouge">
-$ knife ssh "name:node1" --ssh-user ecloud --ssh-password 'qwer1011' 'sudo chef-client'
-</code></p>
-
-<h1 id="chef-analytics">安装 Chef Analytics</h1>
-
-<p>http://www.hurryupandwait.io/blog/multi-node-testing-with-test-kitchen-and-docker</p>
-
-<p>https://medium.com/brigade-engineering/reduce-chef-infrastructure-integration-test-times-by-75-with-test-kitchen-and-docker-bf638ab95a0a#.16pstgp4a</p>
-
-<p>这篇文章有讲到如何用docker容器来和kitchen来做开发。<br />
-http://www.timusg.com/blog/2013/10/15/testing-cookbook-with-docker-and-test-kitchen/</p>
-
-<p>主要是使用了kitchen-docker<br />
-https://github.com/portertech/kitchen-docker</p>
-
-<p>依据https://docs.chef.io/cookbook_repo.html<br />
-如果用git来管理cookbook,那么安装第三方cookbook的方式为</p>
-
-<p>$  knife cookbook site install COOKBOOK_NAME</p>
-
-<p>如果不使用git来管理cookbook，那么使用第三方cookbook的方式为：<br />
-$ knife cookbook site download COOKBOOK_NAME</p>
-
-<p>以下命令用来查看 cookbook的元数据信息。<br />
-$ knife cookbook metadata<br />
-这个命令会生成元数据信息，并保存为json格式。</p>
-
-<h1 id="attributes">Attributes</h1>
-<p>At the beginning of a chef-client run, all attributes are reset. 这个要注意。</p>
-
-<h1 id="role">关于Role</h1>
-<p>用chef management console 和knife或是直接编辑文件的方式来管理role是会相互影响的，文档里建议我们只用一种方式，不要几种方式共用，因为会相互覆盖导致数据丢失。</p>
-
-<p><code class="highlighter-rouge">why-run Mode</code> 这个概念puppet里有，就是输出执行过程并不真正执行命令。</p>
-
-<p>实战：</p>
-
-<p>规划</p>
-
-<p>两个Node节点，</p>
-
-<ol>
-  <li>Role: appserver, ENV: development</li>
-  <li>Role: webserver, ENV： production</li>
-</ol>
-
-<p>http://williamherry.blogspot.tw/2012/06/chef_23.html 这篇文章写得挺好的，虽然不长但真是能理解很多东西，：）</p>
-
-<p>#　Chef Delivery</p>
-
-<p>Push build artifacts to production servers in real time　　，这个很重要，是实时的？</p>
-
-<p>＃　使用 docker cookbook<br />
-要在 ubuntu 14.04上使用docker cookbook,首先要安装ruby2.1以上的版本。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo apt-get install software-properties-common
-$ sudo apt-add-repository ppa:brightbox/ruby-ng
-$ sudo apt-get update
-</code></pre>
-</div>
-
-<p>然后在Node节点上安装docker.</p>
-
-<p>Create a new cookbook on workstation.<br />
-# cd ~/chef-repo<br />
-# knife cookbook create COOKBOOK_NAME</p>
-
-<p>Add <code class="highlighter-rouge">depends 'docker', '~&gt; 2.0'</code> to metadata.rb</p>
-
-<h1 id="install-third-party-cookbook">Install third party cookbook</h1>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook site install COOKBOOK_NAME
-</code></pre>
-</div>
-
-<p>or just download a cookbook</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ knife cookbook site download COOKBOOK_NAME
-</code></pre>
-</div>
-
-<p>要在node节点上把默认的rubygem源换成淘宝的,将来可以考虑把这一步也做成一个recipe.<br />
-```<br />
-$ gem sources –add https://ruby.taobao.org/ –remove https://rubygems.org/<br />
-$ gem sources -l<br />
-<em>** CURRENT SOURCES **</em></p>
-
-<p>https://ruby.taobao.org<br />
-# 请确保只有 ruby.taobao.org<br />
-$ gem install rails<br />
-```</p>
-
-<p><strong>参考资料：</strong><br />
-http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-reverse-proxy-to-artifactory</p>
+            <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><h3 class="ctitle">部署OpenStack Mitaka</h3></a>
+            <p><csmall>Aug 27, 2016. | By: 任怀林</csmall></p>
+
+            <div id="main_content"><h1 id="section">1 规划</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>0:0</th>
+      <th>1:0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0:2</td>
+      <td>1:2</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Header1</th>
+      <th style="text-align: center">Header2</th>
+      <th style="text-align: right">Header3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">cell1</td>
+      <td style="text-align: center">cell2</td>
+      <td style="text-align: right">cell3</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">cell4</td>
+      <td style="text-align: center">cell5</td>
+      <td style="text-align: right">cell6</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>192.168.234.202   Openstack controller node     <br />
+192.168.234.205   Openstack network node     <br />
+192.168.234.204   Openstack compute node</p>
+
+<p>networ node必须有三个NIC(network interface card),也就是网卡．</p>
+
+<p>管理网段：10.0.0.0/24</p>
+
+<p>#参考：　<br />
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>      <br />
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
 </div>
 
             <div class="spacing"></div>
@@ -427,7 +183,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">4</span>
+            <span class="badge badge-theme pull-right">3</span>
         </p>
     
         <p>
@@ -459,12 +215,6 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
             </li>
             
                 <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
                     <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
                     <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
                 <em>Posted on 05 Jul 2016</em>
@@ -474,6 +224,12 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
                     <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
                     <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
                 <em>Posted on 03 May 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/docker/ssh-login-without-password"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
+                    <p><a href="/blog/docker/ssh-login-without-password">实现SSH无密码登录远程主机</a></p>
+                <em>Posted on 02 May 2016</em>
             </li>
             
         </ul>
@@ -488,7 +244,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
@@ -770,7 +526,7 @@ http://stackoverflow.com/questions/31730319/how-to-push-docker-images-through-re
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/docker/install-chef" data-title="安装chef" data-url="http://www.renhl.com/blog/docker/install-chef "></div>
+<div class="ds-thread" data-thread-key="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04" data-title="部署OpenStack Mitaka" data-url="http://www.renhl.com/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04 "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

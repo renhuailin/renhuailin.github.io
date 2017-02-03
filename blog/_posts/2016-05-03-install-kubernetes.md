@@ -13,12 +13,51 @@ thumb: docker.png
 两台主机,运行ubuntu 14.04
 
 |-----------------+------------|
-| Default aligned |Left aligned|
+| IP | 说明 |
 |-----------------|:-----------|
-| 192.168.56.1  |   workstation，也就是我工作的主机。 |
-| 182.168.56.101 |  kube-master   master/minion 一体机 |
-| 182.168.56.102  | kube-slave |
+| 192.168.99.60  | kube-minion2 |
+| 192.168.99.61  | master/minion 一体机 |
+| 192.168.99.62  | kube-minion1 |
 
+```
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/harley/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/harley/.ssh/id_rsa.
+Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
+The key's randomart image is:
++---[RSA 2048]----+
+|        .+..+..  |
+|       ......E oo|
+|    .   . .. .+=*|
+|   = . . ..  .=**|
+|  + * o S. .++.+=|
+| . . B .  o.ooo .|
+|    o o  . o .   |
+|       .  + o    |
+|        .. o     |
++----[SHA256]-----+
+```
+
+```
+$ ssh-copy-id harley@192.168.99.60
+$ ssh-copy-id harley@192.168.99.61
+$ ssh-copy-id harley@192.168.99.62
+```
+
+
+在每个节点上执行这个命令，让harleyr无需密码地运行sudo。
+```
+$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
+$ sudo chmod 0440 /etc/sudoers.d/harley
+```
+
+因为重新配置docker需要用到`brctl`命令。需要先安装相关的包。
+`apt-get install bridge-utils`.
 
 kubernetes版本：1.2.0
 
@@ -32,6 +71,10 @@ kubernetes版本：1.2.0
 
 You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.
 
+```
+# KUBERNETES_PROVIDER=ubuntu ./kube-up.sh 
+```
+
 
 `kubelet`,`kube-proxy`不放在容器里。 `etcd`, `kube-apiserver`, `kube-controller-manager`, `kube-scheduler` 放在容器里运行。
 
@@ -42,7 +85,14 @@ $ docker pull quay.io/coreos/etcd:v2.2.1
 The hyperkube binary is an all in one binary
 hyperkube kubelet ... runs the kubelet, hyperkube apiserver ... runs an apiserver, etc.
 
-modify `download-release.sh`      
+```
+$ export KUBE_VERSION=1.3.2
+$ export FLANNEL_VERSION=0.5.5
+$ export ETCD_VERSION=2.2.1
+```
+
+
+modify `~/kubernetes/cluster/ubuntu/download-release.sh`      
 
 ``` bash
 #!/bin/bash
@@ -71,6 +121,8 @@ function cleanup {
   # cleanup work
   rm -rf flannel* kubernetes* etcd* binaries
 }
+
+# 把下面的这一行注释掉，在国内我们经常会因网络原因导致下载进程卡死，当你手动中断时，你之前辛辛苦苦下载的东西会全部删除，就是因为这条命令。
 #trap cleanup SIGHUP SIGINT SIGTERM
 
 pushd $(dirname $0)
@@ -104,9 +156,11 @@ KUBE_VERSION=${KUBE_VERSION:-"1.2.0"}
 echo "Prepare kubernetes ${KUBE_VERSION} release ..."
 grep -q "^${KUBE_VERSION}\$" binaries/.kubernetes 2>/dev/null || {
 
+  # 不要再去下载了，我们已经下载完了，请直接
   #curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz
   #tar xzf kubernetes.tar.gz
 
+  # 直接copy过来
   cp ../../server/kubernetes-server-linux-amd64.tar.gz .
   cp ../../server/kubernetes-salt.tar.gz .
 
@@ -133,10 +187,14 @@ popd
 ```
 
 Download easy rsa package.   
+这时还是在cluster这个目录。
+```
+$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
+```
 
-```
-curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
-```
+把`kubernetes-salt.tar.gz`copy 到 cluster目录。
+cp ../../server/kubernetes-salt.tar.gz .
+把里面的目录解压出来，`kubernetes/saltbase` mv到 cluster目录。
 
 
 登录到kube-master这台机器上,创建相关目录。
@@ -385,6 +443,36 @@ $ cd cluster/ubuntu
 $ binaries/kubectl get nodes
 NAME             STATUS    AGE
 192.168.56.101   Ready     2h
+```
+
+问题1： 不同节点上的两个Pod不能相互Ping通；
+仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的`--bip`不一样，应该是这个原因了。
+```
+# docker的启动参数为
+/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock --bip=172.16.3.1/24 --mtu=1450 --raw-logs
+
+# cat  /run/flannel/subnet.env 显示为：
+FLANNEL_NETWORK=172.16.0.0/16
+FLANNEL_SUBNET=172.16.45.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+```
+应该是在安装节点时`reconfDocker.sh`,我们重新配置一下。
+```
+$ cd ~/kube
+$ sudo FLANNEL_NET="172.16.45.1/24" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh i 
+```
+结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？
+
+```
+harley@k8smasterminion:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
+10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
+172.16.30.0     0.0.0.0         255.255.255.0   U     0      0        0 docker0
+192.168.99.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
 ```
 
 **参考资料：**

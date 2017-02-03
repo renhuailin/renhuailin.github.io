@@ -9,6 +9,13 @@ categories:
 thumb: linux.png
 ---
 
+fdsafdsfsda
+fdsafdsfsad
+fdsafsadfsd
+
+dsfdsfsdfsadfsda
+
+<!--more-->
 # 系统配置
 
 4台主机,运行ubuntu 16.04
@@ -20,6 +27,8 @@ thumb: linux.png
 选用的Ceph版本：
 
 V10.2.2 JEWEL RELEASED
+
+
 
 ## Ceph Deploy节点192.168.99.53的安装
 For Ubuntu ,Debian.
