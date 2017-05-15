@@ -86,7 +86,7 @@ fdsafsadfsd</p>
 <p>dsfdsfsdfsadfsda</p>
 
 <!--more-->
-<p># 系统配置</p>
+<h1 id="系统配置">系统配置</h1>
 
 <p>4台主机,运行ubuntu 16.04<br />
 192.168.99.50    Ceph Monitor    <br />
@@ -98,7 +98,7 @@ fdsafsadfsd</p>
 
 <p>V10.2.2 JEWEL RELEASED</p>
 
-<h2 id="ceph-deploy1921689953">Ceph Deploy节点192.168.99.53的安装</h2>
+<h2 id="ceph-deploy节点1921689953的安装">Ceph Deploy节点192.168.99.53的安装</h2>
 <p>For Ubuntu ,Debian.<br />
 Add the release key:</p>
 
@@ -110,33 +110,33 @@ Add the release key:</p>
 </code></pre>
 </div>
 
-<p>更新源，安装<code class="highlighter-rouge">ceph-deploy</code><br />
-<code class="highlighter-rouge">
-sudo apt-get update &amp;&amp; sudo apt-get install ceph-deploy
-</code></p>
+<p>更新源，安装<code class="highlighter-rouge">ceph-deploy</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get update &amp;&amp; sudo apt-get install ceph-deploy
+</code></pre>
+</div>
 
-<h2 id="ceph-node">Ceph node设置</h2>
+<h2 id="ceph-node设置">Ceph node设置</h2>
 
-<p>安装ntp server.  包括monitor和两个osd节点。<br />
-<code class="highlighter-rouge">
-sudo apt-get install ntp
-</code></p>
+<p>安装ntp server.  包括monitor和两个osd节点。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install ntp
+</code></pre>
+</div>
 
-<p>安装 SSH Server,要确保所有节点都安装了SSH Server。<br />
-<code class="highlighter-rouge">
-sudo apt-get install openssh-server
-</code></p>
+<p>安装 SSH Server,要确保所有节点都安装了SSH Server。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install openssh-server
+</code></pre>
+</div>
 
 <p>创建一个用于部署ceph的用户<br />
 ceph-deploy这个工具必须能登录到节点上，而且要可以无需密码地运行sudo。最新版的ceph-deploy 支持<code class="highlighter-rouge">--username</code>这个选项，可以指定一个用户，也可以是<code class="highlighter-rouge">root</code>(not recommended),为了方便我们就用<code class="highlighter-rouge">harley</code>吧。</p>
 
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。<br />
-<code class="highlighter-rouge">
-echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
+<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
 sudo chmod 0440 /etc/sudoers.d/harley
-</code></p>
+</code></pre>
+</div>
 
-<h2 id="ceph-deploylogin-to-nodes-without-password">Ceph Deploy节点配置Login to nodes without password</h2>
+<h2 id="ceph-deploy节点配置login-to-nodes-without-password">Ceph Deploy节点配置Login to nodes without password</h2>
 <p>ceph-deploy没有用expect,所以不能输入密码，要求ceph-deploy用harley这个用户登录到各个节点时，不能提示输入密码。<br />
  我们要在Ceph Deploy节点上生成证书然后分发到相关的节点上。</p>
 
@@ -145,12 +145,12 @@ sudo chmod 0440 /etc/sudoers.d/harley
 <div class="highlighter-rouge"><pre class="highlight"><code>vi /etc/hosts
 </code></pre>
 </div>
-<p>添加下列内容：<br />
-<code class="highlighter-rouge">
-192.168.99.50 ceph_monitor
+<p>添加下列内容：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>192.168.99.50 ceph_monitor
 192.168.99.51 ceph_osd1
 192.168.99.52 ceph_osd2
-</code></p>
+</code></pre>
+</div>
 
 <p>复制ssh key到各个节点：</p>
 
@@ -166,14 +166,14 @@ ssh-copy-id harley@ceph_osd2
 <p>开放相关的端口<br />
 如果你用的CentOS等，他默认的防火墙是很严格的，你需要配置防火墙打开相关的端口。</p>
 
-<h1 id="section">开始创建一个集群！</h1>
+<h1 id="开始创建一个集群">开始创建一个集群！</h1>
 
-<p>在ceph-deploy节点上<br />
-```<br />
-mkdir my-cluster<br />
-cd my-cluster</p>
+<p>在ceph-deploy节点上</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>mkdir my-cluster
+cd my-cluster
 
-<p>```</p>
+</code></pre>
+</div>
 
 <h2 id="create-a-cluster">CREATE A CLUSTER</h2>
 
@@ -253,7 +253,7 @@ cd my-cluster</p>
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
         </p>
     
 
@@ -264,27 +264,27 @@ cd my-cluster</p>
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
+                <em>Posted on 15 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
+                <em>Posted on 14 Nov 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
                 <em>Posted on 27 Aug 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/ssh-login-without-password"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/ssh-login-without-password">实现SSH无密码登录远程主机</a></p>
-                <em>Posted on 02 May 2016</em>
             </li>
             
         </ul>
@@ -305,7 +305,7 @@ cd my-cluster</p>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
         
     </p>
 

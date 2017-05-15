@@ -81,7 +81,7 @@
 
             <div id="main_content"><p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
 
-<h1 id="gitlab">備份原來的gitlab</h1>
+<h1 id="備份原來的gitlab">備份原來的gitlab</h1>
 <div class="highlighter-rouge"><pre class="highlight"><code>$ docker exec -it gitlab sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 </code></pre>
 </div>
@@ -93,7 +93,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <p>OK，看了一下我現在的版本7.9.4</p>
 
-<h1 id="pull--images">Pull 各種 images</h1>
+<h1 id="pull-各種-images">Pull 各種 images</h1>
 
 <p>Next , pull gitlab 7.9.4 image from docker hub. 哈.</p>
 
@@ -121,13 +121,13 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 
 <p>然後要把MySQL配置好，請參考<a href="http://www.renhl.com/blog/openstack/move-gitlab-to-docker-container/">我的上篇文章</a>，這裏就不再贅述了。</p>
 
-<h1 id="docker-composegitlab">使用docker-compose啓動舊版本gitlab</h1>
+<h1 id="使用docker-compose啓動舊版本gitlab">使用docker-compose啓動舊版本gitlab</h1>
 
 <p>爲了方便維護，我使用了docker-compose。這是我的配置文件：</p>
 
 <p>docker-compose.yml</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:7.9.4</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -171,7 +171,7 @@ gitlab的备份是类似<code class="highlighter-rouge">1449806583_gitlab_backup
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code>
 <span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.2</span>
   <span class="s">command</span><span class="pi">:</span> <span class="s">app:start</span>
@@ -229,7 +229,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>$ docker run –name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">mysql</span><span class="pi">:</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">mysql</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">mysql:5.7</span>
   <span class="s">environment</span><span class="pi">:</span>
@@ -240,7 +240,7 @@ mkdir -p /opt/data/mysql</p>
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
 <span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
 <span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
 <span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
@@ -251,7 +251,7 @@ mkdir -p /opt/data/mysql</p>
 
 <p>fvXhxg7tthcg4jpxpfg9MbrWJbbHTqsRj3xpLNxdrMpsWmgnMNjRdhc73qX7dsgz</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">gitlab</span><span class="pi">:</span>
   <span class="s">image</span><span class="pi">:</span> <span class="s">sameersbn/gitlab:8.2.0</span>
   <span class="s">container_name</span><span class="pi">:</span> <span class="s">gitlab</span>
   <span class="s">ports</span><span class="pi">:</span>
@@ -339,7 +339,7 @@ mkdir -p /opt/data/mysql</p>
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">4</span>
+            <span class="badge badge-theme pull-right">3</span>
         </p>
     
         <p>
@@ -354,7 +354,7 @@ mkdir -p /opt/data/mysql</p>
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
         </p>
     
 
@@ -365,27 +365,27 @@ mkdir -p /opt/data/mysql</p>
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
+                <em>Posted on 15 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
+                <em>Posted on 14 Nov 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
                 <em>Posted on 27 Aug 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
             </li>
             
         </ul>
@@ -400,13 +400,13 @@ mkdir -p /opt/data/mysql</p>
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
         
     </p>
 

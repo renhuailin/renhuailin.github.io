@@ -86,25 +86,25 @@ gitlab 1核  2G</p>
 
 <p>node1 最终部署节点　1 核  2G</p>
 
-<h1 id="jenkins">安装Jenkins</h1>
+<h1 id="安装jenkins">安装Jenkins</h1>
 
-<h2 id="jdk">配置jdk</h2>
+<h2 id="配置jdk">配置jdk</h2>
 
-<h1 id="antmaven">安装 ant,maven</h1>
+<h1 id="安装-antmaven">安装 ant,maven</h1>
 
-<h1 id="jenkins-1">配置Jenkins的安全策略</h1>
+<h1 id="配置jenkins的安全策略">配置Jenkins的安全策略</h1>
 
 <p>#插件管理</p>
 
-<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：<br />
-<code class="highlighter-rouge">
-$ git config --global http.sslverify false
-</code><br />
-另一个办法就是设置环境变量<br />
-<code class="highlighter-rouge">
-GIT_SSL_NO_VERIFY=1
-</code><br />
-我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
+<p>在填好了git地址后，就开始build了，结果失败了，因为我们的gitlab https用的是自签名的证书，提示我们无法clone。这个其实简单，有二个解决办法，一是把git config里的http.sslverify设置为false。可以用一条命令来实现：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git config --global http.sslverify false
+</code></pre>
+</div>
+<p>另一个办法就是设置环境变量</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>GIT_SSL_NO_VERIFY=1
+</code></pre>
+</div>
+<p>我在安装Jenkins的Server上运行了<code class="highlighter-rouge">git config --global http.sslverify false</code>，然后运行Jenkins构建还是出错。我又试着重启了一下Jenkins,构建还是出错。看来Jenkins在运行git命令时没有读取这个全局的配置，挺奇怪的。</p>
 
 <p>那就用第二种方法吧，如何设置某个项目构建时的环境变量呢？</p>
 
@@ -165,14 +165,14 @@ GIT_SSL_NO_VERIFY=1
 </code></pre>
 </div>
 
-<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.<br />
-<code class="highlighter-rouge">
-Cannot connect to the Docker daemon. Is the docker daemon running on this host?
-</code></p>
+<p>然后需要reboot jenkins那台主机,否则jenkisn无法访问docker daemon.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Cannot connect to the Docker daemon. Is the docker daemon running on this host?
+</code></pre>
+</div>
 
 <p>可以参考这个<a href="https://github.com/docker/docker/issues/5314">issue</a></p>
 
-<h1 id="section">参考文档</h1>
+<h1 id="参考文档">参考文档</h1>
 <p>http://www.vogella.com/tutorials/Jenkins/article.html#installation_ubuntu</p>
 
 <p>http://hyhx2008.github.io/li-yong-jenkinsgitlabda-jian-chi-xu-ji-cheng-cihuan-jing.html</p>
@@ -230,7 +230,7 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">4</span>
+            <span class="badge badge-theme pull-right">3</span>
         </p>
     
         <p>
@@ -245,7 +245,7 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
         </p>
     
 
@@ -256,27 +256,27 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
+                <em>Posted on 15 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
+                <em>Posted on 14 Nov 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
                 <em>Posted on 27 Aug 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
             </li>
             
         </ul>
@@ -291,13 +291,13 @@ Cannot connect to the Docker daemon. Is the docker daemon running on this host?
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
         
     </p>
 

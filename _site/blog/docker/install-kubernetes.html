@@ -79,7 +79,7 @@
             <a href="/blog/docker/install-kubernetes"><h3 class="ctitle">安装kubernetes</h3></a>
             <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><h1 id="section">系统配置</h1>
+            <div id="main_content"><h1 id="系统配置">系统配置</h1>
 <p>两台主机,运行ubuntu 14.04</p>
 
 <table>
@@ -135,11 +135,11 @@ $ ssh-copy-id harley@192.168.99.62
 </code></pre>
 </div>
 
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。<br />
-<code class="highlighter-rouge">
-$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
+<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
 $ sudo chmod 0440 /etc/sudoers.d/harley
-</code></p>
+</code></pre>
+</div>
 
 <p>因为重新配置docker需要用到<code class="highlighter-rouge">brctl</code>命令。需要先安装相关的包。<br />
 <code class="highlighter-rouge">apt-get install bridge-utils</code>.</p>
@@ -177,7 +177,7 @@ $ export ETCD_VERSION=2.2.1
 
 <p>modify <code class="highlighter-rouge">~/kubernetes/cluster/ubuntu/download-release.sh</code></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="c"># Copyright 2015 The Kubernetes Authors All rights reserved.</span>
 <span class="c">#</span>
@@ -270,10 +270,10 @@ rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<s
 </div>
 
 <p>Download easy rsa package.   <br />
-这时还是在cluster这个目录。<br />
-<code class="highlighter-rouge">
-$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
-</code></p>
+这时还是在cluster这个目录。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
+</code></pre>
+</div>
 
 <p>把<code class="highlighter-rouge">kubernetes-salt.tar.gz</code>copy 到 cluster目录。<br />
 cp ../../server/kubernetes-salt.tar.gz .<br />
@@ -490,7 +490,7 @@ $ sudo FLANNEL_NET="172.16.0.0/16" KUBE_CONFIG_FILE="config-default.sh" DOCKER_O
 
 <p>vi <code class="highlighter-rouge">~/.kube/config</code> ,input following contents.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="s">clusters</span><span class="pi">:</span>
 <span class="pi">-</span> <span class="s">cluster</span><span class="pi">:</span>
     <span class="s">insecure-skip-tls-verify</span><span class="pi">:</span> <span class="s">true</span>
@@ -522,23 +522,23 @@ NAME             STATUS    AGE
 </div>
 
 <p>问题1： 不同节点上的两个Pod不能相互Ping通；<br />
-仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的<code class="highlighter-rouge">--bip</code>不一样，应该是这个原因了。<br />
-```<br />
-# docker的启动参数为<br />
-/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock –bip=172.16.3.1/24 –mtu=1450 –raw-logs</p>
+仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的<code class="highlighter-rouge">--bip</code>不一样，应该是这个原因了。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code># docker的启动参数为
+/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock --bip=172.16.3.1/24 --mtu=1450 --raw-logs
 
-<h1 id="cat--runflannelsubnetenv-">cat  /run/flannel/subnet.env 显示为：</h1>
-<p>FLANNEL_NETWORK=172.16.0.0/16<br />
-FLANNEL_SUBNET=172.16.45.1/24<br />
-FLANNEL_MTU=1450<br />
-FLANNEL_IPMASQ=true<br />
-<code class="highlighter-rouge">
-应该是在安装节点时`reconfDocker.sh`,我们重新配置一下。
-</code><br />
-$ cd ~/kube<br />
-$ sudo FLANNEL_NET=”172.16.45.1/24” KUBE_CONFIG_FILE=”config-default.sh” DOCKER_OPTS=””  ~/kubeeconfDocker.sh i <br />
-```<br />
-结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？</p>
+# cat  /run/flannel/subnet.env 显示为：
+FLANNEL_NETWORK=172.16.0.0/16
+FLANNEL_SUBNET=172.16.45.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+</code></pre>
+</div>
+<p>应该是在安装节点时<code class="highlighter-rouge">reconfDocker.sh</code>,我们重新配置一下。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cd ~/kube
+$ sudo FLANNEL_NET="172.16.45.1/24" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh i 
+</code></pre>
+</div>
+<p>结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>harley@k8smasterminion:~$ route -n
 Kernel IP routing table
@@ -551,11 +551,13 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 </code></pre>
 </div>
 
-<p><strong>参考资料：</strong><br />
-1. http://dockone.io/article/622<br />
-2. http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html<br />
-3. http://linux.die.net/man/1/bash<br />
-4. <a href="http://blog.csdn.net/leexide/article/details/17252369">Linux/UNIX下使用ssh-keygen设置SSH无密码登录</a></p>
+<p><strong>参考资料：</strong></p>
+<ol>
+  <li>http://dockone.io/article/622</li>
+  <li>http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</li>
+  <li>http://linux.die.net/man/1/bash</li>
+  <li><a href="http://blog.csdn.net/leexide/article/details/17252369">Linux/UNIX下使用ssh-keygen设置SSH无密码登录</a></li>
+</ol>
 </div>
 
             <div class="spacing"></div>
@@ -610,7 +612,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">4</span>
+            <span class="badge badge-theme pull-right">3</span>
         </p>
     
         <p>
@@ -625,7 +627,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
         </p>
     
 
@@ -636,27 +638,27 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
+                <em>Posted on 15 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
+                <em>Posted on 14 Nov 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
                 <em>Posted on 27 Aug 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
             </li>
             
         </ul>
@@ -671,13 +673,13 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
         
     </p>
 

@@ -79,7 +79,7 @@
             <a href="/blog/docker/nginx-ssl-reverse-proxy"><h3 class="ctitle">Nginx自签名https和反向代理</h3></a>
             <p><csmall>Dec 11, 2015. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><h1 id="section">场景</h1>
+            <div id="main_content"><h1 id="场景">场景</h1>
 <p>公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP，<br />
 只能通过一个公网IP来访问，所以需要用Nginx做个反向代理来访问些服务器。另外，这些服务都要以https来访问。</p>
 
@@ -102,7 +102,7 @@
   </tbody>
 </table>
 
-<h1 id="section-1">生成自签名的证书</h1>
+<h1 id="生成自签名的证书">生成自签名的证书</h1>
 <p>因为是自己公司用也就无需申请认证的证书了，自签名即可。</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mkdir -p /etc/nginx/ssl
@@ -110,11 +110,11 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 </code></pre>
 </div>
 
-<h1 id="section-2">配置反向代理</h1>
+<h1 id="配置反向代理">配置反向代理</h1>
 
 <p>编辑<code class="highlighter-rouge">/etc/nginx/sites-available/default</code>,加入如下内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">wiki</span>  <span class="p">{</span>
 	<span class="kn">server</span> <span class="nf">172.168.100.47</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span> <span class="c1"># wiki.renhl.com
 </span><span class="p">}</span>
 
@@ -182,16 +182,16 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
 </code></pre>
 </div>
 
-<h1 id="ip">IP限制</h1>
+<h1 id="ip限制">IP限制</h1>
 <p>出于安全的考虑，要禁止公司以外的人访问这些服务，在nginx里设置只允许公司的IP访问。在上面的两个配置里加入下面的内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
+<div class="language-nginx highlighter-rouge"><pre class="highlight"><code><span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.12</span><span class="p">;</span>
 <span class="k">allow</span> <span class="mi">111</span><span class="s">.206.238.94</span><span class="p">;</span>
 <span class="k">deny</span> <span class="s">all</span><span class="p">;</span>
 </code></pre>
 </div>
 
-<h1 id="section-3">參考文献</h1>
+<h1 id="參考文献">參考文献</h1>
 <ul>
   <li>https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04</li>
   <li>http://www.cyberciti.biz/tips/using-nginx-as-reverse-proxy.html</li>
@@ -250,7 +250,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">4</span>
+            <span class="badge badge-theme pull-right">3</span>
         </p>
     
         <p>
@@ -265,7 +265,7 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
         </p>
     
 
@@ -276,27 +276,27 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
+                <em>Posted on 15 Nov 2016</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
+                <em>Posted on 14 Nov 2016</em>
+            </li>
+            
+                <li>
                     <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
                     <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
                 <em>Posted on 27 Aug 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
             </li>
             
         </ul>
@@ -311,13 +311,13 @@ $ sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/nginx/s
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
         
     </p>
 
