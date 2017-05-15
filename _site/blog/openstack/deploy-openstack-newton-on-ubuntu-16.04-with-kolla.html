@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 安装kubernetes</title>
+    <title>念西堂 - 在Ubuntu 16.04上部署OpenStack newton</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,488 +76,325 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/docker/install-kubernetes"><h3 class="ctitle">安装kubernetes</h3></a>
-            <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
+            <a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla"><h3 class="ctitle">在Ubuntu 16.04上部署OpenStack newton</h3></a>
+            <p><csmall>Mar 7, 2017. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><h1 id="系统配置">系统配置</h1>
-<p>两台主机,运行ubuntu 14.04</p>
+            <div id="main_content"><h1 id="1-规划">1 规划</h1>
 
 <table>
   <thead>
     <tr>
-      <th>IP</th>
-      <th style="text-align: left">说明</th>
+      <th>主机名称</th>
+      <th style="text-align: center">管理段IP</th>
+      <th style="text-align: center">IP</th>
+      <th style="text-align: left">描述</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>192.168.99.60</td>
-      <td style="text-align: left">kube-minion2</td>
+      <td>controller1</td>
+      <td style="text-align: center">172.16.69.235</td>
+      <td style="text-align: center">192.168.56.110</td>
+      <td style="text-align: left">控制节点</td>
     </tr>
     <tr>
-      <td>192.168.99.61</td>
-      <td style="text-align: left">master/minion 一体机</td>
+      <td>compute1</td>
+      <td style="text-align: center">172.16.69.236</td>
+      <td style="text-align: center"> 192.168.56.111</td>
+      <td style="text-align: left">计算节点</td>
     </tr>
     <tr>
-      <td>192.168.99.62</td>
-      <td style="text-align: left">kube-minion1</td>
+      <td>network1</td>
+      <td style="text-align: center">172.16.69.237</td>
+      <td style="text-align: center"> 192.168.56.112</td>
+      <td style="text-align: left">网络节点</td>
     </tr>
   </tbody>
 </table>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-keygen -t rsa
-Generating public/private rsa key pair.
-Enter file in which to save the key (/home/harley/.ssh/id_rsa):
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in /home/harley/.ssh/id_rsa.
-Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
-The key fingerprint is:
-SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
-The key's randomart image is:
-+---[RSA 2048]----+
-|        .+..+..  |
-|       ......E oo|
-|    .   . .. .+=*|
-|   = . . ..  .=**|
-|  + * o S. .++.+=|
-| . . B .  o.ooo .|
-|    o o  . o .   |
-|       .  + o    |
-|        .. o     |
-+----[SHA256]-----+
+<ul>
+  <li>
+    <p>network_interface    <br />
+While it is not used on its own, this provides the required default for other interfaces below.</p>
+  </li>
+  <li>
+    <p>api_interface     <br />
+This interface is used for the management network. The management network is the network OpenStack services uses to communicate to each other and the databases. There are known security risks here, so it’s recommended to make this network internal, not accessible from outside. Defaults to <code class="highlighter-rouge">network_interface</code>.</p>
+  </li>
+  <li>
+    <p>kolla_external_vip_interface     <br />
+This interface is public-facing one. It’s used when you want HAProxy public endpoints to be exposed in different network than internal ones. It is mandatory to set this option when <code class="highlighter-rouge">kolla_enable_tls_external</code> is set to yes. Defaults to <code class="highlighter-rouge">network_interface</code>.</p>
+  </li>
+  <li>
+    <p>storage_interface   <br />
+This is the interface that is used by virtual machines to communicate to Ceph. This can be heavily utilized so it’s recommended to put this network on 10Gig networking. Defaults to <code class="highlighter-rouge">network_interface</code>.</p>
+  </li>
+  <li>
+    <p>cluster_interface<br />
+This is another interface used by Ceph. It’s used for data replication. It can be heavily utilized also and if it becomes a bottleneck it can affect data consistency and performance of whole cluster. Defaults to <code class="highlighter-rouge">network_interface</code>.</p>
+  </li>
+  <li>tunnel_interface     <br />
+This interface is used by Neutron for vm-to-vm traffic over tunneled networks (like VxLan). Defaults to <code class="highlighter-rouge">network_interface</code>.</li>
+  <li>neutron_external_interface    <br />
+This interface is required by Neutron. Neutron will put br-ex on it. It will be used for flat networking as well as tagged vlan networks. Has to be set separately.</li>
+</ul>
+
+<p>这些网络接口interface是在  <code class="highlighter-rouge">/etc/kolla/globals.yml</code>里定义的。</p>
+
+<p>networ node必须有三个NIC(network interface card),也就是网卡．</p>
+
+<p>管理网段：172.16.69.0/24</p>
+
+<p>在所有节点的/etc/hosts里加入：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>192.168.56.110  controller1 
+192.168.56.111  compute1    
+192.168.56.112  network1
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-copy-id harley@192.168.99.60
-$ ssh-copy-id harley@192.168.99.61
-$ ssh-copy-id harley@192.168.99.62
+<h1 id="kolla">Kolla</h1>
+<p>使用kolla快速部署openstack all-in-one环境<br />
+https://xiexianbin.cn/openstack/2016/10/23/use-kolla-to-deploy-openstack-all-in-one-env</p>
+
+<p>九州云-生产环境中使用Docker自动化部署升级OpenStack的运维实践<br />
+http://doc.mbalib.com/view/b75d377a08dbe37ec0f42f5efbce5765.html</p>
+
+<h2 id="install-openstack-newton-with-kolla">Install OpenStack Newton with Kolla</h2>
+
+<p>openstack-controller1 172.16.69.226    ubuntu 16.04<br />
+openstack-network-node1 172.16.69.227  ubuntu 16.04<br />
+openstack-compute-node1 172.16.69.228  ubuntu 16.04<br />
+ansible-docker-registry 172.16.69.229  ubuntu 16.04</p>
+
+<h3 id="安装pip">安装pip</h3>
+<p>在ansible-docker-registry 172.16.69.229这台机器上安装pip</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo apt-get install python-pip 
+$ suod apt-get install python-dev libffi-dev gcc libssl-dev
 </code></pre>
 </div>
 
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
-$ sudo chmod 0440 /etc/sudoers.d/harley
+<h3 id="安装ansible-kolla">安装ansible, kolla</h3>
+<p>On ansible-docker-registry 172.16.69.229</p>
+
+<p>$ sudo apt install ansible</p>
+
+<p>$ git clone https://github.com/openstack/kolla.git</p>
+
+<p>运行一个私有registry服务。<br />
+$ tools/start-registry</p>
+
+<h3 id="configure-docker-on-all-nodes">Configure Docker on all nodes</h3>
+
+<p>在所有节点的/etc/hosts里加入：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>172.16.69.226  controller1 
+172.16.69.228  compute1    
+172.16.69.227  network1
 </code></pre>
 </div>
 
-<p>因为重新配置docker需要用到<code class="highlighter-rouge">brctl</code>命令。需要先安装相关的包。<br />
-<code class="highlighter-rouge">apt-get install bridge-utils</code>.</p>
+<p>在其它所有的节点上配置docker,让它可以使用这个私有的registry.<br />
+编辑<code class="highlighter-rouge">/etc/default/docker</code></p>
 
-<p>kubernetes版本：1.2.0</p>
-
-<p>从github上下载kubernetes 1.2.0的二进制安装包，上传到kubernetes包到kube-master节点上并解压。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code> $ sudo cp kubernetes/server/kubernetes-server-linux-amd64.tar.gz /opt
- # tar xzvf kubernetes-server-linux-amd64.tar.gz
-</code></pre>
-</div>
-<p>然后把<code class="highlighter-rouge">/opt/kubernetes/server/bin</code>加入到PATH里。</p>
-
-<p>You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># KUBERNETES_PROVIDER=ubuntu ./kube-up.sh 
+<div class="highlighter-rouge"><pre class="highlight"><code>DOCKER_OPTS="--insecure-registry 172.16.69.229:5000"
 </code></pre>
 </div>
 
-<p><code class="highlighter-rouge">kubelet</code>,<code class="highlighter-rouge">kube-proxy</code>不放在容器里。 <code class="highlighter-rouge">etcd</code>, <code class="highlighter-rouge">kube-apiserver</code>, <code class="highlighter-rouge">kube-controller-manager</code>, <code class="highlighter-rouge">kube-scheduler</code> 放在容器里运行。</p>
+<p>16.04 使用systemd了，所以根据Docker官方文档<a href="https://docs.docker.com/engine/admin/systemd/">Control and configure Docker with systemd</a></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ docker pull quay.io/coreos/etcd:v2.2.1
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo cp /lib/systemd/system/docker.service /etc/systemd/system/docker.service
+</code></pre>
+</div>
+<p>接下来，我们修改文件<code class="highlighter-rouge">/etc/systemd/system/docker.service</code>的<code class="highlighter-rouge">Service</code>小节：</p>
+<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="nn">[Service]</span>
+<span class="py">MountFlags</span><span class="p">=</span><span class="s">shared</span>
+<span class="py">EnvironmentFile</span><span class="p">=</span><span class="s">-/etc/default/docker</span>
+<span class="py">ExecStart</span><span class="p">=</span><span class="s">/usr/bin/docker daemon -H fd:// $DOCKER_OPTS</span>
 </code></pre>
 </div>
 
-<p>The hyperkube binary is an all in one binary<br />
-hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
+<p>重启docker服务</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ export KUBE_VERSION=1.3.2
-$ export FLANNEL_VERSION=0.5.5
-$ export ETCD_VERSION=2.2.1
+<div class="highlighter-rouge"><pre class="highlight"><code># systemctl daemon-reload
+# systemctl restart docker
 </code></pre>
 </div>
 
-<p>modify <code class="highlighter-rouge">~/kubernetes/cluster/ubuntu/download-release.sh</code></p>
+<p>确认修改成功</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ docker info | grep Registries -C 10
 
-<span class="c"># Copyright 2015 The Kubernetes Authors All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># Licensed under the Apache License, Version 2.0 (the "License");</span>
-<span class="c"># you may not use this file except in compliance with the License.</span>
-<span class="c"># You may obtain a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#     http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c"># distributed under the License is distributed on an "AS IS" BASIS,</span>
-<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
-<span class="c"># See the License for the specific language governing permissions and</span>
-<span class="c"># limitations under the License.</span>
+....
+Registry: https://index.docker.io/v1/
+WARNING: No swap limit support
+Insecure Registries:
+ 172.16.69.229:5000
+ 127.0.0.0/8
+</code></pre>
+</div>
+<p>可以看到<code class="highlighter-rouge"> 172.16.69.229:5000</code>加入到<code class="highlighter-rouge">Insecure Registries</code>中了。</p>
 
-<span class="c"># Download the etcd, flannel, and K8s binaries automatically and stored in binaries directory</span>
-<span class="c"># Run as root only</span>
+<p>編輯<code class="highlighter-rouge">/etc/rc.local</code>檔案，加入以下內容：</p>
 
-<span class="c"># author @resouer @WIZARD-CXY</span>
-<span class="nb">set</span> -e
-
-<span class="k">function </span>cleanup <span class="o">{</span>
-  <span class="c"># cleanup work</span>
-  rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span> binaries
-<span class="o">}</span>
-
-<span class="c"># 把下面的这一行注释掉，在国内我们经常会因网络原因导致下载进程卡死，当你手动中断时，你之前辛辛苦苦下载的东西会全部删除，就是因为这条命令。</span>
-<span class="c">#trap cleanup SIGHUP SIGINT SIGTERM</span>
-
-<span class="nb">pushd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span>
-mkdir -p binaries/master
-mkdir -p binaries/minion
-
-<span class="c"># flannel</span>
-<span class="nv">FLANNEL_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">:-</span><span class="s2">"0.5.5"</span><span class="k">}</span>
-<span class="nb">echo</span> <span class="s2">"Prepare flannel </span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.flannel 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-  curl -L  https://github.com/coreos/flannel/releases/download/v<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>-linux-amd64.tar.gz -o flannel.tar.gz
-  tar xzf flannel.tar.gz
-  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/master
-  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/minion
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span> &gt; binaries/.flannel
-<span class="o">}</span>
-
-<span class="c"># ectd</span>
-<span class="nv">ETCD_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">:-</span><span class="s2">"2.2.1"</span><span class="k">}</span>
-<span class="nv">ETCD</span><span class="o">=</span><span class="s2">"etcd-v</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2">-linux-amd64"</span>
-<span class="nb">echo</span> <span class="s2">"Prepare etcd </span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.etcd 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-  curl -L https://github.com/coreos/etcd/releases/download/v<span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span>/<span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>.tar.gz -o etcd.tar.gz
-  tar xzf etcd.tar.gz
-  cp <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcd <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcdctl binaries/master
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span> &gt; binaries/.etcd
-<span class="o">}</span>
-
-<span class="c"># k8s</span>
-<span class="nv">KUBE_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">:-</span><span class="s2">"1.2.0"</span><span class="k">}</span>
-<span class="nb">echo</span> <span class="s2">"Prepare kubernetes </span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.kubernetes 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-
-  <span class="c"># 不要再去下载了，我们已经下载完了，请直接</span>
-  <span class="c">#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz</span>
-  <span class="c">#tar xzf kubernetes.tar.gz</span>
-
-  <span class="c"># 直接copy过来</span>
-  cp ../../server/kubernetes-server-linux-amd64.tar.gz .
-  cp ../../server/kubernetes-salt.tar.gz .
-
-  <span class="c">#pushd kubernetes/server</span>
-  tar xzf kubernetes-server-linux-amd64.tar.gz
-  tar xzf kubernetes-salt.tar.gz .
-  <span class="c">#popd</span>
-  cp kubernetes/server/bin/kube-apiserver <span class="se">\</span>
-     kubernetes/server/bin/kube-controller-manager <span class="se">\</span>
-     kubernetes/server/bin/kube-scheduler binaries/master
-  cp kubernetes/server/bin/kubelet <span class="se">\</span>
-     kubernetes/server/bin/kube-proxy binaries/minion
-  cp kubernetes/server/bin/kubectl binaries/
-  cp -r kubernetes/saltbase .
-
-
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span> &gt; binaries/.kubernetes
-<span class="o">}</span>
-
-rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span>
-
-<span class="nb">echo</span> <span class="s2">"Done! All your binaries locate in kubernetes/cluster/ubuntu/binaries directory"</span>
-<span class="nb">popd</span>
+<div class="highlighter-rouge"><pre class="highlight"><code>mount --make-shared /run
 </code></pre>
 </div>
 
-<p>Download easy rsa package.   <br />
-这时还是在cluster这个目录。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
+<p>因为我们用的是Ubuntu 16.04,请卸载<code class="highlighter-rouge">lxd lxc</code>，因为<code class="highlighter-rouge">cgroup mounts</code>问题，在启动容器时，mounts会指数级地增长。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># apt remove lxd lxc
 </code></pre>
 </div>
 
-<p>把<code class="highlighter-rouge">kubernetes-salt.tar.gz</code>copy 到 cluster目录。<br />
-cp ../../server/kubernetes-salt.tar.gz .<br />
-把里面的目录解压出来，<code class="highlighter-rouge">kubernetes/saltbase</code> mv到 cluster目录。</p>
+<p>安装<code class="highlighter-rouge">pip</code> ,然后通过 <code class="highlighter-rouge">pip</code> 安装 <code class="highlighter-rouge">docker-py</code></p>
 
-<p>登录到kube-master这台机器上,创建相关目录。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ mkdir -p ~/kube/default
+<div class="highlighter-rouge"><pre class="highlight"><code># apt-get install -y python-pip python-dev
+# pip install -U pip docker-py
 </code></pre>
 </div>
 
-<p>Back to workstation,and copy files to kube-master.</p>
+<p>上面的操作要在所有的节点都操作一遍。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd kubernetes/cluster/ubuntu
-$ pwd
-/home/harley/Software/kubernetes/cluster/ubuntu
-$ scp -r \
-    saltbase/salt/generate-cert/make-ca-cert.sh \
-    easy-rsa.tar.gz \
-    config-default.sh \
-    util.sh \
-    minion/* \
-    master/* \
-    reconfDocker.sh \
-    binaries/master/ \
-    binaries/minion \
-    "192.168.56.101:~/kube"
+<h3 id="配置计算节点">配置计算节点</h3>
+<p>在<code class="highlighter-rouge">openstack-compute-node1 172.16.69.228</code>上</p>
+
+<p>編輯<code class="highlighter-rouge">/etc/rc.local</code>檔案，加入以下內容：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>mount --make-shared /var/lib/nova/mnt
+</code></pre>
+</div>
+<p>保存后，执行下面的命令：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># mkdir -p /var/lib/nova/mnt /var/lib/nova/mnt1
+# mount --bind /var/lib/nova/mnt1 /var/lib/nova/mnt
+# mount --make-shared /var/lib/nova/mnt
 </code></pre>
 </div>
 
-<p>我们要用flannel来实现overlay的网络，要把相关的配置copy到kube-master上。</p>
+<p>配置时间同步<br />
+我的这三台机器都能上外网，所以直接配置ntp同步就行了。如果你的机器不能访问外网，就在其中的一台上安装ntp服务，然后让其它的机器从它同步时间，保证所有的机器时间一致就OK。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ scp -r minion-flannel/* master-flannel/* "192.168.56.101:~/kube"
+<p>16.04 使用timedatect同步时间了。<br />
+https://help.ubuntu.com/lts/serverguide/NTP.html</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># timedatectl status
+</code></pre>
+</div>
+<p>请确认状态是对的。</p>
+
+<p>Libvirt is started by default on many operating systems. Please disable libvirt on any machines that will be deployment targets. Only one copy of libvirt may be running at a time.<br />
+在很多系统下Libvrit是默认自动启动的，</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>service libvirt-bin stop
+update-rc.d libvirt-bin disable
 </code></pre>
 </div>
 
-<p>我们回到kube-master上，看看kube目录有哪些内容了。</p>
+<p>16.04默认是没有启动的，所以这一步可以略过。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ tree kube
-kube
-├── config-default.sh
-├── default
-├── easy-rsa.tar.gz
-├── init_conf
-│   ├── etcd.conf
-│   ├── flanneld.conf
-│   ├── kube-apiserver.conf
-│   ├── kube-controller-manager.conf
-│   ├── kubelet.conf
-│   ├── kube-proxy.conf
-│   └── kube-scheduler.conf
-├── init_scripts
-│   ├── etcd
-│   ├── flanneld
-│   ├── kube-apiserver
-│   ├── kube-controller-manager
-│   ├── kubelet
-│   ├── kube-proxy
-│   └── kube-scheduler
-├── make-ca-cert.sh
-├── master
-│   ├── etcd
-│   ├── etcdctl
-│   ├── flanneld
-│   ├── kube-apiserver
-│   ├── kube-controller-manager
-│   └── kube-scheduler
-├── minion
-│   ├── flanneld
-│   ├── kubelet
-│   └── kube-proxy
-├── reconfDocker.sh
-└── util.sh
-</code></pre>
-</div>
-<p>看来flannel的配置文件只保留了一分 master-flannel下的内容。</p>
+<h3 id="重启所有节点">重启所有节点</h3>
+<p>重启所有节点,以使配置生效。</p>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/etcd</code>。</p>
+<h1 id="编辑-ansible的inventory文件">编辑 ansible的<code class="highlighter-rouge">Inventory</code>文件</h1>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>ETCD_OPTS="
- -name infra
- -listen-client-urls http://127.0.0.1:4001,http://192.168.56.101:4001
- -advertise-client-urls http://192.168.56.101:4001"
+<p>下面开始安装kolla，我发现必须如果要通过源码安装，一定要clone kolla repository.不能下载压缩包安装，否则会报下面的错：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code> Complete output from command python setup.py egg_info:
+    ERROR:root:Error parsing
+    Traceback (most recent call last):
+      File "/usr/local/lib/python2.7/dist-packages/pbr/core.py", line 111, in pbr
+        attrs = util.cfg_to_args(path, dist.script_args)
+      File "/usr/local/lib/python2.7/dist-packages/pbr/util.py", line 246, in cfg_to_args
+        pbr.hooks.setup_hook(config)
+      File "/usr/local/lib/python2.7/dist-packages/pbr/hooks/__init__.py", line 25, in setup_hook
+        metadata_config.run()
+      File "/usr/local/lib/python2.7/dist-packages/pbr/hooks/base.py", line 27, in run
+        self.hook()
+      File "/usr/local/lib/python2.7/dist-packages/pbr/hooks/metadata.py", line 26, in hook
+        self.config['name'], self.config.get('version', None))
+      File "/usr/local/lib/python2.7/dist-packages/pbr/packaging.py", line 725, in get_version
+        raise Exception("Versioning for this project requires either an sdist"
+    Exception: Versioning for this project requires either an sdist tarball, or access to an upstream git repository. Are you sure that git is installed?
+    error in setup command: Error parsing /tmp/pip-AV4mIk-build/setup.cfg: Exception: Versioning for this project requires either an sdist tarball, or access to an upstream git repository. Are you sure that git is installed?
 </code></pre>
 </div>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-apiserver</code> with following contents.</p>
+<p>Installing Kolla and dependencies for development</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_APISERVER_OPTS="
- --insecure-bind-address=0.0.0.0
- --insecure-port=8080
- --etcd-servers=http://127.0.0.1:4001
- --logtostderr=true
- --service-cluster-ip-range=192.168.3.0/24
- --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,SecurityContextDeny
- --service-node-port-range=30000-32767
- --advertise-address=192.168.56.101
- --client-ca-file=/srv/kubernetes/ca.crt
- --tls-cert-file=/srv/kubernetes/server.cert
- --tls-private-key-file=/srv/kubernetes/server.key"
+<p>To clone the Kolla repo:</p>
+
+<p>git clone https://git.openstack.org/openstack/kolla<br />
+To install Kolla’s Python dependencies use:</p>
+
+<p>pip install -r kolla/requirements.txt -r kolla/test-requirements.txt<br />
+Note This does not actually install Kolla. Many commands in this documentation are named differently in the tools directory.<br />
+Kolla holds configurations files in etc/kolla. Copy the configuration files to /etc:</p>
+
+<p>cd kolla<br />
+cp -r etc/kolla /etc/<br />
+Install Python Clients<br />
+On the system where the OpenStack CLI/Python code is run, the Kolla community recommends installing the OpenStack python clients if they are not installed. This could be a completely different machine then the deployment host or deployment targets. Install dependencies needed to build the code with pip package manager as explained earlier.</p>
+
+<p>To install the clients use:</p>
+
+<p>yum install python-openstackclient python-neutronclient<br />
+Or using pip to install:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>pip install -U python-openstackclient python-neutronclient
+
+pip install .
 </code></pre>
 </div>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-controller-manager</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_CONTROLLER_MANAGER_OPTS="
- --master=127.0.0.1:8080
- --root-ca-file=/srv/kubernetes/ca.crt
- --service-account-private-key-file=/srv/kubernetes/server.key
- --logtostderr=true"
+<div class="highlighter-rouge"><pre class="highlight"><code>kolla-build --base ubuntu --type source --registry 172.16.69.229:5000 --push
 </code></pre>
 </div>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/kubelet</code> with following contents.</p>
+<p>编辑<code class="highlighter-rouge">/etc/kolla/globals.yml</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>config_strategy: "COPY_ALWAYS"
+kolla_base_distro: "ubuntu"
+kolla_install_type: "source"
+openstack_release: "4.0.0"
+docker_registry: "172.16.69.229:5000"
+network_interface: "eth0"
+neutron_external_interface: "eth1"
 
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBELET_OPTS="
- --hostname-override=192.168.56.101
- --api-servers=http://192.168.56.101:8080
- --logtostderr=true
- --cluster-dns=192.168.3.10
- --cluster-domain=cluster.local
- --config="
+# 这个IP绑定在网络节点的eth0上，要用ip addr这个命令才能看出来。
+kolla_internal_vip_address: "172.16.69.240"  
+network_interface: "eth0"
 </code></pre>
 </div>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-proxy</code> with following contents.</p>
+<p>kolla-genpwd</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_PROXY_OPTS="
- --hostname-override=192.168.56.101
- --master=http://192.168.56.101:8080
- --logtostderr=true"
+<div class="highlighter-rouge"><pre class="highlight"><code># kolla-ansible prechecks -i ansible/inventory/multinode
 </code></pre>
 </div>
 
-<p>Create <code class="highlighter-rouge">~/kube/default/flanneld</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>FLANNEL_OPTS="--etcd-endpoints=http://127.0.0.1:4001
- --ip-masq
- --iface=192.168.56.101"
+<div class="highlighter-rouge"><pre class="highlight"><code>172.16.69.226	control01
+172.16.69.227	network01
+172.16.69.228	compute01
 </code></pre>
 </div>
 
-<p>现在文件树结构是这样的：</p>
+<p>control01 ansible_host=172.16.69.226 ansible_user=xcadmin ansible_ssh_pass=”Xiangc10ud”<br />
+network01 ansible_host=172.16.69.227 ansible_user=xcadmin ansible_ssh_pass=”Xiangc10ud”<br />
+compute01 ansible_host=172.16.69.228 ansible_user=xcadmin ansible_ssh_pass=”Xiangc10ud”</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>.
-├── kube
-│   ├── config-default.sh
-│   ├── default
-│   │   ├── etcd
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   ├── kubelet
-│   │   └── kube-proxy
-│   ├── easy-rsa.tar.gz
-│   ├── init_conf
-│   │   ├── etcd.conf
-│   │   ├── flanneld.conf
-│   │   ├── kube-apiserver.conf
-│   │   ├── kube-controller-manager.conf
-│   │   ├── kubelet.conf
-│   │   ├── kube-proxy.conf
-│   │   └── kube-scheduler.conf
-│   ├── init_scripts
-│   │   ├── etcd
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   ├── kubelet
-│   │   ├── kube-proxy
-│   │   └── kube-scheduler
-│   ├── make-ca-cert.sh
-│   ├── master
-│   │   ├── etcd
-│   │   ├── etcdctl
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   └── kube-scheduler
-│   ├── minion
-│   │   ├── flanneld
-│   │   ├── kubelet
-│   │   └── kube-proxy
-│   ├── reconfDocker.sh
-│   └── util.sh
-└── kubernetes.tar.gz
+<div class="highlighter-rouge"><pre class="highlight"><code>TASK [prechecks : fail] ********************************************************
+failed: [compute01] =&gt; (item={u'stdout': u'192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ', u'cmd': [u'getent', u'ahostsv4', u'controller1'], u'end': u'2017-01-13 15:28:12.477273', '_ansible_no_log': False, u'warnings': [], u'changed': False, u'start': u'2017-01-13 15:28:12.447745', u'delta': u'0:00:00.029528', 'item': u'control01', u'rc': 0, 'invocation': {'module_name': u'command', u'module_args': {u'creates': None, u'executable': None, u'chdir': None, u'_raw_params': u'getent ahostsv4 controller1', u'removes': None, u'warn': True, u'_uses_shell': False}}, 'stdout_lines': [u'192.157.208.178 STREAM controller1', u'192.157.208.178 DGRAM  ', u'192.157.208.178 RAW    '], u'stderr': u''}) =&gt; {"failed": true, "item": {"_ansible_no_log": false, "changed": false, "cmd": ["getent", "ahostsv4", "controller1"], "delta": "0:00:00.029528", "end": "2017-01-13 15:28:12.477273", "invocation": {"module_args": {"_raw_params": "getent ahostsv4 controller1", "_uses_shell": false, "chdir": null, "creates": null, "executable": null, "removes": null, "warn": true}, "module_name": "command"}, "item": "control01", "rc": 0, "start": "2017-01-13 15:28:12.447745", "stderr": "", "stdout": "192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ", "stdout_lines": ["192.157.208.178 STREAM controller1", "192.157.208.178 DGRAM  ", "192.157.208.178 RAW    "], "warnings": []}, "msg": "Hostname has to resolve to IP address of api_interface"}
+failed: [control01] =&gt; (item={u'stdout': u'192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ', u'cmd': [u'getent', u'ahostsv4', u'controller1'], u'end': u'2017-01-13 15:28:12.405884', '_ansible_no_log': False, u'warnings': [], u'changed': False, u'start': u'2017-01-13 15:28:12.366799', u'delta': u'0:00:00.039085', 'item': u'control01', u'rc': 0, 'invocation': {'module_name': u'command', u'module_args': {u'creates': None, u'executable': None, u'chdir': None, u'_raw_params': u'getent ahostsv4 controller1', u'removes': None, u'warn': True, u'_uses_shell': False}}, 'stdout_lines': [u'192.157.208.178 STREAM controller1', u'192.157.208.178 DGRAM  ', u'192.157.208.178 RAW    '], u'stderr': u''}) =&gt; {"failed": true, "item": {"_ansible_no_log": false, "changed": false, "cmd": ["getent", "ahostsv4", "controller1"], "delta": "0:00:00.039085", "end": "2017-01-13 15:28:12.405884", "invocation": {"module_args": {"_raw_params": "getent ahostsv4 controller1", "_uses_shell": false, "chdir": null, "creates": null, "executable": null, "removes": null, "warn": true}, "module_name": "command"}, "item": "control01", "rc": 0, "start": "2017-01-13 15:28:12.366799", "stderr": "", "stdout": "192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ", "stdout_lines": ["192.157.208.178 STREAM controller1", "192.157.208.178 DGRAM  ", "192.157.208.178 RAW    "], "warnings": []}, "msg": "Hostname has to resolve to IP address of api_interface"}
+failed: [network01] =&gt; (item={u'stdout': u'192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ', u'cmd': [u'getent', u'ahostsv4', u'controller1'], u'end': u'2017-01-13 15:28:12.505458', '_ansible_no_log': False, u'warnings': [], u'changed': False, u'start': u'2017-01-13 15:28:12.475810', u'delta': u'0:00:00.029648', 'item': u'control01', u'rc': 0, 'invocation': {'module_name': u'command', u'module_args': {u'creates': None, u'executable': None, u'chdir': None, u'_raw_params': u'getent ahostsv4 controller1', u'removes': None, u'warn': True, u'_uses_shell': False}}, 'stdout_lines': [u'192.157.208.178 STREAM controller1', u'192.157.208.178 DGRAM  ', u'192.157.208.178 RAW    '], u'stderr': u''}) =&gt; {"failed": true, "item": {"_ansible_no_log": false, "changed": false, "cmd": ["getent", "ahostsv4", "controller1"], "delta": "0:00:00.029648", "end": "2017-01-13 15:28:12.505458", "invocation": {"module_args": {"_raw_params": "getent ahostsv4 controller1", "_uses_shell": false, "chdir": null, "creates": null, "executable": null, "removes": null, "warn": true}, "module_name": "command"}, "item": "control01", "rc": 0, "start": "2017-01-13 15:28:12.475810", "stderr": "", "stdout": "192.157.208.178 STREAM controller1\n192.157.208.178 DGRAM  \n192.157.208.178 RAW    ", "stdout_lines": ["192.157.208.178 STREAM controller1", "192.157.208.178 DGRAM  ", "192.157.208.178 RAW    "], "warnings": []}, "msg": "Hostname has to resolve to IP address of api_interface"}
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo cp ~/kube/default/* /etc/default/
-$ sudo cp ~/kube/init_conf/* /etc/init/
-$ sudo cp ~/kube/init_scripts/* /etc/init.d/
+<h1 id="kolla-ansible-deploy--i-ansibleinventorymultinode">kolla-ansible deploy -i ansible/inventory/multinode</h1>
 
-$ sudo groupadd -f -r kube-cert
+<p>如果没有错误，就可以运行下面的处理。</p>
+<h1 id="kolla-ansible-post-deploy">kolla-ansible post-deploy</h1>
 
-$ sudo ~/kube/make-ca-cert.sh "192.168.56.101" "IP:192.168.56.101,IP:192.168.3.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
+<p>参考：<br />
+http://docs.openstack.org/developer/kolla/quickstart.html</p>
 
-$ sudo mkdir -p /opt/bin/
-$ sudo cp ~/kube/master/* /opt/bin/
-$ sudo cp ~/kube/minion/* /opt/bin/
-
-
-$ sudo service etcd start
-
-#因为我们使用的是flannel + VxLAN,所以我们需要重新配置docker.
-$ sudo FLANNEL_NET="172.16.0.0/16" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh ai
-</code></pre>
-</div>
-<p>接下来验证一下我们的安装是否成功，从<code class="highlighter-rouge">uitl.sh</code>来看，验证方法就是ssh登录上去，然后查看指定的进程有没有运行起来。</p>
-
-<p>kube master上要运行这些进程：”kube-apiserver” “kube-controller-manager” “kube-scheduler”。</p>
-
-<p>kube minion上要运行这些进程：”kube-proxy” “kubelet” “docker”。</p>
-
-<p>vi <code class="highlighter-rouge">~/.kube/config</code> ,input following contents.</p>
-
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
-<span class="s">clusters</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">cluster</span><span class="pi">:</span>
-    <span class="s">insecure-skip-tls-verify</span><span class="pi">:</span> <span class="s">true</span>
-    <span class="s">server</span><span class="pi">:</span> <span class="s">http://192.168.56.101:8080</span>
-  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">contexts</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">context</span><span class="pi">:</span>
-    <span class="s">cluster</span><span class="pi">:</span> <span class="s">ubuntu</span>
-    <span class="s">user</span><span class="pi">:</span> <span class="s">ubuntu</span>
-  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">current-context</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">kind</span><span class="pi">:</span> <span class="s">Config</span>
-<span class="s">preferences</span><span class="pi">:</span> <span class="pi">{}</span>
-<span class="s">users</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-  <span class="s">user</span><span class="pi">:</span>
-    <span class="s">password</span><span class="pi">:</span> <span class="s">P9Ez40tyITBdJnPf</span>
-    <span class="s">username</span><span class="pi">:</span> <span class="s">admin</span>
-</code></pre>
-</div>
-
-<p>验证我们的安装是否成功。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd cluster/ubuntu
-$ binaries/kubectl get nodes
-NAME             STATUS    AGE
-192.168.56.101   Ready     2h
-</code></pre>
-</div>
-
-<p>问题1： 不同节点上的两个Pod不能相互Ping通；<br />
-仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的<code class="highlighter-rouge">--bip</code>不一样，应该是这个原因了。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># docker的启动参数为
-/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock --bip=172.16.3.1/24 --mtu=1450 --raw-logs
-
-# cat  /run/flannel/subnet.env 显示为：
-FLANNEL_NETWORK=172.16.0.0/16
-FLANNEL_SUBNET=172.16.45.1/24
-FLANNEL_MTU=1450
-FLANNEL_IPMASQ=true
-</code></pre>
-</div>
-<p>应该是在安装节点时<code class="highlighter-rouge">reconfDocker.sh</code>,我们重新配置一下。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd ~/kube
-$ sudo FLANNEL_NET="172.16.45.1/24" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh i 
-</code></pre>
-</div>
-<p>结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>harley@k8smasterminion:~$ route -n
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
-10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
-172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
-172.16.30.0     0.0.0.0         255.255.255.0   U     0      0        0 docker0
-192.168.99.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
-</code></pre>
-</div>
-
-<p><strong>参考资料：</strong></p>
-<ol>
-  <li>http://dockone.io/article/622</li>
-  <li>http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</li>
-  <li>http://linux.die.net/man/1/bash</li>
-  <li><a href="http://blog.csdn.net/leexide/article/details/17252369">Linux/UNIX下使用ssh-keygen设置SSH无密码登录</a></li>
-</ol>
 </div>
 
             <div class="spacing"></div>
@@ -962,7 +799,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/docker/install-kubernetes" data-title="安装kubernetes" data-url="http://www.renhl.com/blog/docker/install-kubernetes "></div>
+<div class="ds-thread" data-thread-key="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla" data-title="在Ubuntu 16.04上部署OpenStack newton" data-url="http://www.renhl.com/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

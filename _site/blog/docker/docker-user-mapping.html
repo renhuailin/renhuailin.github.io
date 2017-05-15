@@ -141,10 +141,10 @@ ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 COPY plugins.sh /usr/local/bin/plugins.sh
 </code></pre>
 
-<p>請注意這一行：<br />
-<code class="highlighter-rouge">
-RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
-</code></p>
+<p>請注意這一行：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
+</code></pre>
+</div>
 
 <p>製作者創建了一個新用戶叫<code class="highlighter-rouge">jenkins</code>,指定它的uid爲1000。</p>
 
@@ -180,10 +180,10 @@ drwxr-xr-x  2 root root  4096 Dec 30 03:11 jenkins_home/
 <p>docker run的 <code class="highlighter-rouge">-u</code>選項可以指定容器裏的默認用戶，選項的值可以是用戶名，也可以是uid。    <br />
 如果是用戶名，這個用戶必須在容器裏是存在的。如果是uid則沒有這個限制。</p>
 
-<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：<br />
-<code class="highlighter-rouge">
-ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
-</code></p>
+<p>我們還是用jenkins image來舉例。如果我在運行時指定 <code class="highlighter-rouge">-u ubuntu</code>，容器就會報錯：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583c908533a89f525: [8] System error: Unable to find user ubuntu
+</code></pre>
+</div>
 
 <p>回到剛纔我們說的問題，/opt/jenkins_home的owner是root,所以容器無法寫數據。我們可以在運行時使用參數<code class="highlighter-rouge">-u root</code>,這樣容器內的默認用戶變爲root，就可以向<code class="highlighter-rouge">/opt/jenkins_home</code>寫入數據了。</p>
 
@@ -260,7 +260,12 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
+        </p>
+    
+        <p>
+            <a href="/category/#Linux"><i class="fa fa-angle-right"></i> Linux</a>
+            <span class="badge badge-theme pull-right">1</span>
         </p>
     
 
@@ -271,27 +276,27 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
         <ul class="popular-posts">
             
                 <li>
-                    <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
-                <em>Posted on 27 Aug 2016</em>
+                    <a href="/blog/linux/install-powerdns-on-ubuntu-16.04"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-powerdns-on-ubuntu-16.04">在Ubuntu 16.04上安装PowerDNS</a></p>
+                <em>Posted on 10 May 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/openstack/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/install-ceph">安装Ceph1111</a></p>
-                <em>Posted on 05 Jul 2016</em>
+                    <a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla">在Ubuntu 16.04上部署OpenStack newton</a></p>
+                <em>Posted on 07 Mar 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
+                    <a href="/blog/linux/use-shadowsocks-and-privoxy"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/use-shadowsocks-and-privoxy">Linux下用shadowsocks和Privoxy实现翻墙</a></p>
+                <em>Posted on 03 Feb 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
             </li>
             
         </ul>
@@ -312,7 +317,9 @@ ERROR: Cannot start container e0e1201fb3192d0f8e68656de3657e2ae80b111e5f72f56583
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
+        
+            <a class="btn btn-theme" href="/category/#Linux" role="button">Linux (1)</a>
         
     </p>
 

@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 把Gitlab迁移到Docker容器里</title>
+    <title>念西堂 - Cent OS 7安装VNC server.</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,167 +76,19 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/docker/move-gitlab-to-docker-container"><h3 class="ctitle">把Gitlab迁移到Docker容器里</h3></a>
-            <p><csmall>Apr 9, 2015. | By: 任怀林</csmall></p>
+            <a href="/blog/linux/install-vnc-server-on-centos7"><h3 class="ctitle">Cent OS 7安装VNC server.</h3></a>
+            <p><csmall>Nov 15, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到docker container里去。发现真的有人已经做了gitlab的image了，真心赞。</p>
+            <div id="main_content"><h1 id="1-创建vnc用户">1 创建vnc用户</h1>
 
-<h1 id="1-规划">1 规划</h1>
-
-<p>规划：     <br />
-一个容器运行gitlab    <br />
-一个容器运行MySQL,然后 link到gitlab上。   <br />
-一个容器运行Redis,然后 link到gitlab上。</p>
-
-<h1 id="2-安装gitlab">2 安装gitlab</h1>
-
-<p>我们先运行MySQL，</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo docker pull sameersbn/mysql:latest
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo useradd -c "User xcvnc Configured for VNC Access" xcvnc
+$ sudo passwd xcvnc
 </code></pre>
 </div>
 
-<p>在host主机上创建mysql的数据目录。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mkdir -p /opt/mysql/data
-</code></pre>
-</div>
-
-<p>启动MySQL容器。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo docker run --name mysql -d \
-    -v /opt/mysql/data:/var/lib/mysql \
-    sameersbn/mysql:latest
-</code></pre>
-</div>
-
-<p>连接到MySQL上，修改授权信息</p>
-
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it mysql bash
-</code></pre>
-</div>
-
-<p>创建数据库并授权。</p>
-
-<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="nv">`gitlabhq_production`</span> <span class="k">DEFAULT</span> <span class="n">CHARACTER</span> <span class="k">SET</span> <span class="nv">`utf8`</span> <span class="k">COLLATE</span> <span class="nv">`utf8_unicode_ci`</span><span class="p">;</span>
-<span class="k">GRANT</span> <span class="k">SELECT</span><span class="p">,</span> <span class="k">LOCK</span> <span class="n">TABLES</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span><span class="p">,</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">CREATE</span><span class="p">,</span> <span class="k">DROP</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">,</span> <span class="k">ALTER</span> <span class="err">\</span>
-<span class="k">ON</span> <span class="nv">`gitlabhq_production`</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">'gitlab'</span><span class="o">@</span><span class="s1">'172.17.%.%'</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">'dbpassword'</span><span class="p">;</span>
-<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
-</code></pre>
-</div>
-
-<h1 id="3-配置redis">3 配置redis</h1>
-
-<p>Pull image</p>
-
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/redis:latest
-</code></pre>
-</div>
-
-<p>run redis</p>
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name<span class="o">=</span>redis -d sameersbn/redis:latest
-</code></pre>
-</div>
-
-<h1 id="4-gitlab">4 Gitlab</h1>
-
-<p>Pull 先把老版的imagepull回来</p>
-
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker pull sameersbn/gitlab:6.7.5
-</code></pre>
-</div>
-
-<p>创建数据目录</p>
-
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo mkdir -p /opt/gitlab/data
-</code></pre>
-</div>
-<p>这个目录会映像到窗口的<code class="highlighter-rouge">/home/git/data</code>目录上，所以这里保存了所有的数据，请一定不要删除这里的内容。</p>
-
-<p>运行gitlab容器,进行设置，容器会进行数据库的migration等操作。</p>
-
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo docker run --name gitlab -i -t --rm --link mysql:mysql <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:6.7.5 app:rake gitlab:setup
-</code></pre>
-</div>
-
-<p>运行gitlab容器</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:6.7.5</code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># 从原来gitlab里导出备份</span>
-<span class="gp">$ </span><span class="nb">cd</span> /home/git/gitlab
-<span class="gp">$ </span>sudo -u git -H bundle <span class="nb">exec </span>rake gitlab:backup:create <span class="nv">RAILS_ENV</span><span class="o">=</span>production</code></pre></figure>
-
-<p>导出的文件放在<code class="highlighter-rouge">/home/git/gitlab/tmp/backups</code>这个目录下。</p>
-
-<p>把这个文件 scp到 docker gitlab那台机器的<code class="highlighter-rouge">/opt/gitlab/data/backups</code></p>
-
-<p>登录到gitlab的container</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker <span class="nb">exec</span> -it gitlab bash</code></pre></figure>
-
-<p>在容器里执行下面的命令</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span><span class="nb">cd</span> /home/git/gitlab
-<span class="gp">$ </span>sudo -u git -H  bundle <span class="nb">exec </span>rake gitlab:backup:restore <span class="nv">RAILS_ENV</span><span class="o">=</span>production
-<span class="gp">$ </span><span class="nb">exit</span></code></pre></figure>
-
-<p>这个样数据就全部到新的gitlab上了。<br />
-你会发现跟原来的一样。</p>
-
-<p>下面我们来升级gitlab到新版。</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker stop gitlab
-<span class="gp">$ </span>sudo docker rm gitlab
-
-<span class="gp">$ </span>sudo docker run --name gitlab -d -P --link mysql:mysql <span class="se">\</span>
-  --link redis:redisio <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  sameersbn/gitlab:latest</code></pre></figure>
-
-<p>配置好以后，把它保存成一个镜像。</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker commit -m <span class="s2">"update gitlab.yml ,change host,set timezone to BeiJing"</span> -a <span class="s2">"china-ops gitlab v7.9.4"</span> 6af1d0739ae0 china-ops/gitlab:7.9.4</code></pre></figure>
-
-<p>我原来的想法是修改config/gitlab.yml，把host，timezone等修改好，然后存成一个新的image。<br />
-后来发现修改config/gitlab.yml是不生效的，重启container后就会恢复默认值。后来看了文档才知道，<br />
-hostname等是通过环境变量来控制的。</p>
-
-<p>用这个镜像来启动一个container</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="gp">$ </span>sudo docker run --name gitlab -d  <span class="se">\</span>
-  -p 80:80  -p 8443:443 <span class="se">\</span>
-  --link mysql:mysql <span class="se">\</span>
-  --link redis:redisio <span class="se">\</span>
-  -e <span class="s2">"DB_USER=gitlab"</span> -e <span class="s2">"DB_PASS=dbpassword"</span> <span class="se">\</span>
-  -e <span class="s2">"DB_NAME=gitlabhq_production"</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_HOST=gitlab.china-ops.com"</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_TIMEZONE=Beijing"</span> <span class="se">\</span>
-  -e <span class="s1">'GITLAB_BACKUPS=daily'</span> <span class="se">\</span>
-  -e <span class="s2">"GITLAB_GRAVATAR_ENABLED=false"</span> <span class="se">\</span>
-  -v /opt/gitlab/data:/home/git/data <span class="se">\</span>
-  china-ops/gitlab:7.9.4</code></pre></figure>
-
-<p>参数<code class="highlighter-rouge">-e 'GITLAB_BACKUPS=daily'</code> 是备份策略，我们设置为每天</p>
-
-<p>默认的密码：    <br />
-username: admin@local.host    <br />
-password: 5iveL!fe</p>
-
-<p>参考：　  <br />
+<p>#参考：　<br />
 <a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>      <br />
-<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a>    <br />
-<a href="http://dockerpool.com/article/1413082493">Docker FAQ —— Docker 使用常见问题（持续更新中）</a></p>
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
 </div>
 
             <div class="spacing"></div>
@@ -641,7 +493,7 @@ password: 5iveL!fe</p>
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/docker/move-gitlab-to-docker-container" data-title="把Gitlab迁移到Docker容器里" data-url="http://www.renhl.com/blog/docker/move-gitlab-to-docker-container "></div>
+<div class="ds-thread" data-thread-key="/blog/linux/install-vnc-server-on-centos7" data-title="Cent OS 7安装VNC server." data-url="http://www.renhl.com/blog/linux/install-vnc-server-on-centos7 "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

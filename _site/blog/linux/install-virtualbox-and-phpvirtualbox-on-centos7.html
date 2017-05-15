@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 安装Ceph</title>
+    <title>念西堂 - Cent OS 7 VirtualBox 5.0和phpVirtualBox</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,114 +76,41 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/linux/install-ceph"><h3 class="ctitle">安装Ceph</h3></a>
-            <p><csmall>Jul 5, 2016. | By: 任怀林</csmall></p>
+            <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><h3 class="ctitle">Cent OS 7 VirtualBox 5.0和phpVirtualBox</h3></a>
+            <p><csmall>Nov 18, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>fdsafdsfsda<br />
-fdsafdsfsad<br />
-fdsafsadfsd</p>
+            <div id="main_content"><p>在研发环境的CentOS 7上安装VirtualBox以便安装虚拟机使用。</p>
 
-<p>dsfdsfsdfsadfsda</p>
+<p>参考：<br />
+http://tecadmin.net/install-oracle-virtualbox-on-centos-redhat-and-fedora/#</p>
 
-<!--more-->
-<p># 系统配置</p>
+<p>上面的文章里的<code class="highlighter-rouge">service vboxdrv setup</code>不能运行，应该用下面的命令:<br />
+<code class="highlighter-rouge">/usr/lib/virtualbox/vboxdrv.sh setup</code></p>
 
-<p>4台主机,运行ubuntu 16.04<br />
-192.168.99.50    Ceph Monitor    <br />
-192.168.99.51    Ceph OSD1<br />
-192.168.99.52    Ceph OSD2<br />
-192.168.99.53    Ceph Deploy</p>
-
-<p>选用的Ceph版本：</p>
-
-<p>V10.2.2 JEWEL RELEASED</p>
-
-<h2 id="ceph-deploy1921689953">Ceph Deploy节点192.168.99.53的安装</h2>
-<p>For Ubuntu ,Debian.<br />
-Add the release key:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+<p>要关闭SELinux</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>setenforce 0
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>echo deb http://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
-</code></pre>
-</div>
+<p>/lib/modules/3.10.0-327.el7.x86_64/build</p>
 
-<p>更新源，安装<code class="highlighter-rouge">ceph-deploy</code><br />
-<code class="highlighter-rouge">
-sudo apt-get update &amp;&amp; sudo apt-get install ceph-deploy
-</code></p>
+<p>要下载 Extension Pack<br />
+http://download.virtualbox.org/virtualbox/5.0.28/Oracle_VM_VirtualBox_Extension_Pack-5.0.28-111378.vbox-extpack</p>
 
-<h2 id="ceph-node">Ceph node设置</h2>
+<p>$ sudo VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.0.28-111378.vbox-extpack</p>
 
-<p>安装ntp server.  包括monitor和两个osd节点。<br />
-<code class="highlighter-rouge">
-sudo apt-get install ntp
-</code></p>
+<p>启动：<br />
+/usr/lib/virtualbox/vboxwebsrv &amp;</p>
 
-<p>安装 SSH Server,要确保所有节点都安装了SSH Server。<br />
-<code class="highlighter-rouge">
-sudo apt-get install openssh-server
-</code></p>
+<p>要想通过桌面连上去必须要在主机的设置里把主机的</p>
 
-<p>创建一个用于部署ceph的用户<br />
-ceph-deploy这个工具必须能登录到节点上，而且要可以无需密码地运行sudo。最新版的ceph-deploy 支持<code class="highlighter-rouge">--username</code>这个选项，可以指定一个用户，也可以是<code class="highlighter-rouge">root</code>(not recommended),为了方便我们就用<code class="highlighter-rouge">harley</code>吧。</p>
+<h1 id="安装phpvirtualbox">安装phpVirtualBox</h1>
 
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。<br />
-<code class="highlighter-rouge">
-echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
-sudo chmod 0440 /etc/sudoers.d/harley
-</code></p>
+<p>要安装 php-soap</p>
 
-<h2 id="ceph-deploylogin-to-nodes-without-password">Ceph Deploy节点配置Login to nodes without password</h2>
-<p>ceph-deploy没有用expect,所以不能输入密码，要求ceph-deploy用harley这个用户登录到各个节点时，不能提示输入密码。<br />
- 我们要在Ceph Deploy节点上生成证书然后分发到相关的节点上。</p>
+<p>#参考：　<br />
+<a href="http://tecadmin.net/install-oracle-virtualbox-on-centos-redhat-and-fedora/#">http://tecadmin.net/install-oracle-virtualbox-on-centos-redhat-and-fedora/#</a></p>
 
-<p>add to ceph deploy node</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>vi /etc/hosts
-</code></pre>
-</div>
-<p>添加下列内容：<br />
-<code class="highlighter-rouge">
-192.168.99.50 ceph_monitor
-192.168.99.51 ceph_osd1
-192.168.99.52 ceph_osd2
-</code></p>
-
-<p>复制ssh key到各个节点：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>ssh-copy-id harley@ceph_monitor
-ssh-copy-id harley@ceph_osd1
-ssh-copy-id harley@ceph_osd2
-</code></pre>
-</div>
-
-<p>ENSURE CONNECTIVITY<br />
-要能Ping通相关的节点？？？</p>
-
-<p>开放相关的端口<br />
-如果你用的CentOS等，他默认的防火墙是很严格的，你需要配置防火墙打开相关的端口。</p>
-
-<h1 id="section">开始创建一个集群！</h1>
-
-<p>在ceph-deploy节点上<br />
-```<br />
-mkdir my-cluster<br />
-cd my-cluster</p>
-
-<p>```</p>
-
-<h2 id="create-a-cluster">CREATE A CLUSTER</h2>
-
-<p>ceph-deploy –user harley new  ceph_monitor</p>
-
-<p>[ceph_deploy][ERROR ] RuntimeError: connecting to host: harley@ceph_monitor resulted in errors: IOError cannot send (already closed?)</p>
-
-<p>原因是ubuntu 16.04上没有python这个命令，默认是python3. 登录到各个节点，cd到/usr/bin做个软链接就行了。</p>
-
-<p><strong>参考资料：</strong></p>
 </div>
 
             <div class="spacing"></div>
@@ -238,7 +165,7 @@ cd my-cluster</p>
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">3</span>
+            <span class="badge badge-theme pull-right">4</span>
         </p>
     
         <p>
@@ -253,7 +180,12 @@ cd my-cluster</p>
     
         <p>
             <a href="/category/#linux"><i class="fa fa-angle-right"></i> Linux</a>
-            <span class="badge badge-theme pull-right">2</span>
+            <span class="badge badge-theme pull-right">5</span>
+        </p>
+    
+        <p>
+            <a href="/category/#Linux"><i class="fa fa-angle-right"></i> Linux</a>
+            <span class="badge badge-theme pull-right">1</span>
         </p>
     
 
@@ -264,27 +196,27 @@ cd my-cluster</p>
         <ul class="popular-posts">
             
                 <li>
-                    <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
-                <em>Posted on 27 Aug 2016</em>
+                    <a href="/blog/linux/install-powerdns-on-ubuntu-16.04"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-powerdns-on-ubuntu-16.04">在Ubuntu 16.04上安装PowerDNS</a></p>
+                <em>Posted on 10 May 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/linux/install-ceph"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-ceph">安装Ceph</a></p>
-                <em>Posted on 05 Jul 2016</em>
+                    <a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla">在Ubuntu 16.04上部署OpenStack newton</a></p>
+                <em>Posted on 07 Mar 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/docker/install-kubernetes"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/install-kubernetes">安装kubernetes</a></p>
-                <em>Posted on 03 May 2016</em>
+                    <a href="/blog/linux/use-shadowsocks-and-privoxy"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/use-shadowsocks-and-privoxy">Linux下用shadowsocks和Privoxy实现翻墙</a></p>
+                <em>Posted on 03 Feb 2017</em>
             </li>
             
                 <li>
-                    <a href="/blog/docker/ssh-login-without-password"><img src="/assets/img/blog/thumbs/docker.png" alt="Popular Post"></a>
-                    <p><a href="/blog/docker/ssh-login-without-password">实现SSH无密码登录远程主机</a></p>
-                <em>Posted on 02 May 2016</em>
+                    <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
+                <em>Posted on 18 Nov 2016</em>
             </li>
             
         </ul>
@@ -299,13 +231,15 @@ cd my-cluster</p>
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
-            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (2)</a>
+            <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
+        
+            <a class="btn btn-theme" href="/category/#Linux" role="button">Linux (1)</a>
         
     </p>
 
@@ -581,7 +515,7 @@ cd my-cluster</p>
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/linux/install-ceph" data-title="安装Ceph" data-url="http://www.renhl.com/blog/linux/install-ceph "></div>
+<div class="ds-thread" data-thread-key="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7" data-title="Cent OS 7 VirtualBox 5.0和phpVirtualBox" data-url="http://www.renhl.com/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7 "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

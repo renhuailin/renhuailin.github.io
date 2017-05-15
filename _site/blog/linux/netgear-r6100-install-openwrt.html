@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 安装kubernetes</title>
+    <title>念西堂 - Netgear R6100安装OpenWRT 15.05</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,488 +76,69 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/docker/install-kubernetes"><h3 class="ctitle">安装kubernetes</h3></a>
-            <p><csmall>May 3, 2016. | By: 任怀林</csmall></p>
+            <a href="/blog/linux/netgear-r6100-install-openwrt"><h3 class="ctitle">Netgear R6100安装OpenWRT 15.05</h3></a>
+            <p><csmall>Nov 14, 2016. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><h1 id="系统配置">系统配置</h1>
-<p>两台主机,运行ubuntu 14.04</p>
+            <div id="main_content"><h1 id="1-下载固件">1 下载固件</h1>
+<p>OpenWRT固件有两种：一种是factory固件（用于从原厂系统升级），一种是sysupgrade固件（用于从OpenWRT系统升级）。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>IP</th>
-      <th style="text-align: left">说明</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>192.168.99.60</td>
-      <td style="text-align: left">kube-minion2</td>
-    </tr>
-    <tr>
-      <td>192.168.99.61</td>
-      <td style="text-align: left">master/minion 一体机</td>
-    </tr>
-    <tr>
-      <td>192.168.99.62</td>
-      <td style="text-align: left">kube-minion1</td>
-    </tr>
-  </tbody>
-</table>
+<p>先下载 <a href="http://downloads.openwrt.org/chaos_calmer/15.05/ar71xx/nand/openwrt-15.05-ar71xx-nand-r6100-ubi-factory.img">OpenWRT 15.05 for Netgear R6100 的固件</a></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-keygen -t rsa
-Generating public/private rsa key pair.
-Enter file in which to save the key (/home/harley/.ssh/id_rsa):
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in /home/harley/.ssh/id_rsa.
-Your public key has been saved in /home/harley/.ssh/id_rsa.pub.
-The key fingerprint is:
-SHA256:iTJopd0aS59/PPFWHcpYHV5/NHvYGqDeWdYDIGF418E harley@harley-ThinkPad-T420
-The key's randomart image is:
-+---[RSA 2048]----+
-|        .+..+..  |
-|       ......E oo|
-|    .   . .. .+=*|
-|   = . . ..  .=**|
-|  + * o S. .++.+=|
-| . . B .  o.ooo .|
-|    o o  . o .   |
-|       .  + o    |
-|        .. o     |
-+----[SHA256]-----+
+<p>开打管理页面：<br />
+http://www.routerlogin.net/adv_index.htm  admin/password</p>
+
+<p><img src="/images/2016/11/14/5ECC2BA0-DE51-414C-B64C-F33141CA75DA.png" alt="openwrt_admin" /></p>
+
+<h1 id="2-安装shadowsocks">2 安装shadowsocks</h1>
+<p>先删除所有的旧shadowsocks包</p>
+<div class="highlighter-rouge"><pre class="highlight"><code># opkg list_installed | grep shadowsocks
+# opkg remove shadowsocks-*
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-copy-id harley@192.168.99.60
-$ ssh-copy-id harley@192.168.99.61
-$ ssh-copy-id harley@192.168.99.62
+<p>下载安装shadowsocks-libev-spec<br />
+http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/</p>
+
+<p>要先知道我的路由器是哪个平台的：<br />
+https://wiki.openwrt.org/toh/hwdata/netgear/netgear_r6100</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Platform: Atheros AR9344
+Target: ar71xx
+Instruction Set: MIPS32
+Sub Instruction Set: MIPS32 74K series
 </code></pre>
 </div>
 
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
-$ sudo chmod 0440 /etc/sudoers.d/harley
+<p>安装依赖包：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># opkg install ip ipset libopenssl iptables-mod-tproxy
 </code></pre>
 </div>
 
-<p>因为重新配置docker需要用到<code class="highlighter-rouge">brctl</code>命令。需要先安装相关的包。<br />
-<code class="highlighter-rouge">apt-get install bridge-utils</code>.</p>
+<p>网友<code class="highlighter-rouge">aa65535</code>大侠做了很多工作，他把所需要的包都整理好放在了sourceforge.net上，我们只要在OpenWRT的源里添加这个源就可以直接安装了。  <br />
+地址在这里：<a href="http://openwrt-dist.sourceforge.net/">http://openwrt-dist.sourceforge.net/</a>。</p>
 
-<p>kubernetes版本：1.2.0</p>
+<p>到 <a href="http://openwrt-dist.sourceforge.net/dist/base/ar71xx/">http://openwrt-dist.sourceforge.net/dist/base/ar71xx/</a> 这个页面下载： <a href="">ChinaDNS_1.3.2-4_ar71xx.ipk</a></p>
 
-<p>从github上下载kubernetes 1.2.0的二进制安装包，上传到kubernetes包到kube-master节点上并解压。</p>
+<p>到 <a href="http://openwrt-dist.sourceforge.net/dist/luci/">http://openwrt-dist.sourceforge.net/dist/luci/</a> 这个页面下载： <a href="http://openwrt-dist.sourceforge.net/dist/luci/luci-app-chinadns_1.6.0-1_all.ipk">luci-app-chinadns_1.6.0-1_all.ipk</a>、<br />
+<a href="http://openwrt-dist.sourceforge.net/dist/luci/luci-app-shadowsocks_1.3.7-1_all.ipk">luci-app-shadowsocks_1.3.7-1_all.ipk</a></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> $ sudo cp kubernetes/server/kubernetes-server-linux-amd64.tar.gz /opt
- # tar xzvf kubernetes-server-linux-amd64.tar.gz
-</code></pre>
-</div>
-<p>然后把<code class="highlighter-rouge">/opt/kubernetes/server/bin</code>加入到PATH里。</p>
+<p>然后，在Luci中切换至“网络”-“DHCP/DNS”设置，如下图，在”DNS转发”中填入127.0.0.1#35353</p>
 
-<p>You will run docker, kubelet, and kube-proxy outside of a container, the same way you would run any system daemon, so you just need the bare binaries. For etcd, kube-apiserver, kube-controller-manager, and kube-scheduler, we recommend that you run these as containers, so you need an image to be built.</p>
+<p>其中，35353是ChinaDNS的端口，如果你在之前设置界面里端口号不是35353，这里记得和前面保持一致。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code># KUBERNETES_PROVIDER=ubuntu ./kube-up.sh 
-</code></pre>
-</div>
+<p>然后切到HOSTS和解析文件选项卡，勾中“忽略解析文件”</p>
 
-<p><code class="highlighter-rouge">kubelet</code>,<code class="highlighter-rouge">kube-proxy</code>不放在容器里。 <code class="highlighter-rouge">etcd</code>, <code class="highlighter-rouge">kube-apiserver</code>, <code class="highlighter-rouge">kube-controller-manager</code>, <code class="highlighter-rouge">kube-scheduler</code> 放在容器里运行。</p>
+<p>开启dns转发：<br />
+开启shadowsocks的DNS转发</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ docker pull quay.io/coreos/etcd:v2.2.1
-</code></pre>
-</div>
+<p><a href="https://github.com/aa65535/openwrt-chinadns/releases">下载ChinaDNS</a></p>
 
-<p>The hyperkube binary is an all in one binary<br />
-hyperkube kubelet … runs the kubelet, hyperkube apiserver … runs an apiserver, etc.</p>
+<p>难道shadowsocks-libev和shadowsocks服务器端是不兼容的?我需要安装shadowsocks-libev 端？</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ export KUBE_VERSION=1.3.2
-$ export FLANNEL_VERSION=0.5.5
-$ export ETCD_VERSION=2.2.1
-</code></pre>
-</div>
-
-<p>modify <code class="highlighter-rouge">~/kubernetes/cluster/ubuntu/download-release.sh</code></p>
-
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-
-<span class="c"># Copyright 2015 The Kubernetes Authors All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># Licensed under the Apache License, Version 2.0 (the "License");</span>
-<span class="c"># you may not use this file except in compliance with the License.</span>
-<span class="c"># You may obtain a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#     http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c"># distributed under the License is distributed on an "AS IS" BASIS,</span>
-<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
-<span class="c"># See the License for the specific language governing permissions and</span>
-<span class="c"># limitations under the License.</span>
-
-<span class="c"># Download the etcd, flannel, and K8s binaries automatically and stored in binaries directory</span>
-<span class="c"># Run as root only</span>
-
-<span class="c"># author @resouer @WIZARD-CXY</span>
-<span class="nb">set</span> -e
-
-<span class="k">function </span>cleanup <span class="o">{</span>
-  <span class="c"># cleanup work</span>
-  rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span> binaries
-<span class="o">}</span>
-
-<span class="c"># 把下面的这一行注释掉，在国内我们经常会因网络原因导致下载进程卡死，当你手动中断时，你之前辛辛苦苦下载的东西会全部删除，就是因为这条命令。</span>
-<span class="c">#trap cleanup SIGHUP SIGINT SIGTERM</span>
-
-<span class="nb">pushd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span>
-mkdir -p binaries/master
-mkdir -p binaries/minion
-
-<span class="c"># flannel</span>
-<span class="nv">FLANNEL_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">:-</span><span class="s2">"0.5.5"</span><span class="k">}</span>
-<span class="nb">echo</span> <span class="s2">"Prepare flannel </span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.flannel 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-  curl -L  https://github.com/coreos/flannel/releases/download/v<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>-linux-amd64.tar.gz -o flannel.tar.gz
-  tar xzf flannel.tar.gz
-  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/master
-  cp flannel-<span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span>/flanneld binaries/minion
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">FLANNEL_VERSION</span><span class="k">}</span> &gt; binaries/.flannel
-<span class="o">}</span>
-
-<span class="c"># ectd</span>
-<span class="nv">ETCD_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">:-</span><span class="s2">"2.2.1"</span><span class="k">}</span>
-<span class="nv">ETCD</span><span class="o">=</span><span class="s2">"etcd-v</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2">-linux-amd64"</span>
-<span class="nb">echo</span> <span class="s2">"Prepare etcd </span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.etcd 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-  curl -L https://github.com/coreos/etcd/releases/download/v<span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span>/<span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>.tar.gz -o etcd.tar.gz
-  tar xzf etcd.tar.gz
-  cp <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcd <span class="k">${</span><span class="nv">ETCD</span><span class="k">}</span>/etcdctl binaries/master
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">ETCD_VERSION</span><span class="k">}</span> &gt; binaries/.etcd
-<span class="o">}</span>
-
-<span class="c"># k8s</span>
-<span class="nv">KUBE_VERSION</span><span class="o">=</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">:-</span><span class="s2">"1.2.0"</span><span class="k">}</span>
-<span class="nb">echo</span> <span class="s2">"Prepare kubernetes </span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="s2"> release ..."</span>
-grep -q <span class="s2">"^</span><span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span><span class="se">\$</span><span class="s2">"</span> binaries/.kubernetes 2&gt;/dev/null <span class="o">||</span> <span class="o">{</span>
-
-  <span class="c"># 不要再去下载了，我们已经下载完了，请直接</span>
-  <span class="c">#curl -L https://github.com/kubernetes/kubernetes/releases/download/v${KUBE_VERSION}/kubernetes.tar.gz -o kubernetes.tar.gz</span>
-  <span class="c">#tar xzf kubernetes.tar.gz</span>
-
-  <span class="c"># 直接copy过来</span>
-  cp ../../server/kubernetes-server-linux-amd64.tar.gz .
-  cp ../../server/kubernetes-salt.tar.gz .
-
-  <span class="c">#pushd kubernetes/server</span>
-  tar xzf kubernetes-server-linux-amd64.tar.gz
-  tar xzf kubernetes-salt.tar.gz .
-  <span class="c">#popd</span>
-  cp kubernetes/server/bin/kube-apiserver <span class="se">\</span>
-     kubernetes/server/bin/kube-controller-manager <span class="se">\</span>
-     kubernetes/server/bin/kube-scheduler binaries/master
-  cp kubernetes/server/bin/kubelet <span class="se">\</span>
-     kubernetes/server/bin/kube-proxy binaries/minion
-  cp kubernetes/server/bin/kubectl binaries/
-  cp -r kubernetes/saltbase .
-
-
-  <span class="nb">echo</span> <span class="k">${</span><span class="nv">KUBE_VERSION</span><span class="k">}</span> &gt; binaries/.kubernetes
-<span class="o">}</span>
-
-rm -rf flannel<span class="k">*</span> kubernetes<span class="k">*</span> etcd<span class="k">*</span>
-
-<span class="nb">echo</span> <span class="s2">"Done! All your binaries locate in kubernetes/cluster/ubuntu/binaries directory"</span>
-<span class="nb">popd</span>
-</code></pre>
-</div>
-
-<p>Download easy rsa package.   <br />
-这时还是在cluster这个目录。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz &gt; /dev/null 2&gt;&amp;1
-</code></pre>
-</div>
-
-<p>把<code class="highlighter-rouge">kubernetes-salt.tar.gz</code>copy 到 cluster目录。<br />
-cp ../../server/kubernetes-salt.tar.gz .<br />
-把里面的目录解压出来，<code class="highlighter-rouge">kubernetes/saltbase</code> mv到 cluster目录。</p>
-
-<p>登录到kube-master这台机器上,创建相关目录。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ mkdir -p ~/kube/default
-</code></pre>
-</div>
-
-<p>Back to workstation,and copy files to kube-master.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd kubernetes/cluster/ubuntu
-$ pwd
-/home/harley/Software/kubernetes/cluster/ubuntu
-$ scp -r \
-    saltbase/salt/generate-cert/make-ca-cert.sh \
-    easy-rsa.tar.gz \
-    config-default.sh \
-    util.sh \
-    minion/* \
-    master/* \
-    reconfDocker.sh \
-    binaries/master/ \
-    binaries/minion \
-    "192.168.56.101:~/kube"
-</code></pre>
-</div>
-
-<p>我们要用flannel来实现overlay的网络，要把相关的配置copy到kube-master上。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ scp -r minion-flannel/* master-flannel/* "192.168.56.101:~/kube"
-</code></pre>
-</div>
-
-<p>我们回到kube-master上，看看kube目录有哪些内容了。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ tree kube
-kube
-├── config-default.sh
-├── default
-├── easy-rsa.tar.gz
-├── init_conf
-│   ├── etcd.conf
-│   ├── flanneld.conf
-│   ├── kube-apiserver.conf
-│   ├── kube-controller-manager.conf
-│   ├── kubelet.conf
-│   ├── kube-proxy.conf
-│   └── kube-scheduler.conf
-├── init_scripts
-│   ├── etcd
-│   ├── flanneld
-│   ├── kube-apiserver
-│   ├── kube-controller-manager
-│   ├── kubelet
-│   ├── kube-proxy
-│   └── kube-scheduler
-├── make-ca-cert.sh
-├── master
-│   ├── etcd
-│   ├── etcdctl
-│   ├── flanneld
-│   ├── kube-apiserver
-│   ├── kube-controller-manager
-│   └── kube-scheduler
-├── minion
-│   ├── flanneld
-│   ├── kubelet
-│   └── kube-proxy
-├── reconfDocker.sh
-└── util.sh
-</code></pre>
-</div>
-<p>看来flannel的配置文件只保留了一分 master-flannel下的内容。</p>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/etcd</code>。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>ETCD_OPTS="
- -name infra
- -listen-client-urls http://127.0.0.1:4001,http://192.168.56.101:4001
- -advertise-client-urls http://192.168.56.101:4001"
-</code></pre>
-</div>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-apiserver</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_APISERVER_OPTS="
- --insecure-bind-address=0.0.0.0
- --insecure-port=8080
- --etcd-servers=http://127.0.0.1:4001
- --logtostderr=true
- --service-cluster-ip-range=192.168.3.0/24
- --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,SecurityContextDeny
- --service-node-port-range=30000-32767
- --advertise-address=192.168.56.101
- --client-ca-file=/srv/kubernetes/ca.crt
- --tls-cert-file=/srv/kubernetes/server.cert
- --tls-private-key-file=/srv/kubernetes/server.key"
-</code></pre>
-</div>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-controller-manager</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_CONTROLLER_MANAGER_OPTS="
- --master=127.0.0.1:8080
- --root-ca-file=/srv/kubernetes/ca.crt
- --service-account-private-key-file=/srv/kubernetes/server.key
- --logtostderr=true"
-</code></pre>
-</div>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/kubelet</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBELET_OPTS="
- --hostname-override=192.168.56.101
- --api-servers=http://192.168.56.101:8080
- --logtostderr=true
- --cluster-dns=192.168.3.10
- --cluster-domain=cluster.local
- --config="
-</code></pre>
-</div>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/kube-proxy</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>KUBE_PROXY_OPTS="
- --hostname-override=192.168.56.101
- --master=http://192.168.56.101:8080
- --logtostderr=true"
-</code></pre>
-</div>
-
-<p>Create <code class="highlighter-rouge">~/kube/default/flanneld</code> with following contents.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>FLANNEL_OPTS="--etcd-endpoints=http://127.0.0.1:4001
- --ip-masq
- --iface=192.168.56.101"
-</code></pre>
-</div>
-
-<p>现在文件树结构是这样的：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>.
-├── kube
-│   ├── config-default.sh
-│   ├── default
-│   │   ├── etcd
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   ├── kubelet
-│   │   └── kube-proxy
-│   ├── easy-rsa.tar.gz
-│   ├── init_conf
-│   │   ├── etcd.conf
-│   │   ├── flanneld.conf
-│   │   ├── kube-apiserver.conf
-│   │   ├── kube-controller-manager.conf
-│   │   ├── kubelet.conf
-│   │   ├── kube-proxy.conf
-│   │   └── kube-scheduler.conf
-│   ├── init_scripts
-│   │   ├── etcd
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   ├── kubelet
-│   │   ├── kube-proxy
-│   │   └── kube-scheduler
-│   ├── make-ca-cert.sh
-│   ├── master
-│   │   ├── etcd
-│   │   ├── etcdctl
-│   │   ├── flanneld
-│   │   ├── kube-apiserver
-│   │   ├── kube-controller-manager
-│   │   └── kube-scheduler
-│   ├── minion
-│   │   ├── flanneld
-│   │   ├── kubelet
-│   │   └── kube-proxy
-│   ├── reconfDocker.sh
-│   └── util.sh
-└── kubernetes.tar.gz
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo cp ~/kube/default/* /etc/default/
-$ sudo cp ~/kube/init_conf/* /etc/init/
-$ sudo cp ~/kube/init_scripts/* /etc/init.d/
-
-$ sudo groupadd -f -r kube-cert
-
-$ sudo ~/kube/make-ca-cert.sh "192.168.56.101" "IP:192.168.56.101,IP:192.168.3.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
-
-$ sudo mkdir -p /opt/bin/
-$ sudo cp ~/kube/master/* /opt/bin/
-$ sudo cp ~/kube/minion/* /opt/bin/
-
-
-$ sudo service etcd start
-
-#因为我们使用的是flannel + VxLAN,所以我们需要重新配置docker.
-$ sudo FLANNEL_NET="172.16.0.0/16" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh ai
-</code></pre>
-</div>
-<p>接下来验证一下我们的安装是否成功，从<code class="highlighter-rouge">uitl.sh</code>来看，验证方法就是ssh登录上去，然后查看指定的进程有没有运行起来。</p>
-
-<p>kube master上要运行这些进程：”kube-apiserver” “kube-controller-manager” “kube-scheduler”。</p>
-
-<p>kube minion上要运行这些进程：”kube-proxy” “kubelet” “docker”。</p>
-
-<p>vi <code class="highlighter-rouge">~/.kube/config</code> ,input following contents.</p>
-
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
-<span class="s">clusters</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">cluster</span><span class="pi">:</span>
-    <span class="s">insecure-skip-tls-verify</span><span class="pi">:</span> <span class="s">true</span>
-    <span class="s">server</span><span class="pi">:</span> <span class="s">http://192.168.56.101:8080</span>
-  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">contexts</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">context</span><span class="pi">:</span>
-    <span class="s">cluster</span><span class="pi">:</span> <span class="s">ubuntu</span>
-    <span class="s">user</span><span class="pi">:</span> <span class="s">ubuntu</span>
-  <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">current-context</span><span class="pi">:</span> <span class="s">ubuntu</span>
-<span class="s">kind</span><span class="pi">:</span> <span class="s">Config</span>
-<span class="s">preferences</span><span class="pi">:</span> <span class="pi">{}</span>
-<span class="s">users</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">ubuntu</span>
-  <span class="s">user</span><span class="pi">:</span>
-    <span class="s">password</span><span class="pi">:</span> <span class="s">P9Ez40tyITBdJnPf</span>
-    <span class="s">username</span><span class="pi">:</span> <span class="s">admin</span>
-</code></pre>
-</div>
-
-<p>验证我们的安装是否成功。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd cluster/ubuntu
-$ binaries/kubectl get nodes
-NAME             STATUS    AGE
-192.168.56.101   Ready     2h
-</code></pre>
-</div>
-
-<p>问题1： 不同节点上的两个Pod不能相互Ping通；<br />
-仔细研究发现在一个节点的flannel的子网配置和docker的启动参数里的<code class="highlighter-rouge">--bip</code>不一样，应该是这个原因了。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># docker的启动参数为
-/usr/bin/docker daemon -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock --bip=172.16.3.1/24 --mtu=1450 --raw-logs
-
-# cat  /run/flannel/subnet.env 显示为：
-FLANNEL_NETWORK=172.16.0.0/16
-FLANNEL_SUBNET=172.16.45.1/24
-FLANNEL_MTU=1450
-FLANNEL_IPMASQ=true
-</code></pre>
-</div>
-<p>应该是在安装节点时<code class="highlighter-rouge">reconfDocker.sh</code>,我们重新配置一下。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ cd ~/kube
-$ sudo FLANNEL_NET="172.16.45.1/24" KUBE_CONFIG_FILE="config-default.sh" DOCKER_OPTS=""  ~/kubeeconfDocker.sh i 
-</code></pre>
-</div>
-<p>结果还是不通，这是我的路由表。eth0是net出去，eth1是virtualbox,host-only,那flannel向etcd注册的是哪个IP？</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>harley@k8smasterminion:~$ route -n
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
-10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
-172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
-172.16.30.0     0.0.0.0         255.255.255.0   U     0      0        0 docker0
-192.168.99.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
-</code></pre>
-</div>
-
-<p><strong>参考资料：</strong></p>
-<ol>
-  <li>http://dockone.io/article/622</li>
-  <li>http://aclisp.github.io/blog/2015/08/20/kubernetes-scratch.html</li>
-  <li>http://linux.die.net/man/1/bash</li>
-  <li><a href="http://blog.csdn.net/leexide/article/details/17252369">Linux/UNIX下使用ssh-keygen设置SSH无密码登录</a></li>
-</ol>
+<p>#参考：     <br />
+　<br />
+https://cokebar.info/archives/664</p>
 </div>
 
             <div class="spacing"></div>
@@ -962,7 +543,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/docker/install-kubernetes" data-title="安装kubernetes" data-url="http://www.renhl.com/blog/docker/install-kubernetes "></div>
+<div class="ds-thread" data-thread-key="/blog/linux/netgear-r6100-install-openwrt" data-title="Netgear R6100安装OpenWRT 15.05" data-url="http://www.renhl.com/blog/linux/netgear-r6100-install-openwrt "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
