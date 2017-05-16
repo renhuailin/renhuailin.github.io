@@ -58,6 +58,8 @@ unable to ping registry endpoint https://hub.renhl.com/v0/
 v2 ping attempt failed with error: Get https://hub.renhl.com/v2/: x509: certificate is valid for renhl.com, not hub.renhl.com
  v1 ping attempt failed with error: Get https://hub.renhl.com/v1/_ping: x509: certificate is valid for renhl.com, not hub.renhl.com
 ```
+
+
 我已经把这个私有registry的ssl证书放在/etc/docker/certs.d下，应该不会出错呀。仔细看了这个配置后，我发现nginx的没有使用私有registry的ssl证书，而是使用了自己的证书`/etc/nginx/ssl/nginx.crt`。问题应该出在这儿,把nginx的ssl证书换成私有registry的ssl证书。
 
 ``` nginx

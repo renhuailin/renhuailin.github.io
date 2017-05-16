@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/ico/favicon.ico">
 
-    <title>念西堂 - 安装Ceph</title>
+    <title>念西堂 - 在Ubuntu 16.04上安装PowerDNS</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -76,114 +76,192 @@
 			<!--
             <p><img class="img-responsive" src="/assets/img/blog/"></p>
 			-->
-            <a href="/blog/linux/install-ceph"><h3 class="ctitle">安装Ceph</h3></a>
-            <p><csmall>Jul 5, 2016. | By: 任怀林</csmall></p>
+            <a href="/blog/linux/install-powerdns-on-ubuntu-16.04"><h3 class="ctitle">在Ubuntu 16.04上安装PowerDNS</h3></a>
+            <p><csmall>May 10, 2017. | By: 任怀林</csmall></p>
 
-            <div id="main_content"><p>fdsafdsfsda<br />
-fdsafdsfsad<br />
-fdsafsadfsd</p>
+            <div id="main_content"><h1 id="安装-powerdns">安装 PowerDNS</h1>
+<p>安装非常简单:<br />
+$ sudo apt install mysql-server 一定要先安装mysql然后再安装powerdns,而且一定要用安装程序的提示来配置mysql。<br />
+$ sudo apt install pdns-server  pdns-backend-mysql</p>
 
-<p>dsfdsfsdfsadfsda</p>
+<p>在弹出的对话框<code class="highlighter-rouge">Configuring pdns-backend-mysql</code>里填入一个密码,我在这里输入了<code class="highlighter-rouge">powerdns</code>.</p>
 
-<!--more-->
-<h1 id="系统配置">系统配置</h1>
+<p>首先<code class="highlighter-rouge">/etc/powerdns/pdns.d</code>目录请只保留<code class="highlighter-rouge">pdns.local.gmysql.conf</code>这个文件。</p>
 
-<p>4台主机,运行ubuntu 16.04<br />
-192.168.99.50    Ceph Monitor    <br />
-192.168.99.51    Ceph OSD1<br />
-192.168.99.52    Ceph OSD2<br />
-192.168.99.53    Ceph Deploy</p>
+<p>之前我保留了<code class="highlighter-rouge">pdns.simplebind.conf</code>这个文件，powerdns就报错。</p>
 
-<p>选用的Ceph版本：</p>
-
-<p>V10.2.2 JEWEL RELEASED</p>
-
-<h2 id="ceph-deploy节点1921689953的安装">Ceph Deploy节点192.168.99.53的安装</h2>
-<p>For Ubuntu ,Debian.<br />
-Add the release key:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+<div class="highlighter-rouge"><pre class="highlight"><code>powerdns Trying to set unexisting parameter 'gmysql-host'
 </code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>echo deb http://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+<h2 id="mysql-pdnstest">mysql pdnstest</h2>
+
+<p>首先要插入一个域。</p>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">domains</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="s1">'example.com'</span><span class="p">,</span> <span class="s1">'NATIVE'</span><span class="p">);</span>
 </code></pre>
 </div>
 
-<p>更新源，安装<code class="highlighter-rouge">ceph-deploy</code></p>
-<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get update &amp;&amp; sudo apt-get install ceph-deploy
+<p>再插入SOA记录和记录</p>
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">records</span> <span class="p">(</span><span class="n">domain_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span><span class="n">ttl</span><span class="p">,</span><span class="n">prio</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'ns1.xiangcloud.com.cn renhuailin@xiangcloud.com.cn 1'</span><span class="p">,</span><span class="s1">'SOA'</span><span class="p">,</span><span class="mi">86400</span><span class="p">,</span><span class="k">NULL</span><span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">records</span> <span class="p">(</span><span class="n">domain_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span><span class="n">ttl</span><span class="p">,</span><span class="n">prio</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'ns1.xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'NS'</span><span class="p">,</span><span class="mi">86400</span><span class="p">,</span><span class="k">NULL</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">records</span> <span class="p">(</span><span class="n">domain_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span><span class="n">ttl</span><span class="p">,</span><span class="n">prio</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'ns2.xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'NS'</span><span class="p">,</span><span class="mi">86400</span><span class="p">,</span><span class="k">NULL</span><span class="p">);</span>
 </code></pre>
 </div>
 
-<h2 id="ceph-node设置">Ceph node设置</h2>
+<p>然后再插入A记录</p>
 
-<p>安装ntp server.  包括monitor和两个osd节点。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install ntp
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">records</span> <span class="p">(</span><span class="n">domain_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span><span class="n">ttl</span><span class="p">,</span><span class="n">prio</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'gitlab.xiangcloud.com.cn'</span><span class="p">,</span><span class="s1">'122.115.51.128'</span><span class="p">,</span><span class="s1">'A'</span><span class="p">,</span><span class="mi">120</span><span class="p">,</span><span class="k">NULL</span><span class="p">);</span>
 </code></pre>
 </div>
 
-<p>安装 SSH Server,要确保所有节点都安装了SSH Server。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install openssh-server
+<p>另外，安装程序虽然配置了用户名和密码，并没有在数据库里执行grant的命令，所以这个要自己授权。我因为这个搞了半天，最后用配置文件里的用户名和密码一连mysql，结果失败，才找出这个原因。<br />
+我按照上面的SQL语句插入了数据后，dig还是不好使，日志里提示</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Should not get here (www.test.com|1): please run pdnssec rectify-zone test.com
 </code></pre>
 </div>
-
-<p>创建一个用于部署ceph的用户<br />
-ceph-deploy这个工具必须能登录到节点上，而且要可以无需密码地运行sudo。最新版的ceph-deploy 支持<code class="highlighter-rouge">--username</code>这个选项，可以指定一个用户，也可以是<code class="highlighter-rouge">root</code>(not recommended),为了方便我们就用<code class="highlighter-rouge">harley</code>吧。</p>
-
-<p>在每个节点上执行这个命令，让harleyr无需密码地运行sudo。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>echo "harley ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/harley
-sudo chmod 0440 /etc/sudoers.d/harley
-</code></pre>
-</div>
-
-<h2 id="ceph-deploy节点配置login-to-nodes-without-password">Ceph Deploy节点配置Login to nodes without password</h2>
-<p>ceph-deploy没有用expect,所以不能输入密码，要求ceph-deploy用harley这个用户登录到各个节点时，不能提示输入密码。<br />
- 我们要在Ceph Deploy节点上生成证书然后分发到相关的节点上。</p>
-
-<p>add to ceph deploy node</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>vi /etc/hosts
-</code></pre>
-</div>
-<p>添加下列内容：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>192.168.99.50 ceph_monitor
-192.168.99.51 ceph_osd1
-192.168.99.52 ceph_osd2
-</code></pre>
-</div>
-
-<p>复制ssh key到各个节点：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>ssh-copy-id harley@ceph_monitor
-ssh-copy-id harley@ceph_osd1
-ssh-copy-id harley@ceph_osd2
-</code></pre>
-</div>
-
-<p>ENSURE CONNECTIVITY<br />
-要能Ping通相关的节点？？？</p>
-
-<p>开放相关的端口<br />
-如果你用的CentOS等，他默认的防火墙是很严格的，你需要配置防火墙打开相关的端口。</p>
-
-<h1 id="开始创建一个集群">开始创建一个集群！</h1>
-
-<p>在ceph-deploy节点上</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>mkdir my-cluster
-cd my-cluster
+<p>然后我就运行了一下</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ pdnssec rectify-zone www.test.com
 
 </code></pre>
 </div>
+<p>然后再dig就好了</p>
 
-<h2 id="create-a-cluster">CREATE A CLUSTER</h2>
+<h1 id="理解authoritative-server-和-recursor">理解Authoritative Server 和 Recursor</h1>
+<p>The Authoritative Server will answer questions about domains it knows about, but will not go out on the net to resolve queries about other domains. However, it can use a recursing backend to provide that functionality</p>
 
-<p>ceph-deploy –user harley new  ceph_monitor</p>
+<p>Authoritative Server只回答它知道的域名的信息,它不知道的域名,不会去问网上的其它name server. 不过它可以通过遍历后端(recursing backend)来实现这个功能.<br />
+你可以理解为它是这样的一个专家:我知道什么我就答什么,不知道的我也不问别的专家. 不过我有一个后端团队(backend),如果他们知道答案,也可以代我回答.</p>
 
-<p>[ceph_deploy][ERROR ] RuntimeError: connecting to host: harley@ceph_monitor resulted in errors: IOError cannot send (already closed?)</p>
+<p>Recursor 可以理解为一个域名的缓存,本身没有域名信息,你问我,我就问别人(DNS)去.</p>
 
-<p>原因是ubuntu 16.04上没有python这个命令，默认是python3. 登录到各个节点，cd到/usr/bin做个软链接就行了。</p>
+<p>很多dns是把这两部分的功能融合在一起的,PowerDNS把它们分开提供.</p>
 
-<p><strong>参考资料：</strong></p>
+<h1 id="理解-soa-and-glue-record">理解 SOA and GLUE Record</h1>
+<p>首先要明白什么是SOA，NS,请参见[1]和[2]：<br />
+如果用户注册了一个域名,把这个域名的name server设置为你的dns server, 你的这个dns server就是这个域名的权威解析服务器. 就要在配置里添加这个域名的SOA记录,</p>
+
+<p>那什么是GLUE记录呢?</p>
+
+<p>假设你注册了一个域名<code class="highlighter-rouge">yourname.com</code><br />
+同时你建了一个DNS用来解析你这个域名的,假设这个DNS你设置为<code class="highlighter-rouge">ns1.yourname.com</code>.</p>
+
+<p>你在你的域名注册商那儿,要把你的域名的dns设置<code class="highlighter-rouge">ns1.yourname.com</code>.</p>
+
+<p>这里就有一个问题: yourname.com下的所有的域名都要通过ns1.yourname.com这个域名所指向的服务器来解析,但时要知道ns1.yourname.com的IP就要先解析这个域名啊,死循环了.</p>
+
+<p>要想破这个死循环,<code class="highlighter-rouge">ns1.yourname.com</code>就不能是通过<code class="highlighter-rouge">ns1.yourname.com</code>来解析的. 它必须是上级DNS能知道的.</p>
+
+<p>如何让上级的DNS知道呢? 这就需要在上级的DNS里添加一个GLUE记录,把ns1.yourname.com和它的IP填入GLUE记录.</p>
+
+<p>这里假设ns1.yourname.com的IP为 <code class="highlighter-rouge">192.168.88.1</code>.</p>
+
+<p>假设我们添加了一个二级域名<code class="highlighter-rouge">test.yourname.com</code>,设置A记录为<code class="highlighter-rouge">192.168.88.30</code>.</p>
+
+<p>解析过程是这样的,<code class="highlighter-rouge">test.yourname.com</code>上级DNS,也就是解析<code class="highlighter-rouge">com</code>域的DNS接收到查询<code class="highlighter-rouge">test.yourname.com</code>请求后,查找<code class="highlighter-rouge">yourname.com</code>这个域名的DNS,发现设置为<code class="highlighter-rouge">ns1.yourname.com</code>,它们在同个域里,于是它就查询它的GLUE记录,发现<code class="highlighter-rouge">ns1.yourname.com</code>的IP为<code class="highlighter-rouge">192.168.88.1</code>,于是它向<code class="highlighter-rouge">192.168.88.1</code>查询<code class="highlighter-rouge">test.yourname.com</code>的记录.   <br />
+<code class="highlighter-rouge">192.168.88.1</code>接到查询请求后,查找本地的记录,把<code class="highlighter-rouge">192.168.88.1</code>这个A记录返回给上级DNS,完成域名到IP的解析.</p>
+
+<h1 id="如何查看glue记录呢">如何查看GLUE记录呢?</h1>
+<p>我们用一个实际的例子来看一下.我们看一百度的域名</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ dig NS baidu.com
+...
+
+;; QUESTION SECTION:
+;baidu.com.			IN	NS
+
+;; ANSWER SECTION:
+baidu.com.		1	IN	NS	ns7.baidu.com.
+baidu.com.		1	IN	NS	ns2.baidu.com.
+baidu.com.		1	IN	NS	ns4.baidu.com.
+baidu.com.		1	IN	NS	ns3.baidu.com.
+baidu.com.		1	IN	NS	dns.baidu.com.
+
+...
+
+</code></pre>
+</div>
+<p>我们可以看到百度也是自己解析域名的.所以肯定是有GLUE记录添加到<code class="highlighter-rouge">com</code>的DNS上的.<br />
+接下来我们看看<code class="highlighter-rouge">com</code>的DNS</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>dig NS com.cn
+
+...
+
+;; QUESTION SECTION:
+;com.				IN	NS
+
+;; ANSWER SECTION:
+com.			164153	IN	NS	e.gtld-servers.net.
+com.			164153	IN	NS	a.gtld-servers.net.
+com.			164153	IN	NS	l.gtld-servers.net.
+com.			164153	IN	NS	g.gtld-servers.net.
+com.			164153	IN	NS	k.gtld-servers.net.
+com.			164153	IN	NS	c.gtld-servers.net.
+com.			164153	IN	NS	f.gtld-servers.net.
+com.			164153	IN	NS	j.gtld-servers.net.
+com.			164153	IN	NS	m.gtld-servers.net.
+com.			164153	IN	NS	b.gtld-servers.net.
+com.			164153	IN	NS	h.gtld-servers.net.
+com.			164153	IN	NS	d.gtld-servers.net.
+com.			164153	IN	NS	i.gtld-servers.net.
+
+...
+</code></pre>
+</div>
+
+<p>我们来查询一下baidu.com的NS记录.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ dig NS baidu.com @b.gtld-servers.net
+ 
+...
+
+;; QUESTION SECTION:
+;baidu.com.			IN	NS
+
+;; AUTHORITY SECTION:
+baidu.com.		172800	IN	NS	dns.baidu.com.
+baidu.com.		172800	IN	NS	ns2.baidu.com.
+baidu.com.		172800	IN	NS	ns3.baidu.com.
+baidu.com.		172800	IN	NS	ns4.baidu.com.
+baidu.com.		172800	IN	NS	ns7.baidu.com.
+
+;; ADDITIONAL SECTION:
+dns.baidu.com.		172800	IN	A	202.108.22.220
+ns2.baidu.com.		172800	IN	A	61.135.165.235
+ns3.baidu.com.		172800	IN	A	220.181.37.10
+ns4.baidu.com.		172800	IN	A	220.181.38.10
+ns7.baidu.com.		172800	IN	A	119.75.219.82
+...
+
+</code></pre>
+</div>
+<p>其中的<code class="highlighter-rouge">ADDITIONAL SECTION</code>部分就是GLUE记录.</p>
+
+<h1 id="理解-txt-record">理解 txt Record</h1>
+
+<p>https://en.wikipedia.org/wiki/TXT_record</p>
+
+<p>在kubernetes里有用到!     <br />
+這裏是google的解釋:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>TXT记录的工作原理
+TXT记录可包含任何文本值，具体取决于它的用途。例如，Google使用TXT记录来验证您拥有希望用于我们企业服务的网域。具体而言，我们会要求您输入TXT记录，其值为“google-site-verification=rXOxyZounnZasA8Z7oaD3c14JdjS9aKSWvsR1EbUSIQ”。之后，我们会查询您的网域以确定该TXT记录是否已生效。如果TXT记录已生效，那么我们会知道您有权访问该网域的DNS设置，那么您一定拥有该网域。
+</code></pre>
+</div>
+
+<p>。</p>
+
+<p>参考:     <br />
+[1] <a href="https://support.dnsimple.com/articles/soa-record/">https://support.dnsimple.com/articles/soa-record/</a>        <br />
+[2] <a href="http://www.zytrax.com/books/dns/ch8/soa.html">http://www.zytrax.com/books/dns/ch8/soa.html</a>        <br />
+[3] <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-powerdns-with-a-mariadb-backend-on-ubuntu-14-04"></a>    <br />
+[4] https://www.zhihu.com/question/19691928    <br />
+[5] https://en.wikipedia.org/wiki/Domain_Name_System#Circular_dependencies_and_glue_records      <br />
+[6] <a href="https://www.freehao123.com/powerdns/">自建PowerDNS免费DNS服务器-PowerDNS和MariaDB安装配置教程</a>      <br />
+[7] https://blog.phoenixlzx.com/2016/09/07/powerdns-admin-replacing-moedns/</p>
 </div>
 
             <div class="spacing"></div>
@@ -238,7 +316,7 @@ cd my-cluster
     
         <p>
             <a href="/category/#OpenStack"><i class="fa fa-angle-right"></i> Openstack</a>
-            <span class="badge badge-theme pull-right">3</span>
+            <span class="badge badge-theme pull-right">4</span>
         </p>
     
         <p>
@@ -256,6 +334,11 @@ cd my-cluster
             <span class="badge badge-theme pull-right">5</span>
         </p>
     
+        <p>
+            <a href="/category/#Linux"><i class="fa fa-angle-right"></i> Linux</a>
+            <span class="badge badge-theme pull-right">1</span>
+        </p>
+    
 
     <div class="spacing"></div>
 
@@ -264,27 +347,27 @@ cd my-cluster
         <ul class="popular-posts">
             
                 <li>
+                    <a href="/blog/linux/install-powerdns-on-ubuntu-16.04"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/install-powerdns-on-ubuntu-16.04">在Ubuntu 16.04上安装PowerDNS</a></p>
+                <em>Posted on 10 May 2017</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
+                    <p><a href="/blog/openstack/deploy-openstack-newton-on-ubuntu-16.04-with-kolla">在Ubuntu 16.04上部署OpenStack newton</a></p>
+                <em>Posted on 07 Mar 2017</em>
+            </li>
+            
+                <li>
+                    <a href="/blog/linux/use-shadowsocks-and-privoxy"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
+                    <p><a href="/blog/linux/use-shadowsocks-and-privoxy">Linux下用shadowsocks和Privoxy实现翻墙</a></p>
+                <em>Posted on 03 Feb 2017</em>
+            </li>
+            
+                <li>
                     <a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
                     <p><a href="/blog/linux/install-virtualbox-and-phpvirtualbox-on-centos7">Cent OS 7 VirtualBox 5.0和phpVirtualBox</a></p>
                 <em>Posted on 18 Nov 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/install-vnc-server-on-centos7"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/install-vnc-server-on-centos7">Cent OS 7安装VNC server.</a></p>
-                <em>Posted on 15 Nov 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/linux/netgear-r6100-install-openwrt"><img src="/assets/img/blog/thumbs/linux.png" alt="Popular Post"></a>
-                    <p><a href="/blog/linux/netgear-r6100-install-openwrt">Netgear R6100安装OpenWRT 15.05</a></p>
-                <em>Posted on 14 Nov 2016</em>
-            </li>
-            
-                <li>
-                    <a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04"><img src="/assets/img/blog/thumbs/openstack.png" alt="Popular Post"></a>
-                    <p><a href="/blog/openstack/deploy-openstack-mitaka-on-ubuntu-14.04">部署OpenStack Mitaka</a></p>
-                <em>Posted on 27 Aug 2016</em>
             </li>
             
         </ul>
@@ -299,13 +382,15 @@ cd my-cluster
         
             <a class="btn btn-theme" href="/category/#Java" role="button">Java (1)</a>
         
-            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (3)</a>
+            <a class="btn btn-theme" href="/category/#OpenStack" role="button">Openstack (4)</a>
         
             <a class="btn btn-theme" href="/category/#docker" role="button">Docker (7)</a>
         
             <a class="btn btn-theme" href="/category/#gitlab" role="button">Gitlab (2)</a>
         
             <a class="btn btn-theme" href="/category/#linux" role="button">Linux (5)</a>
+        
+            <a class="btn btn-theme" href="/category/#Linux" role="button">Linux (1)</a>
         
     </p>
 
@@ -581,7 +666,7 @@ cd my-cluster
         </script>
 
         <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="/blog/linux/install-ceph" data-title="安装Ceph" data-url="http://www.renhl.com/blog/linux/install-ceph "></div>
+<div class="ds-thread" data-thread-key="/blog/linux/install-powerdns-on-ubuntu-16.04" data-title="在Ubuntu 16.04上安装PowerDNS" data-url="http://www.renhl.com/blog/linux/install-powerdns-on-ubuntu-16.04 "></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
