@@ -211,6 +211,17 @@ $ pdns_control notify hhhhh.com
 
 
 
+## 问题2: PowerDNS  SOA Serial are not updated automatically
+虽然可以同步了,但是添加的域名在API更新了记录时, SOA Serial不自动更新,Slave发现 SOA Serial没变化就同步记录了.     
+所以我们需要在记录变化时自动更新SOA Serial.我在网上找了N久终于找到了相关的设置.
+
+
+在通过API创建zone的时候添加下面的参数:
+```
+"soa_edit_api" : "INCEPTION-INCREMENT",
+```
+http://jpmens.net/2015/01/09/a-look-at-the-powerdns-rest-api/
+
 # 参考:     
 [1] [https://support.dnsimple.com/articles/soa-record/](https://support.dnsimple.com/articles/soa-record/)        
 [2] [http://www.zytrax.com/books/dns/ch8/soa.html](http://www.zytrax.com/books/dns/ch8/soa.html)        
