@@ -1,24 +1,40 @@
 #### Exclude
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 
-#### Code Highlighter
-highlighter: pygments
+
+# Site settings
+title: 念西堂
+description: "Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description."
+analytics: UA-71158870-1
+baseurl: "" #important: start with /
+url: "http://yourdomain.com"
+
+# Build settings
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  hard_wrap: true
+
+
+# #### Code Highlighter
+# highlighter: pygments
 
 #### Permalink
 # For more see: http://jekyllrb.com/docs/permalinks/
 permalink: /:categories/:year/:month/:day/:title 
 
-#### Markdown Processors
-markdown: redcarpet
-redcarpet:
-  extensions:
-    - hard_wrap
-    - no_intra_emphasis
-    - autolink
-    - strikethrough
-    - tables
-    - lax_spacing
-    - with_toc_data
+# #### Markdown Processors
+# markdown: redcarpet
+# redcarpet:
+#   extensions:
+#     - hard_wrap
+#     - no_intra_emphasis
+#     - autolink
+#     - strikethrough
+#     - tables
+#     - lax_spacing
+#     - with_toc_data
 
 #### Default Attributes
 defaults:
@@ -33,8 +49,8 @@ defaults:
 paginate: 20
 
 #### Site
-title : Jekyll Jacman
-tagline: A fresh looking and responsive theme for Jekyll
+title : 念西堂
+tagline: 今生不向此身渡,更待何生渡此身
 assets: /assets
 baseurl: 
 
@@ -88,9 +104,9 @@ share_button: true #enable share buttons if true
 
 #### Author information
 author:
-  name: yitao      ## e.g. wuchong Author name
-  intro_line1:  "Hello ,I'm Larry Page in Google."    ## your introduction on the bottom of the page
-  intro_line2:  "This is my blog,believe it or not."  ## the 2nd line
+  name: 任怀林      ## e.g. wuchong Author name
+  intro_line1:  "一个佛教徒,一个大龄的程序员"    ## your introduction on the bottom of the page
+  intro_line2:  "这里是我的一些备忘,没有刻意修饰,请见谅."  ## the 2nd line
   weibo:      ## e.g. wuchong1014 or 2176287895 for http://weibo.com/2176287895
   weibo_verifier:  ## e.g. b3593ceb Your weibo-show widget verifier ,if you use weibo-show it is needed.
   tsina:      ## e.g. 2176287895  Your weibo ID,It will be used in share button.
