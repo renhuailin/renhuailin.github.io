@@ -4,7 +4,6 @@ title: Linux下用shadowsocks和Privoxy实现翻墙
 date: 2017-02-03 15:30:00
 author: 任怀林
 categories:
-- blog
 - linux
 thumb: linux.png
 ---
@@ -14,8 +13,8 @@ thumb: linux.png
 Debian / Ubuntu:
 
 ```
-apt-get install python-pip
-pip install shadowsocks
+# apt-get install python-pip
+# pip install shadowsocks
 ```
 
 
@@ -55,7 +54,7 @@ Shadowsocks使用的socks5协议,而终端很多工具目前只支持http和http
 在linux下可以使用privoxy来实现这个转换。
 
 ```
-apt-get install privoxy
+$ sudo apt-get install privoxy
 ```
 
 编辑配置文件`/etc/privoxy/config`,加入下面两行内容。
@@ -64,7 +63,7 @@ apt-get install privoxy
 forward-socks5t   /               127.0.0.1:1080 .
 listen-address  localhost:8118
 ```
-需要注意：
+需要注意：
 1.  127.0.0.1：1080是shadowsocks的客户端的IP和端口，要与上面shadowsocks里的配置相符。
 2.  请不要忽略这行配置后面的`.`,这可不是句号的意思，这个必须有。
 
@@ -72,16 +71,16 @@ listen-address  localhost:8118
 启动服务：
 
 ```
-service privoxy restart
+$ sudo service privoxy restart
 ```
 
 这样就配置好了。试一下
 
 ```
-$ export http_proxy=http://127.0.0.1:8118
-$ export https_proxy=http://127.0.0.1:8118
+$ export http_proxy=http://localhost:8118
+$ export https_proxy=http://localhost:8118
 $ curl ip.cn
 ```
 
-## 参考:
-http://www.jianshu.com/p/8e7d7f57bf59
+# 参考:
+[http://www.jianshu.com/p/8e7d7f57bf59](http://www.jianshu.com/p/8e7d7f57bf59)

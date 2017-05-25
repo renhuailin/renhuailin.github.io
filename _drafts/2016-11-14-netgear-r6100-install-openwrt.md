@@ -78,7 +78,30 @@ Sub Instruction Set: MIPS32 74K series
 
 [下载ChinaDNS](https://github.com/aa65535/openwrt-chinadns/releases)
 
-难道shadowsocks-libev和shadowsocks服务器端是不兼容的?我需要安装shadowsocks-libev 端？
+难道shadowsocks-libev和shadowsocks服务器端是不兼容的?我需要安装shadowsocks-libev端？
+
+
+是的,在我的国外的VPS上必须安装并启动`shadowsocks-libev`
+
+```
+$ git clone https://github.com/shadowsocks/shadowsocks-libev.git
+$ cd shadowsocks-libev/
+$ dpkg -i shadowsocks-libev*.deb
+$ vim /etc/shadowsocks-libev/config.json
+$ /etc/init.d/shadowsocks-libev start 
+```
+
+/etc/shadowsocks-libev/config.json的内容
+``` json
+{
+    "server":"xx.xxx.xxx.xx",
+    "server_port":8488,
+    "local_port":1080,
+    "password":"yoursspassword",
+    "timeout":60,
+    "method":"rc4-md5"
+}
+```
 
 #参考：     
 　
