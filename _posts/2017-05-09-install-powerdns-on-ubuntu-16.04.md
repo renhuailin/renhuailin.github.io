@@ -222,6 +222,43 @@ $ pdns_control notify hhhhh.com
 ```
 http://jpmens.net/2015/01/09/a-look-at-the-powerdns-rest-api/
 
+
+
+## Received NOTIFY for xiangcloud.com.cn. from 122.115.54.57 which is not a master
+
+场景是这样的:
+我从原来的dns里导出了域名解析的信息,然后通过powerdns的api插入到了主powerdns里. 不知道什么原因,这些记录没有同步过来,后来我重启了slave的pdns进程.
+我发现没有同步后,我就手动把主powerdns的域名和解析记录导出mysqldump出来,导入到slave powerdns里了.
+接下来我在master上添加记录,发现还是同步不了.就报上面的这个错误.
+
+看了源代码:
+
+``` cpp
+//packethandler.cc
+  else if(!db->isMaster(p->qdomain, p->getRemote().toString())) {
+    L<<Logger::Error<<"Received NOTIFY for "<<p->qdomain<<" from "<<p->getRemote()<<" which is not a master"<<endl;
+    return RCode::Refused;
+  }
+```
+db是一个DNSBackend,我们用的是sqlbackend,所以其实它是`GSQLBackend` 是去数据库里查询域名了.然后比对这个域名的master字段.如果字段与给 `p->getRemote()` 也是上面的122.115.54.57不相等,那就报这个错.
+我看了slave上的pdns数据库里的domains表,记录里master字段为空.
+
+于是新插了一个域名,发现同步是好使的,在slave上的pdns数据库里的domains表里,记录是这样的.
+
+```
+mysql> select * from domains where name = 'junaidong1.com.cn';
++-------+-------------------+---------------+------------+-------+-----------------+---------+
+| id    | name              | master        | last_check | type  | notified_serial | account |
++-------+-------------------+---------------+------------+-------+-----------------+---------+
+| 16266 | junaidong1.com.cn | 122.115.54.57 | 1497338783 | SLAVE |            NULL | admin   |
++-------+-------------------+---------------+------------+-------+-----------------+---------+
+1 row in set (0.00 sec)
+```
+要想实现同步,slave上的数据必须是这样的.
+
+原因找到就好办了,手动把slave上的数据库里的`domains`表的 `master`,`last_check`,`type`这三个字段加上内容就可以了.
+
+
 # 参考:     
 [1] [https://support.dnsimple.com/articles/soa-record/](https://support.dnsimple.com/articles/soa-record/)        
 [2] [http://www.zytrax.com/books/dns/ch8/soa.html](http://www.zytrax.com/books/dns/ch8/soa.html)        
