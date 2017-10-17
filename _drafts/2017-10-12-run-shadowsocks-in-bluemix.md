@@ -12,6 +12,34 @@ categories:
 
 
 
+## **ShadowSocks Docker Image**
+
+<https://hub.docker.com/r/mritd/shadowsocks/>
+
+
+
+```
+$ bx login --sso https://api.eu-de.bluemix.net
+
+$ bx cs init
+
+$ bx cs cluster-config mycluster
+
+# 登录到bluemix的registry.
+$ bx cr login
+
+# 这个必须有，否则我们无法push镜像
+$ bx cr namespace-add harleyren
+
+$ docker tag registry.eu-de.bluemix.net/harleyren/shadowsocks:3.1.0 registry.eu-gb.bluemix.net/harleyren/shadowsocks:3.1.0
+
+$ docker push registry.eu-gb.bluemix.net/harleyren/shadowsocks:3.1.0
+```
+
+
+
+
+
 ```
 $ kubectl proxy --address="0.0.0.0"
 ```
@@ -39,7 +67,7 @@ spec:
       containers:
       - name: shadowsocks
         # Run this image
-        image: registry.ng.bluemix.net/harleyren/shadowsocks:3.1.0
+        image: registry.eu-de.bluemix.net/harleyren/shadowsocks:3.1.0
         ports:
           - containerPort: 8388
         env:
@@ -47,6 +75,7 @@ spec:
             value: 'ss-server'
           - name: 'SS_CONFIG'
             value: '-s 0.0.0.0 -p 8388 -m rc4-md5 -k yousecretkey --fast-open'
+         
 ```
 
 
@@ -55,16 +84,35 @@ spec:
 
 ```
 $ kubectl expose deployment/deployment-shadowsocks --type=NodePort --port=8388 --name=shadowsocks --target-port=8388
+
+$ kubectl describe service shadowsocks
 ```
 
+yaml 格式：
 
-
-`kubectl describe service shadowsocks`
-
-
-
-
-
-
-
-#参考：　
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  # Unique key of the Service instance
+  name: shadowsocks
+spec:
+  ports:
+  # ShadowSocks Port
+  - name: ss
+  	# The port that will be exposed by this service.
+    port: 8388
+    # The port that pod exposed.
+    targetPort: 8388
+  - name: kcp
+  	# The port that will be exposed by this service.
+    port: 9000
+    # The port that pod exposed.
+    targetPort: 9000
+    protocol: "UDP"
+  selector:
+    # Loadbalance traffic across Pods matching
+    # this label selector
+    app: shadowsocks
+  type: NodePort
+```
