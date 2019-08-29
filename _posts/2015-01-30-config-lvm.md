@@ -5,7 +5,7 @@ date: 2015-01-30 12:30:00
 author: 任怀林
 categories: 
 - blog
-- linux
+- other
 thumb: linux.png
 ---
 
@@ -34,7 +34,7 @@ Command action
    x   extra functionality (experts only)
 {% endhighlight %}
 
-
+   
 2 显示当前的分区表
 {% highlight sh %}
 Command (m for help): p 
@@ -178,19 +178,19 @@ Disk /dev/mapper/localhost--vg-swap_1 doesn't contain a valid partition table
 #创建一个lvm物理卷pv
 root@localhost:~# pvcreate /dev/xvdb1
   Physical volume "/dev/xvdb1" successfully created
-
+  
 root@localhost:~# pvscan
   PV /dev/xvda5   VG localhost-vg    lvm2 [29.76 GiB / 0    free]
   PV /dev/xvdb1                      lvm2 [100.00 GiB]
   Total: 2 [129.76 GiB] / in use: 1 [29.76 GiB] / in no VG: 1 [100.00 GiB]
-
   
-
+  
+  
 #因为我们在安装ubuntu时选择lvm类型，所以已经有了vg了。
 root@localhost:~# vgscan
   Reading all physical volumes.  This may take a while...
   Found volume group "localhost-vg" using metadata type lvm2
-
+  
 
 #把新建的pv添加到vg里吧
 root@localhost:~# vgextend localhost-vg /dev/xvdb1
@@ -236,8 +236,8 @@ root@localhost:~# lvdisplay
   Allocation             inherit
   Read ahead sectors     auto
   - currently set to     256
-      Block device           252:0
-
+  Block device           252:0
+   
   --- Logical volume ---
   LV Path                /dev/localhost-vg/swap_1
   LV Name                swap_1
@@ -253,14 +253,14 @@ root@localhost:~# lvdisplay
   Allocation             inherit
   Read ahead sectors     auto
   - currently set to     256
-      Block device           252:1
+  Block device           252:1
 
 #扩大lv的容量,加号后面的值要是vgdisplay命令输出里的Free  PE / Size       25599 / 100.00 GiB 这个值，当然可以小于这个值，也就是不全部分配给这个lv.
 root@localhost:~# lvresize -l +25599 /dev/localhost-vg/root
   Extending logical volume root to 128.51 GiB
   Logical volume root successfully resized
-
-
+  
+  
 #再看看vg,会发现Free PE数量为0了。
 root@localhost:~# vgdisplay
   --- Volume group ---
@@ -317,22 +317,3 @@ none                            4.8G     0  4.8G   0% /run/shm
 none                            100M     0  100M   0% /run/user
 /dev/xvda1                      236M   37M  187M  17% /boot
 {% endhighlight %}
-
-
-# 缩容 RHEL 7.4上的xfs的lvm卷
-参考：http://yallalabs.com/linux/how-to-reduce-shrink-the-size-of-a-lvm-partition-formatted-with-xfs-filesystem/
-
-首先umount lv的挂载点
-```
-# umount /data
-```
-
-缩容并重新mkfs.xfs **注意： 所有的数据会丢失，请先用`xfsdump -f /tmp/test.dump /data`**
-```
-# lvresize -l -4000 /dev/rhel/lv_data
-# mkfs.xfs -f /dev/rhel/lv_data  
-```
-重新mount上
-```
-# mount  /dev/rhel/lv_data /data
-```

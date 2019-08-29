@@ -3,9 +3,7 @@ layout: post
 title: 在Ubuntu 16.04上安装PowerDNS并配置主从复制
 date: 2017-05-09 17:26:00
 author: 任怀林
-categories:
-- blog
-- Linux
+categories: [Linux]
 thumb: linux.png
 ---
 
