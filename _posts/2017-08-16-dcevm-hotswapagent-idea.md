@@ -3,7 +3,8 @@ layout: post
 title: DCEVM+HotSwapAgent实现java类热加载
 date: 2017-08-16 10:00:00
 author: 任怀林
-categories: [Java]
+categories:
+- java
 thumb: java.png
 ---
 
@@ -20,9 +21,6 @@ DCEVM主页: https://dcevm.github.io/
 然后下载DCEVM的patch,是个jar包，从DCEVM主页上下载，我下文件名为：`DCEVM-light-8u112-installer.jar`
 
 运行`java -version`确认您的jdk是`8u112`.
-
-
-<!--more-->
 
 安装patch
 ```

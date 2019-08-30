@@ -1,79 +1,86 @@
-Solid. A Bootstrap theme for Jekyll.
-============
-![Screenshot](https://st4ple.github.io/solid-jekyll/assets/img/browser.png)
+# Jekyll-Jacman
 
-This is a [Jekyll](http://jekyllrb.com/) port of the [Solid theme](http://www.blacktie.co/2014/05/solid-multipurpose-theme/) by [blacktie.co](http://www.blacktie.co/). Visit the [live demo](https://st4ple.github.io/solid-jekyll/) for a preview. 
+**中文 | [English](/README_en.md)**
 
-##Usage
-This theme can be customized, built and published straight from GitHub, thanks to [GitHub Pages](https://pages.github.com/). A local installation of Jekyll isn't even necessary!
+Jekyll-Jacman 是为 [Jekyll](http://jekyllrb.com) 设计的一款清新且具有响应式的主题，拥有更丰富的特性并支持了很多的国内服务。Jacman 始于 [Hexo Jacman](https://github.com/wuchong/jacman) 移植而来。
 
-[Fork this repository](https://github.com/st4ple/solid-jekyll/fork) to get started. 
-####Customize  
-Most general settings and data like site name, colors, address, etc. can be configured and changed right in the main config file: `/_config.yml`
-The content of the Home page can be changed here: `/home.html`
-The content of the About page can be changed here: `/about.html`
-The content of the Portfolio page can be changed here:`/portfolio.html`
-The content of the Contact page can be changed here:`/contact.html`
-####Add content  
-Delete the demo content and publish your own content.
-#####Blog post
-Create a Blog post by creating a file called `yyyy-mm-dd-name-of-post-like-this.markdown` in the `/_posts/blog/` directory with the following template:
-```markdown
----
-layout: post          #important: don't change this
-title: "Name of post like this"
-date: yyyy-mm-dd hh:mm:ss
-author: Name
-categories:
-- blog                #important: leave this here
-- category1
-- category2
-- ...
-img: post01.jpg       #place image (850x450) with this name in /assets/img/blog/
-thumb: thumb01.jpg    #place thumbnail (70x70) with this name in /assets/img/blog/thumbs/
----
-This text will appear in the excerpt "post preview" on the Blog page that lists all the posts.
-<!--more-->
-This text will not be shown in the excerpt because it is after the excerpt separator.
+ * [主题演示](http://simpleyyt.github.io/jekyll-jacman/)
+ * [Yitao's Blog](http://simpleyyt.github.io)
+ * [如何使用 Jacman 主题](http://simpleyyt.github.io/jekyll-jacman/jekyll/2015/09/20/how-to-use-jacman)
+
+##本地搭建
+
+确保已安装`Ruby 2.1.0` 或更高版本：
+
+```sh
+ruby --version
 ```
-#####Project post
-Create a Project post to go in your Portfolio by creating a file called `yyyy-mm-dd-name-of-the-project.markdown` in the `/_posts/project/` directory with the following template:
-```markdown
----
-layout: project       #important: don't change this
-title:  "Name of the project"
-date: yyyy-mm-dd hh:mm:ss
-author: Name
-categories:
-- project             #important: leave this here
-img: portfolio_10.jpg #place image (600x450) with this name in /assets/img/project/
-thumb: thumb02.jpg
-carousel:
-- single01.jpg        #place image (1280x600) with this name in /assets/img/project/carousel/
-- single02.jpg  
-- ...
-client: Company XY
-website: http://www.internet.com
----
-####This is a heading
-This is a regular paragraph. Write as much as you like.
-```
-#####Question entry
-Create a Question entry (that is listed in the Frequently Asked section on the Home page) in this directory by creating a file called `yyyy-mm-dd-do-i-have-a-question.markdown` in the `/_posts/project/` directory with the following template:
-```markdown
----
-layout: question
-title:  "Do I have a question?"
-date: yyyy-mm-dd hh:mm:ss
-author: First Last
-categories:
-- question            #important: leave this here
----
-####Can I use this theme for my website?
-Of course you can!
-```
-####Publish
-To publish with [GitHub Pages](https://pages.github.com/), simply create a branch called `gh-pages`in your repository. GitHub will build your site automatically and publish it at `http://yourusername.github.io/repositoryname/`.  
-If there are problems with loading assets like CSS files and images, make sure that the `baseurl` in the `_config.yml`is set correctly (it should say `/repositoryname`).
 
-If you want to host your website somewhere else than GitHub (or just would like to customize and build your site locally), please check out the [Jekyll documentation](http://jekyllrb.com/). 
+安装`Bundler`：
+
+```sh
+gem install bundler
+```
+
+下载 Jacman 主题：
+
+```sh
+git clone https://github.com/Simpleyyt/jekyll-jacman.git
+cd jekyll-jacman
+```
+
+安装依赖：
+
+```sh
+bundle install
+```
+
+运行 Jekyll：
+
+```sh
+bundle exec jekyll server
+```
+
+更多细节可以参考：[Setting up your GitHub Pages site locally with Jekyll](https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll/)
+
+##功能
+- **菜单 menu**  
+ 主导航菜单
+- **控件 widget**  
+ 侧边栏的控件。包括：Github 名片	、分类、标签、RSS、友情链接、微博秀。
+- **图片相关 Image**  
+ 设置网站图标、网站logo、作者头像、博客顶部大图等。还提供了多种图片样式`img-logo`,`img-topic`,`img-center`等。
+- **首页模式 index**  
+ 主题提供了两种首页展示模式。
+- **作者 author**  
+ 作者信息，主要用于展示网站右下角的社交网络链接。包括：微博、豆瓣、知乎、邮箱、GitHub、StackOverflow、Twitter、Facebook、Linkedin、Google+。
+- **目录 toc**  
+ 在文章中和侧边栏可以显示目录。
+- **评论 comments**  
+ 支持 [多说](http://duoshuo.com/) & [disqus](https://disqus.com/) 评论。
+- **分享 jiathis**  
+ 启用 内建分享工具 或 [加网](http://www.jiathis.com/) 分享系统。
+- **网站统计 Analytiscs**  
+ 支持 [谷歌统计](http://www.google.com/analytics/) & [百度统计](http://tongji.baidu.com/) & [CNZZ站长统计](http://www.cnzz.com/)。
+- **Search**  
+ 支持 [谷歌自定义搜索](https://www.google.com/cse/ ) & [百度站内搜索](http://zn.baidu.com/)  &[微搜索](http://tinysou.com/)。
+- **totop**  
+ 回到顶部。
+- **rss**  
+ RSS 订阅链接。
+- **fancybox**  
+ 图片查看的 [Fancybox](http://fancyapps.com/fancybox/) 工具。
+- **其他**
+ 你可以设置侧边栏在博文页面中不显示。
+
+##关于 Kramdown 引擎
+由于 Github 不再支持原来的 redcarpet，因此每次更新时都会有 Page build warning 发到邮件。我新建了一个分支 kramdown，把 Markdown 引擎换成了 kramdown，把高亮换成了 rough。但是，kramdown 的 markdown 语法比较严格，我不喜欢。所以，你也可以像我一样建个规则过滤 Page build warning 邮件。
+
+##协议
+[MIT](/LICENSE)
+
+##捐赠
+
+支付宝捐赠链接还是要有的，万一真的有人捐呢。
+
+![支付宝扫码捐赠](http://p1.bpimg.com/567571/9a4a158daee8aa69.png)

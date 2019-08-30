@@ -1,4 +1,6 @@
-### GENERAL SETTINGS ###
+#### Exclude
+exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
+
 
 # Site settings
 title: 念西堂
@@ -14,119 +16,168 @@ kramdown:
   input: GFM
   hard_wrap: true
 
-#markdown: redcarpet
-permalink: /:categories/:title
-excerpt_separator: <!--more--> #use this in posts to define how long the excerpt of the post (that is shown on the Blog page) is
 
-gems: [jekyll-paginate]
+# #### Code Highlighter
+# highlighter: pygments
 
-paginate: 5
-# paginate_path: "/page:num"
+#### Permalink
+# For more see: http://jekyllrb.com/docs/permalinks/
+permalink: /:categories/:year/:month/:day/:title 
 
+# #### Markdown Processors
+# markdown: redcarpet
 # redcarpet:
-#   extensions: ["smart","fenced_code","gh_blockcode","autolink", "tables", "with_toc_data"]
+#   extensions:
+#     - hard_wrap
+#     - no_intra_emphasis
+#     - autolink
+#     - strikethrough
+#     - tables
+#     - lax_spacing
+#     - with_toc_data
+
+#### Default Attributes
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      
+#### Pagination
+paginate: 20
+
+#### Site
+title : 念西堂
+tagline: 今生不向此身渡,更待何生渡此身
+assets: /assets
+baseurl: 
+
+#### Language
+language: zh-CN    ## blog site languages: en, zh-CN, zh-TW
+
+#### Menu
+menu:
+  Home: /
+  Archives: /archives
+  About: /about
+## you can create `tags` and `categories` folders (I had created them already).
+## And create a `index.md` file in each of them.
+## set `front-matter`as
+## layout: tags (or categories)
+## title: tags (or categories)
+## ---
+
+#### Widgets
+widgets: 
+- category
+- tag
+- tagcloud
+- links
+- douban
+- github-card
+- rss
+## provide seven widgets:github-card,category,tag,rss,archive,tagcloud,links,weibo,douban
 
 
-#highlighter: rouge
-# rouge:
-#   line_numbers: true
+#### RSS 
+rss: /atom.xml ## RSS address.
 
-colors:  #in hex code if not noted else
-  primary: "#00b3fe" #"#F70031"
-  primary_rgb: "0,179,254" #"247,0,49" #rgb of the primary. Needed in some places for the transparency effect.
-  secondary: "#384452" #"#33004D"
-  link: "#428bca"
-  link_hover: "#01b2fe"
-  footer_heading: "#ffffff"
-  footer_content: "#bfc9d3"
+#### Image
+imglogo:
+  enable: true             ## display image logo true/false.
+  src: img/logo.png        ## `.svg` and `.png` are recommended,please put image into the theme folder `/jacman/source/img`.
+favicon: img/favicon.ico   ## size:32px*32px,`.ico` is recommended,please put image into the theme folder `/jacman/source/img`.     
+apple_icon: img/jacman.jpg ## size:114px*114px,please put image into the theme folder `/jacman/source/img`.
+author_img: img/author.jpg ## size:220px*220px.display author avatar picture.if don't want to display,please don't set this.
+banner_img: #img/banner.jpg ## size:1920px*200px+. Banner Picture
 
+#### index post is expanding or not 
+index:
+  expand: true           ## default is unexpanding,so you can only see the short description of each post.
+  excerpt_link: Read More  
 
-### CONTACT SETTINGS ###
+close_aside: false  #close sidebar in post page if true
+mathjax: true      #enable mathjax if true
+share_button: true #enable share buttons if true
 
-# Social networks usernames. Many more available: google-plus, flickr, linkedin, etc). Shown in footer.
-social:
-  - title: weibo
-    url: http://www.weibo.com/xiaopaozi
-  - title: facebook
-    url: https://www.facebook.com/renhuailin
-  - title: twitter
-    url: https://twitter.com/xiaopaozi
-#  - title: instagram
-#    url:
-#  - title: tumblr
-#    url:
+#### Author information
+author:
+  name: 任怀林      ## e.g. wuchong Author name
+  intro_line1:  "一个佛教徒,一个大龄的程序员"    ## your introduction on the bottom of the page
+  intro_line2:  "这里是我的一些备忘,没有刻意修饰,请见谅."  ## the 2nd line
+  weibo:      ## e.g. wuchong1014 or 2176287895 for http://weibo.com/2176287895
+  weibo_verifier:  ## e.g. b3593ceb Your weibo-show widget verifier ,if you use weibo-show it is needed.
+  tsina:      ## e.g. 2176287895  Your weibo ID,It will be used in share button.
+  douban:     ## e.g. wuchong1014 or your id for https://www.douban.com/people/wuchong1014
+  zhihu:      ## e.g. jark  for http://www.zhihu.com/people/jark
+  email:      ## e.g. imjark@gmail.com
+  twitter:    ## e.g. jarkwu for https://twitter.com/jarkwu
+  github:     ## e.g. wuchong for https://github.com/wuchong
+  facebook:   ## e.g. imjark for https://facebook.com/imjark
+  linkedin:   ## e.g. wuchong1014 for https://www.linkedin.com/in/wuchong1014
+  google_plus:    ## e.g. "111190881341800841449" for https://plus.google.com/u/0/111190881341800841449, the "" is needed!
+  stackoverflow:  ## e.g. 3222790 for http://stackoverflow.com/users/3222790/jark
+## if you set them, the corresponding  share button will show on the footer
 
-# Postal address (add as many lines as necessary). Shown in footer and on Contact page.
-address:
-  - lines:
-    - Some Ave, 987,
-    - 23890, New York,
-    - United States.
-email: hello@solidtheme.com
-tel: +34 8493-4893
+#### Toc
+toc:
+  article: true   ## show contents in article.
+  aside: true     ## show contents in aside.
+## you can set both of the value to true of neither of them.
+## if you don't want display contents in a specified post,you can modify `front-matter` and add `toc: false`.
 
+#### Links
+links:
+  码农圈: https://coderq.com
+  Jark's Blog: http://wuchong.me
 
-### GENERAL DATA FOR VARIOUS LOCATIONS ###
+#### Comment
+duoshuo_shortname:    ## e.g. wuchong   your duoshuo short name.
+disqus_shortname:     ## e.g. wuchong   your disqus short name.
 
-# Members information. Shown on About page.
-members:
-  - name: Mark Webber
-    position: CEO
-    text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    img: team01.jpg
-    social:
-      - title: envelope #use for email address
-        url: mailto:name@domain.com
-      - title: twitter
-        url: http://twitter.com/handle
-  - name: Paul Jameson
-    position: Lead Designer
-    text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    img: team02.jpg
-    social:
-      - title: envelope #use for email address
-        url: mailto:name@domain.com
-      - title: twitter
-        url: http://twitter.com/handle
-  - name: Laura Sommers
-    position: Lead Developer
-    text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    img: team03.jpg
-    social:
-      - title: envelope #use for email address
-        url: mailto:name@domain.com
-      - title: twitter
-        url: http://twitter.com/handle
-  - name: Martin Blunt
-    position: Marketing
-    text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    img: team04.jpg
-# friend links
-friendlinks:
-  - title: 张利海
-    url: http://www.zhanglihai.com
-#  - title: facebook
-#    url: https://www.facebook.com/renhuailin
-#  - title: twitter
-#    url: https://twitter.com/xiaopaozi
+#### Share button
+jiathis:
+  enable: false ## if you use jiathis as your share tool,the built-in share tool won't be display.
+  id:    ## e.g. 1889330 your jiathis ID. 
+  tsina: ## e.g. 2176287895 Your weibo id,It will be used in share button.
 
-# Clients information. Shown on Home and About pages.
-clients:
-  - name: dribbble
-    img: client01.png
-  - name: Code is Poetry
-    img: client02.png
-  - name: Vimeo
-    img: client03.png
-  - name: VimeoPro
-    img: client04.png
+#### Analytics
+google_analytics:
+  enable: true
+  id: UA-71158870-1         ## e.g. UA-46321946-2 your google analytics ID.
+  site:      ## e.g. wuchong.me your google analytics site or set the value as auto.
+## You MUST upgrade to Universal Analytics first!
+## https://developers.google.com/analytics/devguides/collection/upgrade/?hl=zh_CN
+baidu_tongji:
+  enable: false
+  sitecode:  ## e.g. e6d1f421bbc9962127a50488f9ed37d1 your baidu tongji site code
+cnzz_tongji:
+  enable: false
+  siteid:    ## e.g. 1253575964 your cnzz tongji site id
 
-# Short text about your company. Shown in footer on every page and also separately on Home and Contact page.
-about: "我是一名程序员，我喜欢编程，学过几门语言，最喜欢java和ruby，目前主要靠java混饭吃。同时我也是一名佛教徒，虽然我现在还没有皈依。"
+#### Miscellaneous
+fancybox: true        ## if you use gallery post or want use fancybox please set the value to true.
+totop: true           ## if you want to scroll to top in every post set the value to true
 
+#### Custom Search
+google_cse: 
+  enable: false
+  cx: 018294693190868310296:abnhpuysycw  ## e.g. 018294693190868310296:abnhpuysycw your Custom Search ID.
+## https://www.google.com/cse/ 
+## To enable the custom search You must create a "search" folder in '/source' and a "index.md" file
+## set the 'front-matter' as
+## layout: search 
+## title: search
+## ---
+baidu_search:     ## http://zn.baidu.com/
+  enable: false
+  id:   ## e.g. "783281470518440642"  for your baidu search id
+  site: http://zhannei.baidu.com/cse/search  ## your can change to your site instead of the default site
+tinysou_search:     ## http://tinysou.com/
+  enable: false
+  id:  ## e.g. "4ac092ad8d749fdc6293" for your tiny search id
 
-# Testimonial content. Shown on Home and About page.
-testimonial:
-    message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
-    author: Marcel Newman
-    position: WEB DESIGNER - BLACKTIE.CO
+gems:
+ - jemoji

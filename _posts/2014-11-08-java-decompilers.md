@@ -3,7 +3,9 @@ layout: post
 title: "Java 反编译器"
 date: 2014-11-08 13：58：32
 author: 任怀林
-categories: [Java]
+categories: 
+- blog
+- Java
 tags:
 - java
 - decomplier
