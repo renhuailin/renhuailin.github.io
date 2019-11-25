@@ -110,7 +110,7 @@ $ sudo apt-get install certbot python-certbot-nginx
 - Congratulations! Your certificate and chain have been saved at:
   /etc/letsencrypt/live/test.acme.com/fullchain.pem
   Your key file has been saved at:
-  /etc/letsencrypt/live/wx.jcydjf.com/privkey.pem
+  /etc/letsencrypt/live/test.acme.com/privkey.pem
   Your cert will expire on 2020-02-23. To obtain a new or tweaked
   version of this certificate in the future, simply run certbot again
   with the "certonly" option. To non-interactively renew *all* of
