@@ -130,8 +130,21 @@ $ sudo apt-get install certbot python-certbot-nginx
 - Or, just get a certificate
   
   If you're feeling more conservative and would like to make the changes to your Nginx configuration by hand, run this command.
-  
- 
-  ```
+
+```
   $ sudo certbot certonly --nginx
-  ```
+```
+
+## 5. Test automatic renewal
+
+The Certbot packages on your system come with a cron job or systemd timer that will renew your certificates automatically before they expire. You will not need to run Certbot again, unless you change your configuration. You can test automatic renewal for your certificates by running this command:
+
+```
+$ sudo certbot renew --dry-run
+```
+
+The command to renew certbot is installed in one of the following locations:
+
+- /etc/crontab/
+- /etc/cron.*/*
+- systemctl list-timers
