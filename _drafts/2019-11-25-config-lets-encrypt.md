@@ -8,8 +8,6 @@ categories:
   thumb: linux.png
 ---
 
-# 为nginx配置Let's Encrypt证书
-
 # 1. 安装[certbot](https://certbot.eff.org)
 
 # 2. Add Certbot PPA
@@ -44,37 +42,37 @@ $ sudo apt-get install certbot python-certbot-nginx
   Enter email address (used for urgent renewal and security notices) (Enter 'c' to
   cancel): harley@acme.com  #在这里输入一个邮箱，用来提醒证书刷新。
   ```
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   Please read the Terms of Service at
   https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf. You must
   agree in order to register with the ACME server at
   https://acme-v02.api.letsencrypt.org/directory
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   (A)gree/(C)ancel: A  # 只能同意
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   Would you be willing to share your email address with the Electronic Frontier
   Foundation, a founding partner of the Let's Encrypt project and the non-profit
   organization that develops Certbot? We'd like to send you email about our work
   encrypting the web, EFF news, campaigns, and ways to support digital freedom.
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   (Y)es/(N)o: N   #不要分享我的邮箱
-
+  
   Which names would you like to activate HTTPS for?
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   1: test.acme.com
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   Select the appropriate numbers separated by commas and/or spaces, or leave input
   blank to select all options shown (Enter 'c' to cancel):
   Obtaining a new certificate
@@ -83,30 +81,30 @@ $ sudo apt-get install certbot python-certbot-nginx
   Waiting for verification...
   Cleaning up challenges
   Deploying Certificate to VirtualHost /etc/nginx/sites-enabled/test.acme.com
-
+  
   Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   1: No redirect - Make no further changes to the webserver configuration.
   2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for
   new sites, or if you're confident your site works on HTTPS. You can undo this
   change by editing your web server's configuration.
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2  #把http的请求转到https上。
   Redirecting all traffic on port 80 to ssl in /etc/nginx/sites-enabled/test.acme.com
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   Congratulations! You have successfully enabled https://test.acme.com
-
+  
   You should test your configuration at:
   https://www.ssllabs.com/ssltest/analyze.html?d=test.acme.com
-
+  
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  
   IMPORTANT NOTES:
 
 - Congratulations! Your certificate and chain have been saved at:
@@ -146,36 +144,43 @@ $ sudo apt-get install certbot python-certbot-nginx
       if ($host = test.acme.com) {
           return 301 https://$host$request_uri;
       } # managed by Certbot
-  
+  ```
   
       listen 80;
       listen [::]:80;
-  
+      
       server_name test.acme.com;
       return 404; # managed by Certbot
+  
   }
-  ```
+
+```
 
 - Or, just get a certificate
-  
+
   If you're feeling more conservative and would like to make the changes to your Nginx configuration by hand, run this command.
-  
-  ```
+```
+
   $ sudo certbot certonly --nginx
-  ```
+
+```
 
 ## Test automatic renewal
 
 The Certbot packages on your system come with a cron job or systemd timer that will renew your certificates automatically before they expire. You will not need to run Certbot again, unless you change your configuration. You can test automatic renewal for your certificates by running this command:
-
 ```
+
 sudo certbot renew --dry-run
+
 ```
 
 The command to renew certbot is installed in one of the following locations:
-
 ```
+
 /etc/crontab/
 /etc/cron.*/*
 systemctl list-timers
+
+```
+
 ```

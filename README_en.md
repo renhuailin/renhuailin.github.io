@@ -4,9 +4,9 @@
 
 Jacman is a fresh looking and responsive theme for [Jekyll](http://jekyllrb.com) with more features and some build-in Chinese service based on [Hexo Jacman](https://github.com/wuchong/jacman).  
 
- * [Demo](http://simpleyyt.github.io/jekyll-jacman/)
- * [Yitao's Blog](http://simpleyyt.github.io)
- * [如何使用 Jacman 主题](http://simpleyyt.github.io/jekyll-jacman/jekyll/2015/09/20/how-to-use-jacman)
+* [Demo](http://simpleyyt.github.io/jekyll-jacman/)
+* [Yitao's Blog](http://simpleyyt.github.io)
+* [如何使用 Jacman 主题](http://simpleyyt.github.io/jekyll-jacman/jekyll/2015/09/20/how-to-use-jacman)
 
 ##Local Setup
 
@@ -48,34 +48,35 @@ bundle exec jekyll server
 More Details：[Setting up your GitHub Pages site locally with Jekyll](https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll/)
 
 ##Features
+
 - **menu**  
- Main navigation menu.
+  Main navigation menu.
 - **widget**  
- Widgets displaying in sidebar.The github card, category,tag,rss,archive,tagcloud,links,weibo are supported.
+  Widgets displaying in sidebar.The github card, category,tag,rss,archive,tagcloud,links,weibo are supported.
 - **Image**  
- Images about favicon, site logo, author image, banner image. Support different image styles like `img-logo`,`img-topic`,`img-center` etc.
+  Images about favicon, site logo, author image, banner image. Support different image styles like `img-logo`,`img-topic`,`img-center` etc.
 - **index**  
- Two different home page display modes.You can visit [Demo](http://jacman.wuchong.me) to check the difference.
+  Two different home page display modes.You can visit [Demo](http://jacman.wuchong.me) to check the difference.
 - **author**  
- Author imformation, used to show your social network links on the bottom right. Including github, stackoverflow, twitter, facebook, linkedin, google+, weibo, douban, zhihu, email.
+  Author imformation, used to show your social network links on the bottom right. Including github, stackoverflow, twitter, facebook, linkedin, google+, weibo, douban, zhihu, email.
 - **toc**  
- Show Table Of Contents in article & aside.
+  Show Table Of Contents in article & aside.
 - **comments**  
- [duoshuo](http://duoshuo.com/) & [disqus](https://disqus.com/) are supported.
+  [duoshuo](http://duoshuo.com/) & [disqus](https://disqus.com/) are supported.
 - **jiathis**  
- Build-in share tool or [JiaThis](http://www.jiathis.com/) share buttons at the bottom of articles.
+  Build-in share tool or [JiaThis](http://www.jiathis.com/) share buttons at the bottom of articles.
 - **Analytiscs**  
- [Google analytics](http://www.google.com/analytics/) & [Baidu tongji](http://tongji.baidu.com/) & [CNZZ tongji](http://www.cnzz.com/) are all supported.
+  [Google analytics](http://www.google.com/analytics/) & [Baidu tongji](http://tongji.baidu.com/) & [CNZZ tongji](http://www.cnzz.com/) are all supported.
 - **Search**  
- [Googlle Custom Search](https://www.google.com/cse/ ) & [Baidu Site Search](http://zn.baidu.com/) & [Tiny Search](http://tinysou.com/) are supported.
+  [Googlle Custom Search](https://www.google.com/cse/ ) & [Baidu Site Search](http://zn.baidu.com/) & [Tiny Search](http://tinysou.com/) are supported.
 - **totop**  
- Scroll to top
+  Scroll to top
 - **rss**  
- RSS subscription link (change if using Feedburner).
+  RSS subscription link (change if using Feedburner).
 - **fancybox**  
- Enable [Fancybox](http://fancyapps.com/fancybox/)
+  Enable [Fancybox](http://fancyapps.com/fancybox/)
 - **others**
- You can configure sidebar not show in post pages.
+  You can configure sidebar not show in post pages.
 
 ##About kramdown  engine and rouge highlighter
 

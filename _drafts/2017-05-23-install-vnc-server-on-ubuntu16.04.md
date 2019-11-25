@@ -8,7 +8,6 @@ categories:
 thumb: linux.png
 ---
 
-
-
 #参考：　
+
 1. [Install VNC on Ubuntu 16.04](https://www.linode.com/docs/applications/remote-desktop/install-vnc-on-ubuntu-16-04)
