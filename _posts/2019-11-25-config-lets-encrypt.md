@@ -5,17 +5,10 @@ date: 2019-11-25 10:38:00
 author: 任怀林
 categories:
 - linux
-  thumb: linux.png
+thumb: linux.png
 ---
 
-# 为nginx配置Let's Encrypt证书
-
-
-
 # 1. 安装[certbot](https://certbot.eff.org)
-
-
-
 
 
 # 2. Add Certbot PPA
