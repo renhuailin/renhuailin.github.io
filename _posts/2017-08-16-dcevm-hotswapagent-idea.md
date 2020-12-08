@@ -50,4 +50,4 @@ $ sudo java -jar DCEVM-light-8u112-installer.jar
 
 打开你的项目，以debug的方式运行它（__一定要是debug模式__）。
 
-IDEA有个问题，就是在debug模式下不是自动编译的。所以每次修改完代码，要按'cmd + shift + F9'来编译，然后class才能reload，这个挺烦人的，你会发现reload的速度并不是很快，不过总比每次点stop & run要快了不少。
+IDEA有个问题，就是在debug模式下不是自动编译的。所以每次修改完代码，要按'cmd + shift + F9'来编译，然后class才能reload，这个挺烦人的，你会发现reload的速度并不是很快，不过总比每次点stop & run要快了不少。![](/Users/harley/Downloads/WX20201208-145543@2x.png)
