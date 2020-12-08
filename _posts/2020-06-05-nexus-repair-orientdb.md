@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: article
 title: 修复Nexus数据库
 date: 2020-06-05 12:38:00
 author: 任怀林
