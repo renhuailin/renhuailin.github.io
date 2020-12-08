@@ -16,9 +16,6 @@ $ sudo useradd -c "User xcvnc Configured for VNC Access" xcvnc
 $ sudo passwd xcvnc
 ```
 
-
-
-
 #参考：　
 [https://github.com/openstack/keystone/blob/master/tools/sample_data.sh](https://github.com/openstack/keystone/blob/master/tools/sample_data.sh)      
 [https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst](https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst)

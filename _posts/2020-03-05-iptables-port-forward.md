@@ -8,8 +8,6 @@ categories:
 thumb: linux.png
 ---
 
-
-
 ```bash
 #!/bin/bash
 
@@ -71,7 +69,7 @@ function redirectPort2 {
         serverIP=$3
         servicePort=$4
 
-        
+
         iptables -t nat -A PREROUTING -d $localIp -p tcp --dport $localPort -j DNAT --to $serverIP:$servicePort
         #iptables -t nat -A PREROUTING -i $interface -p tcp --dport $localPort -j DNAT --to $serverIP:$servicePort
 
