@@ -280,6 +280,31 @@
 
 <!-- end custom main top snippet -->
 <article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="任怀林"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/12/08/2014-11-08-java-decompilers.html"><h2 itemprop="headline" class="item__header"></h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody"></div><p><a href="/2020/12/08/2014-11-08-java-decompilers.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Dec 08, 2020</span>
+            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2020-12-08T23:03:17+08:00"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/12/08/install-powerdns-admin.html"><h2 itemprop="headline" class="item__header">使用PowerDNS admin来管理PowerDNS</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希望对大家有所帮忙。
+
+1. 用docker来运行PowerDNS admin
+
+运行PowerDNS admin最简单的方式就是用docker了，只需执行下面的命令就可以了。
+
+docker run -d -v pda-data:/data -p 9191:80 ngoduykhanh/powerdns-admin:latest
+
+
+pda-data是host上的目录，你在运行这个命令时，请换成你选择的目录。这是把PowerDNS运行时产生的数据存在本地目录，这样下次启动容器时，配置不会丢失。
+
+2. 注册用户
+
+在第一次登录时，需要注册用户，第...</div><p><a href="/2020/12/08/install-powerdns-admin.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=linux">linux</a>
+            </li></ul><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Dec 08, 2020</span>
+            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2020-12-08T20:38:00+08:00">
+    <meta itemprop="keywords" content="linux"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/linux/2020/06/05/nexus-repair-orientdb.html"><h2 itemprop="headline" class="item__header">修复Nexus数据库</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">昨天nexus所在主机的磁盘完全占满了，nexus无法正常运行了，也无法重启。
 我的nexus是运行在docker里的，快一年了，日志很大，我删除了docker的日志，释放了一些空间。然后我尝试重启nexus，发现报错：
@@ -622,34 +647,8 @@ networ node必须有三个NIC(network interface card),也就是网卡．
 
 # This f...</div><p><a href="/blog/openstack/2015/03/11/deploy-openstack-on-ubuntu-14.04.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Mar 11, 2015</span>
             </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2015-03-11T20:30:00+08:00"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/blog/other/2015/01/30/config-lvm.html"><h2 itemprop="headline" class="item__header">配置LVM</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。
-
-root@localhost:~# fdisk /dev/xvdb 
-Command (m for help): m
-Command action
-   a   toggle a bootable flag
-   b   edit bsd disklabel
-   c   toggle the dos compatibility flag
-   d   delete a partition
-   l   list known partition types
-   m   print this menu
-   n   add a new partition
-   o   create a new empty DOS pa...</div><p><a href="/blog/other/2015/01/30/config-lvm.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Jan 30, 2015</span>
-            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2015-01-30T20:30:00+08:00"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/blog/other/2015/01/06/vm-communicate-with-my-laptop.html"><h2 itemprop="headline" class="item__header">从宿主机访问VirtualBox里的虚机</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的IP，公司1+1主办公区的IP段是172的，当我到1+1主办公区时办公时，我就无法访问我的虚机了。我的虚机桥椄到宿主机的wlan0的网卡上。所以解决方案很简单，当我在1+1办公时，在我的wlan0上绑一个192段的IP就行了。
-
-# ifconfig wlan0:0 192.168.234.249/24
-
-
-回到银丰后，把这个配置删除掉：
-# ifconfig wlan0:0 192.168.234.249 down</div><p><a href="/blog/other/2015/01/06/vm-communicate-with-my-laptop.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Jan 06, 2015</span>
-            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2015-01-06T22:30:00+08:00"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>22 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>23 post articles, 2 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
             <i class="fas fa-angle-left"></i>
