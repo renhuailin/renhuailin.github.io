@@ -6,6 +6,8 @@ author: 任怀林
 tags:
 - linux
 thumb: linux.png
+key: 2020-12-08-install-powerdns-admin
+comment: true
 ---
 
 最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希望对大家有所帮忙。
@@ -24,7 +26,7 @@ docker run -d -v pda-data:/data -p 9191:80 ngoduykhanh/powerdns-admin:latest
 
 在第一次登录时，需要注册用户，第一个用户会被PowerDNS admin设置为管理员。
 
-![login-to-powerdns-admin.png](/assets/img/blog/2020/12/08/WX20201208-221328@2x.pngg)
+![login-to-powerdns-admin.png](/assets/img/blog/2020/12/08/WX20201208-221328@2x.png)
 
 ## 3. 配置PowerDNS API
 

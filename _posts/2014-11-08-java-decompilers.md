@@ -1,5 +1,4 @@
 ---
-
 layout: post
 title: "Java 反编译器"
 date: 2014-11-08 13：58：32
@@ -11,7 +10,7 @@ categories:
 tags:
 - java
 - decomplier
-  thumb: java.png
+thumb: java.png
 
 ---
 
