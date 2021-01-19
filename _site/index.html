@@ -280,6 +280,25 @@
 
 <!-- end custom main top snippet -->
 <article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="任怀林"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/12/23/setup-a-mail-server.html"><h2 itemprop="headline" class="item__header">搭建一个邮件服务器(Mail Server)</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">最近在安装公司的API Connect，安装完成后，在注册新用户时，需要发送激活邮件。需要在apic里配置一个smtp的服务。而目前所有的国内邮箱都开启了SMTP的验证码，不适合直接配置在apic里。于是我想那就自己搭建一个mail server吧。以前做云计算时，自己有云主机，搭建起来比较简单，没想到这次用Google的云主机来搭建时还挺麻烦的。把过程记下来，以备后查。
+
+准备工作
+域名设置
+首先我们要把mail.renhl.com这个域名指向我们的邮件服务器的IP。
+我们需要在godaddy的管理界面为mail.renhl.com添加一个A记录。
+
+mail.renhl.com        &lt;IP-address&gt;
+
+
+接下来我们要添加一个MX记录。
+什么是MX记录？...</div><p><a href="/2020/12/23/setup-a-mail-server.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=linux">linux</a>
+            </li></ul><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Dec 23, 2020</span>
+            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2020-12-23T20:38:00+08:00">
+    <meta itemprop="keywords" content="linux"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2020/12/08/install-powerdns-admin.html"><h2 itemprop="headline" class="item__header">使用PowerDNS admin来管理PowerDNS</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希望对大家有所帮忙。
 
@@ -643,24 +662,8 @@ networ node必须有三个NIC(network interface card),也就是网卡．
 
 # This f...</div><p><a href="/blog/openstack/2015/03/11/deploy-openstack-on-ubuntu-14.04.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Mar 11, 2015</span>
             </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2015-03-11T20:30:00+08:00"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/blog/other/2015/01/30/config-lvm.html"><h2 itemprop="headline" class="item__header">配置LVM</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。
-
-root@localhost:~# fdisk /dev/xvdb 
-Command (m for help): m
-Command action
-   a   toggle a bootable flag
-   b   edit bsd disklabel
-   c   toggle the dos compatibility flag
-   d   delete a partition
-   l   list known partition types
-   m   print this menu
-   n   add a new partition
-   o   create a new empty DOS pa...</div><p><a href="/blog/other/2015/01/30/config-lvm.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="fas fa-user"></i> <span>任怀林</span></li><li><i class="far fa-calendar-alt"></i> <span>Jan 30, 2015</span>
-            </li></ul></div><meta itemprop="author" content="任怀林"/><meta itemprop="datePublished" content="2015-01-30T20:30:00+08:00"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>23 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>24 post articles, 2 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
             <i class="fas fa-angle-left"></i>
