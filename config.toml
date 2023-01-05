@@ -1,6 +1,6 @@
 baseURL = 'http://example.org/'
 languageCode = 'en-us'
-title = '我的网站'
+title = '念西堂'
 theme = 'pacman'
 
 
@@ -23,7 +23,7 @@ theme = 'pacman'
   AuthorHomepage = "your-home-page"
   #BottomIntroduce = "念西堂 <br/> 阿弥陀佛"
   Description = ""
-  Subtitle = "我的个人博客"
+  Subtitle = "一个热爱写程序的平凡人的博客"
   Weibo = ""
   WeiboID = 123
   Twitter = ""
