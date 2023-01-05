@@ -1,0 +1,6 @@
+[submodule "themes/pacman"]
+	path = themes/pacman
+	url = https://github.com/renhuailin/hugo-pacman-theme.git
+[submodule "themes/luna"]
+	path = themes/luna
+	url = git@github.com:renhuailin/hugo-theme-luna.git
