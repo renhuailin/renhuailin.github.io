@@ -5,7 +5,7 @@ theme = 'pacman'
 
 
 [Author]
-  Name = "your-name"
+  Name = "任怀林"
 
 [outputs]
   home = [ "RSS", "HTML" ]
@@ -20,7 +20,8 @@ theme = 'pacman'
     ordered = false
     startLevel = 1
 [Params]
-  AuthorHomepage = "your-home-page"
+  AuthorHomepage = "/about"
+  Author = "任怀林"
   #BottomIntroduce = "念西堂 <br/> 阿弥陀佛"
   Description = ""
   Subtitle = "一个热爱写程序的平凡人的博客"
