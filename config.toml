@@ -40,8 +40,8 @@ theme = 'pacman'
   MathJax = false
 
   [Params.GoogleAnalytics]
-    ID = ""
-    gtag_ID = ""
+    ID = "G-21F3GS6PC0"
+    gtag_ID = "G-21F3GS6PC0"
 
   [Params.Disqus]
     ShortName = ""
