@@ -58,6 +58,16 @@ theme = 'pacman'
     Rss = "RSS 订阅"
     TableOfContents = "文章目录"
 
+  [Params.comments.giscus]
+    repo = "renhuailin/renhuailin.github.io"
+    repoID = "R_kgDOIuU-oQ"
+    category = "Announcements"
+    categoryID = "DIC_kwDOIuU-oc4CTa92"
+    mapping = "pathname"
+    dataStrict = "0"
+    reactionsEnabled = "1"
+    lang = "zh-CN"
+    lazy = "lazy"
 [Menu]
   [[Menu.Main]]
     Name = "首页"
