@@ -1,0 +1,463 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>使用PowerDNS admin来管理PowerDNS - 念西堂</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description"
+    content="最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希">
+  
+  <meta itemprop="name" content="使用PowerDNS admin来管理PowerDNS - 念西堂">
+  <meta itemprop="description"
+    content="最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希">
+  <meta itemprop="image" content="http://example.org/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+
+  
+  <link rel="shortcut icon" href="http://example.org/img/favicon.ico" />
+  <link rel="apple-touch-icon" href="http://example.org/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://example.org/apple-touch-icon.png" />
+  <link rel="stylesheet" href="http://example.org/highlight/styles/github.css">
+  <script src="http://example.org/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-21F3GS6PC0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+  
+  <link rel="stylesheet" href="http://example.org/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="http://example.org/css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+  <div id="imglogo">
+    <a href="http://example.org/"><img src='http://example.org/img/logo.svg' alt="念西堂" title="念西堂"/></a>
+  </div>
+  <div id="textlogo">
+    <h1 class="site-name"><a href="http://example.org/" title="念西堂">念西堂</a></h1>
+    <h2 class="blog-motto">一个热爱写程序的平凡人的博客</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+      
+      <li>
+        <form class="search" method="get" action="https://www.google.com/search">
+          <div>
+            <input type="text" id="search" name="q" placeholder='搜索'>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="http://example.org/posts/2020/12/08/install-powerdns-admin/" title="使用PowerDNS admin来管理PowerDNS" itemprop="url">使用PowerDNS admin来管理PowerDNS</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="/about" title="任怀林">任怀林</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2020-12-08 12:38:00 &#43;0000 UTC" itemprop="datePublished">2020年12月08日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+    <p>最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希望对大家有所帮忙。</p>
+<h2 id="1-用docker来运行powerdns-admin">1. 用docker来运行PowerDNS admin</h2>
+<p>运行PowerDNS admin最简单的方式就是用docker了，只需执行下面的命令就可以了。</p>
+<pre tabindex="0"><code>docker run -d -v pda-data:/data -p 9191:80 ngoduykhanh/powerdns-admin:latest
+</code></pre><p><code>pda-data</code>是host上的目录，你在运行这个命令时，请换成你选择的目录。这是把PowerDNS运行时产生的数据存在本地目录，这样下次启动容器时，配置不会丢失。</p>
+<h2 id="2-注册用户">2. 注册用户</h2>
+<p>在第一次登录时，需要注册用户，第一个用户会被PowerDNS admin设置为管理员。</p>
+<p><img src="/assets/img/blog/2020/12/08/WX20201208-221328@2x.png" alt="login-to-powerdns-admin.png"></p>
+<h2 id="3-配置powerdns-api">3. 配置PowerDNS API</h2>
+<h3 id="31---修改powerdns的启动配置">3.1   修改PowerDNS的启动配置</h3>
+<p>我们需要修改PowerDNS的启动配置，以enable API接口。</p>
+<pre tabindex="0"><code>api=yes
+api-key=1ba8e133e6d684805477f7002182e0ef
+# Needed before 4.1.0
+webserver=yes
+
+webserver-address=192.168.152.8
+
+# Port of web server to listen on
+webserver-port=8081
+# # Web server access is only allowed from these subnets
+webserver-allow-from=0.0.0.0/0,::/0
+</code></pre><p>需要注意的是<code>webserver-allow-from</code>这一行一定要加上，因为从4.1.1版本的默认值是127.0.0.1，如果不加上这一行，我们在容器里的PowerDNS admin是无法访问到这个API的。</p>
+<p>修改完配置后重启PowerDNS.</p>
+<pre tabindex="0"><code>service pdns restart
+</code></pre><h3 id="32--powerdns-admin对接powerdns">3.2  PowerDNS admin对接PowerDNS</h3>
+<p>在PowerDNS admin左侧的菜单里选择<code>Settings</code>-&gt;<code>PDNS</code>，打开API配置界面。</p>
+<p><img src="/assets/img/blog/2020/12/08/WX20201208-223428@2x.png" alt="api-config.png"></p>
+<p>填入正确的信息，点击<code>Update</code>按键即可。</p>
+<p>配置成功后，点击左侧的菜单&quot;PDNS&quot;，会看到PowerDNS的统计和配置信息，如果这个页面是空的，那就是API配置没有成功，请自行检查哪里配置错了。</p>
+<h2 id="4-添加a记录">4. 添加A记录</h2>
+<p>首先我们要添加一个域，这个是域不一定非要是一级域名，如<code>test.com</code>,也可以是二级域名。</p>
+<p><img src="/assets/img/blog/2020/12/08/WX20201208-145543@2x.png" alt="add-domain.png"></p>
+<p>添加完域以后，就可以添加了A记录，A记录是我们最常的，毕竟我们使用NameServer就是为了解析域名嘛。</p>
+<p><img src="/assets/img/blog/2020/12/08/WX20201208-230110@2x.png" alt="add-a-record.png"></p>
+<p>其它类型的记录就不一一解释了，你用到时候自然就明白了。</p>
+
+    
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+<div class="article-tags">
+  <span></span>
+  
+  <a href="http://example.org/tags/linux">linux</a>
+  
+</div>
+
+
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="http://example.org/posts/2020/12/08/install-powerdns-admin/" data-title="使用PowerDNS admin来管理PowerDNS" data-tsina="123" class="share clearfix">
+    </div>
+  </div><script src="https://giscus.app/client.js"
+      data-repo="renhuailin/renhuailin.github.io"
+      data-repo-id="R_kgDOIuU-oQ"
+      data-category="Announcements"
+      data-category-id="DIC_kwDOIuU-oc4CTa92"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata=""
+      data-input-position="bottom"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      data-swup-reload-script
+      async
+  >
+  </script></footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="http://example.org/categories/blog" title="blog">blog<sup>15</sup></a></li>
+    
+    <li><a href="http://example.org/categories/docker" title="docker">docker<sup>5</sup></a></li>
+    
+    <li><a href="http://example.org/categories/gitlab" title="gitlab">gitlab<sup>1</sup></a></li>
+    
+    <li><a href="http://example.org/categories/java" title="java">java<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/linux" title="linux">linux<sup>7</sup></a></li>
+    
+    <li><a href="http://example.org/categories/openstack" title="openstack">openstack<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/other" title="other">other<sup>2</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="http://example.org/tags/decomplier" title="decomplier">decomplier<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/gitlab" title="gitlab">gitlab<sup>3</sup></a></li>
+      
+			<li><a href="http://example.org/tags/java" title="java">java<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/jenkins" title="jenkins">jenkins<sup>2</sup></a></li>
+      
+			<li><a href="http://example.org/tags/linux" title="linux">linux<sup>4</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2021-08">2021年08月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-12">2020年12月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-06">2020年06月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-03">2020年03月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2019-11">2019年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-08">2017年08月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-05">2017年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-02">2017年02月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-11">2016年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-05">2016年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-01">2016年01月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-12">2015年12月</a><span class="archive-list-count">4</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-11">2015年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-04">2015年04月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-03">2015年03月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-01">2015年01月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2014-11">2014年11月</a><span class="archive-list-count">2</span>
+      </li>
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="http://example.org/tags/decomplier" style="font-size: 12px;">decomplier</a>
+    
+    <a href="http://example.org/tags/gitlab" style="font-size: 12px;">gitlab</a>
+    
+    <a href="http://example.org/tags/java" style="font-size: 12px;">java</a>
+    
+    <a href="http://example.org/tags/jenkins" style="font-size: 12px;">jenkins</a>
+    
+    <a href="http://example.org/tags/linux" style="font-size: 12px;">linux</a>
+    
+  </div>
+</div>
+
+
+
+  
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  <section class="info">
+    <p></p>
+  </section>
+  <div class="social-font clearfix">
+    <a href='http://weibo.com/coderzh' target="_blank" title="weibo"></a>
+    <a href='https://twitter.com/coderzh' target="_blank" title="twitter"></a>
+    <a href='https://github.com/coderzh' target="_blank" title="github"></a>
+    <a href='https://www.facebook.com/coderzh' target="_blank" title="facebook"></a>
+    <a href='https://www.linkedin.com/coderzh' target="_blank" title="linkedin"></a>
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2024
+    
+    <a href="http://example.org/" title="念西堂">念西堂</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="http://example.org/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:http:\/\/example.org\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://b.bshare.cn/barCode?site=weixin&url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-71158870-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+
+</body>
+</html>

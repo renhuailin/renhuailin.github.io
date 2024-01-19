@@ -1,0 +1,2840 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>在Ubuntu 14.04上部署OpenStack Juno - 念西堂</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description"
+    content="1 规划 192.168.234.202 Openstack controller node 192.168.234.205 Openstack network node 192.168.234.204 Openstack compute node networ node必须有三个NIC(network interface card),也就是网卡． 管理网段：10.0.0.0/24 2 基础环境">
+  
+  <meta itemprop="name" content="在Ubuntu 14.04上部署OpenStack Juno - 念西堂">
+  <meta itemprop="description"
+    content="1 规划 192.168.234.202 Openstack controller node 192.168.234.205 Openstack network node 192.168.234.204 Openstack compute node networ node必须有三个NIC(network interface card),也就是网卡． 管理网段：10.0.0.0/24 2 基础环境">
+  <meta itemprop="image" content="http://example.org/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+
+  
+  <link rel="shortcut icon" href="http://example.org/img/favicon.ico" />
+  <link rel="apple-touch-icon" href="http://example.org/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://example.org/apple-touch-icon.png" />
+  <link rel="stylesheet" href="http://example.org/highlight/styles/github.css">
+  <script src="http://example.org/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-21F3GS6PC0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+  
+  <link rel="stylesheet" href="http://example.org/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="http://example.org/css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+  <div id="imglogo">
+    <a href="http://example.org/"><img src='http://example.org/img/logo.svg' alt="念西堂" title="念西堂"/></a>
+  </div>
+  <div id="textlogo">
+    <h1 class="site-name"><a href="http://example.org/" title="念西堂">念西堂</a></h1>
+    <h2 class="blog-motto">一个热爱写程序的平凡人的博客</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+      
+      <li>
+        <form class="search" method="get" action="https://www.google.com/search">
+          <div>
+            <input type="text" id="search" name="q" placeholder='搜索'>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/" title="在Ubuntu 14.04上部署OpenStack Juno" itemprop="url">在Ubuntu 14.04上部署OpenStack Juno</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="/about" title="任怀林">任怀林</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2015-03-11 12:30:00 &#43;0000 UTC" itemprop="datePublished">2015年03月11日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+    <h1 id="1-规划">1 规划</h1>
+<p>192.168.234.202   Openstack controller node  <br>
+192.168.234.205   Openstack network node  <br>
+192.168.234.204   Openstack compute node</p>
+<p>networ node必须有三个NIC(network interface card),也就是网卡．</p>
+<p>管理网段：10.0.0.0/24</p>
+<h1 id="2-基础环境">2 基础环境</h1>
+<h2 id="21-控制节点-controller-node">2.1 控制节点 controller node</h2>
+<p>要给它分配一个OpenStack管理网段的IP，因为它已经有了一个192段的IP了，所以建一个虚拟网卡绑定OpenStack管理网段的IP。</p>
+<p>/etc/network/interfaces</p>
+<p>{% highlight aconf %}</p>
+<h1 id="this-file-describes-the-network-interfaces-available-on-your-system">This file describes the network interfaces available on your system</h1>
+<h1 id="and-how-to-activate-them-for-more-information-see-interfaces5">and how to activate them. For more information, see interfaces(5).</h1>
+<h1 id="the-loopback-network-interface">The loopback network interface</h1>
+<p>auto lo
+iface lo inet loopback</p>
+<h1 id="the-primary-network-interface">The primary network interface</h1>
+<p>auto eth0
+#iface eth0 inet dhcp
+iface eth0 inet static
+address 192.168.234.202
+netmask 255.255.255.0
+gateway 192.168.234.1</p>
+<h1 id="openstack-management-interface">OpenStack management interface.</h1>
+<p>iface eth0:1 inet static
+address 10.0.0.11
+netmask 255.255.255.0
+gateway 10.0.0.1</p>
+<p>{% endhighlight %}</p>
+<p>/etc/hosts</p>
+<p>{% highlight sh %}</p>
+<h1 id="controller">Controller</h1>
+<p>10.0.0.11 controller</p>
+<h1 id="network">network</h1>
+<p>10.0.0.21 network</p>
+<h1 id="compute1">compute1</h1>
+<p>10.0.0.31 compute1
+{% endhighlight %}</p>
+<h2 id="22-网络节点-network-node">2.2 网络节点 network node</h2>
+<p>/etc/network/interfaces</p>
+<p>{% highlight aconf %}
+#The primary network interface
+auto eth0
+iface eth0 inet static
+address 192.168.234.205
+netmask 255.255.255.0
+gateway 192.168.234.1</p>
+<p>#management interface
+auto eth1:1
+iface eth0:1 inet static
+address 10.0.0.21
+netmask 255.255.255.0
+gateway 10.0.0.1</p>
+<p>#Instance tunnels interface.
+auto eth1:2
+iface eth0:2 inet static
+address 10.0.1.21
+netmask 255.255.255.0
+{% endhighlight %}</p>
+<p>/etc/hosts</p>
+<p>{% highlight sh %}
+#Controller
+10.0.0.11 controller</p>
+<p>#network
+10.0.0.21 network</p>
+<p>#compute1
+10.0.0.31 compute1
+{% endhighlight %}</p>
+<h2 id="23-计算节点-compute-node">2.3 计算节点 compute node</h2>
+<p>/etc/network/interfaces</p>
+<p>{% highlight sh %}</p>
+<h1 id="the-primary-network-interface-1">The primary network interface</h1>
+<p>auto eth0
+#iface eth0 inet dhcp
+iface eth0 inet static
+address 192.168.234.204
+netmask 255.255.255.0
+gateway 192.168.234.1</p>
+<p>#management interface
+auto eth0:1
+iface eth0:1 inet static
+address 10.0.0.31
+netmask 255.255.255.0
+gateway 10.0.0.1</p>
+<p>#Instance tunnels interface.
+auto eth0:2
+iface eth0:2 inet static
+address 10.0.1.31
+netmask 255.255.255.0</p>
+<p>{% endhighlight %}</p>
+<p>/etc/hosts</p>
+<p>{% highlight sh %}
+#Controller
+10.0.0.11 controller</p>
+<p>#network
+10.0.0.21 network</p>
+<p>#compute1
+10.0.0.31 compute1
+{% endhighlight %}</p>
+<h1 id="3-配置时间同步">3 配置时间同步</h1>
+<p>所有节点的时间必须同步</p>
+<h2 id="31-控制节点ntp配置">3.1 控制节点ntp配置</h2>
+<p>安装ntp
+{% highlight sh %}
+$ sudo aptitude install ntp -y
+{% endhighlight %}</p>
+<p>在/etc/ntp.conf配置上中国区的server.
+{% highlight sh %}
+server 1.cn.pool.ntp.org
+server 0.asia.pool.ntp.org
+server 3.asia.pool.ntp.org
+{% endhighlight %}</p>
+<p>{% highlight sh %}
+server NTP_SERVER iburst
+restrict -4 default kod notrap nomodify
+restrict -6 default kod notrap nomodify
+{% endhighlight %}</p>
+<p>注意：默认的配置里的restrict有两个选项<code>nopeer</code> 和 <code>noquery</code>必须去掉。</p>
+<p>重启服务
+{% highlight sh %}</p>
+<h1 id="service-ntp-restart">service ntp restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="32-其它节点ntp配置">3.2 其它节点ntp配置</h2>
+<p>网络节点和计算节点也要安装配置ntp,要注意的是它们的ntp配置文件指定的server是controller，也就是从控制节点同步时间。</p>
+<p>{% highlight sh %}
+server controller iburst
+{% endhighlight %}</p>
+<h2 id="33-验证ntp是否正确安装">3.3 验证ntp是否正确安装</h2>
+<p>1 在控制节点上运行此命令</p>
+<h1 id="remote-----------refid------st-t-when-poll-reach---delay---offset--jitter">{% highlight sh %}
+#ntpq -c peers
+remote           refid      st t when poll reach   delay   offset  jitter</h1>
+<p>dns2.synet.edu. 202.118.1.46     2 u   67   64   11  114.585    6.251  52.688
+*ts0.itsc.cuhk.e .GPS.            1 u   64   64   37   79.028  -37.503  17.905
+web10.hnshostin 193.67.79.202    2 u    4   64   77  474.192  -58.614  12.22
+{% endhighlight %}
+你的输出可能跟我的不一样，没关系有内容就OK。</p>
+<p>2 在控制节点上运行此命令
+{% highlight sh %}</p>
+<h1 id="ntpq--c-assoc">ntpq -c assoc</h1>
+<h1 id="ind-assid-status--conf-reach-auth-condition--last_event-cnt">ind assid status  conf reach auth condition  last_event cnt</h1>
+<p>1 61846  9424   yes   yes  none candidate   reachable  2
+2 61847  963a   yes   yes  none  sys.peer    sys_peer  3
+3 61848  9324   yes   yes  none   outlyer   reachable  2
+4 61849  9424   yes   yes  none candidate   reachable  2
+{% endhighlight %}
+你的输出可能跟我的不一样，没关系有内容就OK。</p>
+<p>3 在其它节点上运行此命令</p>
+<h1 id="remote-----------refid------st-t-when-poll-reach---delay---offset--jitter-1">{% highlight sh %}
+ntpq -c peers
+remote           refid      st t when poll reach   delay   offset  jitter</h1>
+<p>*controller      137.189.4.10     2 u   29   64    1    0.154   18.278   0.610
+{% endhighlight %}</p>
+<p>输出结果中的remote列，应该是控制节点的hostname.</p>
+<p>4 在其它节点上运行下面的命令
+{% highlight sh %}</p>
+<h1 id="ntpq--c-assoc-1">ntpq -c assoc</h1>
+<h1 id="ind-assid-status--conf-reach-auth-condition--last_event-cnt-1">ind assid status  conf reach auth condition  last_event cnt</h1>
+<p>1 45051  963a   yes   yes  none  sys.peer    sys_peer  3
+{% endhighlight %}</p>
+<p>condition列的值应该是sys.peer</p>
+<h1 id="4-安装mysql-rabbitmq">4 安装MySQL RabbitMQ</h1>
+<h1 id="41-安装ubuntu-cloud的keyring和仓库">4.1 安装Ubuntu Cloud的keyring和仓库</h1>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-ubuntu-cloud-keyring">apt-get install ubuntu-cloud-keyring</h1>
+<h1 id="echo-deb-httpubuntu-cloudarchivecanonicalcomubuntu-">echo &ldquo;deb <a href="http://ubuntu-cloud.archive.canonical.com/ubuntu%22">http://ubuntu-cloud.archive.canonical.com/ubuntu&quot;</a> \</h1>
+<p>&ldquo;trusty-updates/juno main&rdquo; &gt; /etc/apt/sources.list.d/cloudarchive-juno.list
+{% endhighlight %}</p>
+<h1 id="42-安装配置数据库">4.2 安装配置数据库</h1>
+<p>1 安装MySQL</p>
+<p>在数据库只需要安装在controller节点上。</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-mysql-server-python-mysqldb">apt-get install mysql-server python-mysqldb</h1>
+<p>{% endhighlight %}
+在安装时要求输入root用户的密码，在本文里统一用openstack这个密码了。</p>
+<p>2  编辑/etc/mysql/my.cnf，完成下面所提的操作。</p>
+<ul>
+<li>在[mysqld]这一节里，把mysql绑定的IP改为controller节点的管理网段IP，同时加上下面的选项。</li>
+</ul>
+<p>{% highlight sh %}
+[mysqld]
+&hellip;
+bind-address = 10.0.0.11
+&hellip;
+default-storage-engine = innodb
+innodb_file_per_table
+collation-server = utf8_general_ci
+init-connect = &lsquo;SET NAMES utf8&rsquo;
+character-set-server = utf8
+{% endhighlight %}</p>
+<p>重启mysql服务。</p>
+<h1 id="43-安装消息服务">4.3 安装消息服务</h1>
+<p>OpenStack使用消息中间件来传递服务之间的操作和状态，消息中间件通常安装在<code>控制节点</code>。OpenStack支持几种消息中间件，这里我们安装最常用的RabbitMQ。</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-rabbitmq-server">apt-get install rabbitmq-server</h1>
+<p>{% endhighlight %}</p>
+<p>配置RabbitMQ</p>
+<p>RabbitMQ在安装时创建了一个用户<code>guest</code>,我们就用这个用户了，只是把他的密码修改为<code>openstack</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># rabbitmqctl change_password guest openstack</span>
+</span></span></code></pre></div><p>For RabbitMQ version 3.3.0 or newer, you must enable remote access for the guest account.</p>
+<p>Check the RabbitMQ version:</p>
+<pre tabindex="0"><code># rabbitmqctl status | grep rabbit
+</code></pre><p>Restart the message broker service:</p>
+<pre tabindex="0"><code># service rabbitmq-server restart
+</code></pre><h1 id="5-安装openstack的认证服务-openstack-identity-service">5 安装OpenStack的认证服务 OpenStack Identity service</h1>
+<p>OpenStack Identity service提供如下功能</p>
+<ul>
+<li>记录用户和他们的权限</li>
+<li>提供OpenStack可用服务的API列表
+所有的服务在安装后都要向Identity service注册自己。Identity service知道当前安装了哪些服务和他们在网络中的位置。</li>
+</ul>
+<h2 id="51-安装配置identity-service">5.1 安装配置Identity service</h2>
+<h3 id="511-准备工作">5.1.1 准备工作</h3>
+<p>1 首先创建数据库</p>
+<p>登录到控制节点的mysql
+{% highlight sh %}
+$ mysql -u root -p
+{% endhighlight %}</p>
+<p>创建数据库
+{% highlight sql %}
+CREATE DATABASE keystone;
+{% endhighlight %}</p>
+<p>加上本地和远程访问这个keystone数据库的权限。
+{% highlight sql %}
+GRANT ALL PRIVILEGES ON keystone.* TO &lsquo;keystone&rsquo;@&rsquo;localhost&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;
+GRANT ALL PRIVILEGES ON keystone.* TO &lsquo;keystone&rsquo;@&rsquo;%&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;
+flush PRIVILEGES;
+{% endhighlight %}</p>
+<p>生成管理员的token,在初始配置时用。</p>
+<p>{% highlight sh %}</p>
+<h1 id="openssl-rand--hex-10">openssl rand -hex 10</h1>
+<p>7212bf54588f88818b52
+{% endhighlight %}</p>
+<h3 id="511-安装配置keystone">5.1.1 安装配置keystone</h3>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-keystone-python-keystoneclient">apt-get install keystone python-keystoneclient</h1>
+<p>{% endhighlight %}</p>
+<p>编辑 /etc/keystone/keystone.conf完成下面的操作：</p>
+<p>{% highlight ini %}
+[DEFAULT]
+admin_token = 7212bf54588f88818b52
+verbose = True
+&hellip;
+[database]
+connection = mysql://keystone:openstack@controller/keystone
+&hellip;
+[token]
+#这个provider可以不用改，默认的就是uuid
+provider = keystone.token.providers.uuid.Provider</p>
+<p>#这个默认是注释掉的，我们去掉注释就好
+driver = keystone.token.persistence.backends.sql.Token
+&hellip;
+[revoke]
+driver = keystone.contrib.revoke.backends.sql.Revoke
+&hellip;
+{% endhighlight %}</p>
+<p>然后重启一下keystone服务就行了。
+{% highlight sh %}</p>
+<h1 id="service-keystone-restart">service keystone restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="52-创建tenants-users-and-roles">5.2 创建tenants, users, and roles</h2>
+<h3 id="521-准备工作">5.2.1 准备工作</h3>
+<p>在安装完Identity service后，你要创建tenants租户(也就是projects)、用户和角色。
+你要用我们上一节创建的临时的管理员token，在你运行<code>keystone</code>命令前，手动配置Identity service endpoint。</p>
+<p>你可以把管理员token用&ndash;os-token这个参数传给keystone命令，也可以设置环境变量OS_SERVICE_TOKEN。一样的，你可以把管理员token用 Identity service的endpoint用命令行参数&ndash;os-endpoint传给keystone,也可以设置环境变量&ndash;os-endpoint。  <br>
+我们采用环境变量的方式</p>
+<p>{% highlight sh %}
+$ export OS_SERVICE_TOKEN=7212bf54588f88818b52</p>
+<p>$ export OS_SERVICE_ENDPOINT=http://controller:35357/v2.0
+{% endhighlight %}</p>
+<h3 id="522-开始创建">5.2.2 开始创建</h3>
+<ol>
+<li>创建一个用于管理的tenant，用户和角色</li>
+</ol>
+<p>创建管理员租户
+{% highlight sh %}</p>
+<h1 id="keystone-tenant-create---name-admin---description-admin-tenant">keystone tenant-create &ndash;name admin &ndash;description &ldquo;Admin Tenant&rdquo;</h1>
+<p>+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |           Admin Tenant           |
+|   enabled   |               True               |
+|      id     | 357abecb4def441eb7a36e7cf5d173c4 |
+|     name    |              admin               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建管理员,我们用<code>openstack</code>做密码。
+{% highlight sh %}</p>
+<h1 id="keystone-user-create---name-admin---pass-openstack---email-adminexamplecom">keystone user-create &ndash;name admin &ndash;pass openstack &ndash;email <a href="mailto:admin@example.com">admin@example.com</a></h1>
+<p>+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |        <a href="mailto:admin@example.com">admin@example.com</a>         |
+| enabled  |               True               |
+|    id    | c2ba205513e448098f0e0daf80f2f649 |
+|   name   |              admin               |
+| username |              admin               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建管理员角色</p>
+<p>{% highlight sh %}
+$ keystone role-create &ndash;name admin
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|    id    | bff3a6083b714fa29c9344bf8930d199 |
+|   name   |              admin               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>把管理员角色加到管理员用户上
+{% highlight sh %}
+$ keystone user-role-add &ndash;user admin &ndash;tenant admin &ndash;role admin
+{% endhighlight %}</p>
+<ul>
+<li>Note:Any roles that you create must map to roles specified in the policy.json file included with each OpenStack service. The default policy for most services grants administrative access to the admin role. For more information, see the Operations Guide - Managing Projects and Users.</li>
+</ul>
+<ol start="2">
+<li>创建一个用于一般操作的普通租户和用户</li>
+</ol>
+<p>{% highlight sh %}
+$ keystone tenant-create &ndash;name demo &ndash;description &ldquo;Demo Tenant&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |           Demo Tenant            |
+|   enabled   |               True               |
+|      id     | 6245a74d882e451c8d7663a46103b8b2 |
+|     name    |               demo               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+<p>$ keystone user-create &ndash;name demo &ndash;tenant demo &ndash;pass openstack &ndash;email <a href="mailto:demo@example.com">demo@example.com</a>
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |         <a href="mailto:demo@example.com">demo@example.com</a>         |
+| enabled  |               True               |
+|    id    | 54a55d3f3c1f4797bb82d196e6c02ccd |
+|   name   |               demo               |
+| tenantId | 6245a74d882e451c8d7663a46103b8b2 |
+| username |               demo               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+<p>{% endhighlight %}</p>
+<ol start="3">
+<li>OpenStack 服务需要租户、用户和角色来和其它的服务进行交互。每个服务都需要一个或多个<code>service tenant</code>下的特定的管理员，我们先来创建这个<code>service tenant</code>,下节将把这些服务注册到Identity service里。</li>
+</ol>
+<p>{% highlight sh %}
+$ keystone tenant-create &ndash;name service &ndash;description &ldquo;Service Tenant&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |          Service Tenant          |
+|   enabled   |               True               |
+|      id     | ef36de18149b4c809c4b26b63b6dda37 |
+|     name    |             service              |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h2 id="53-创建服务和api端点">5.3 创建服务和API端点</h2>
+<p>你仍然需要设置<code>OS_SERVICE_TOKEN</code>和<code>OS_SERVICE_ENDPOINT</code> 这个两个环境变量。</p>
+<h3 id="531-创建identity-service服务实体">5.3.1 创建Identity service服务实体</h3>
+<p>Openstack维护着一个当前部署环境下可用服务的列表，一个服务想要调用另外一个服务时会先查询一下Identity service,看看想调用的服务是否可用，部署在哪儿等。</p>
+<p>首先当然是为Identity service创建一个服务实体了。</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name keystone &ndash;type identity <br>
+&ndash;description &ldquo;OpenStack Identity&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |        OpenStack Identity        |
+|   enabled   |               True               |
+|      id     | 4d17778357b84921aa632a5f02a4903b |
+|     name    |             keystone             |
+|     type    |             identity             |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h3 id="532-创建identity-service的api端点">5.3.2 创建Identity service的API端点</h3>
+<p>OpenStack的服务都提供API以方便其它与之沟通，Identity service维护着这些服务的列表。一个服务用查询这个列表以确定如何与其它服务进行沟通。</p>
+<p>OpenStack提供三种API端点的变体：admin, internal, and public。在生产环境里，出于安全的考虑，它们应该会部署在单独的网络里，向不同的用户提供服务。</p>
+<p>OpenStack支持多个regions,在本文里进行了简化，我们把所有的API端点都部署在管理网里，并都归属在<code>regionOne</code>这个region下。</p>
+<p>{% highlight sh %}
+$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ identity / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:5000/v2.0 <br>
+&ndash;internalurl http://controller:5000/v2.0 <br>
+&ndash;adminurl http://controller:35357/v2.0 <br>
+&ndash;region regionOne</p>
+<p>+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   adminurl  |   http://controller:35357/v2.0   |
+|      id     | f6a1c6efb040455c8e5aa0b05d01266d |
+| internalurl |   http://controller:5000/v2.0    |
+|  publicurl  |   http://controller:5000/v2.0    |
+|    region   |            regionOne             |
+|  service_id | 4d17778357b84921aa632a5f02a4903b |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}
+上面的命令<code>keystone service-list | awk '/ identity / {print $2}'</code>返回的其实就是我创建的Identity service实体的id.</p>
+<ul>
+<li>Note
+Each service that you add to your OpenStack environment requires adding information such as API endpoints to the Identity service. The sections of this guide that cover service installation include steps to add the appropriate information to the Identity service</li>
+</ul>
+<h2 id="54-验证安装">5.4 验证安装</h2>
+<p>本节我们来验证Identity service是否正确安装。</p>
+<h3 id="541-删除环境变量">5.4.1 删除环境变量</h3>
+<p>删除<code>OS_SERVICE_TOKEN</code> and <code>OS_SERVICE_ENDPOINT</code> 这两个环境变量。</p>
+<p>{% highlight sh %}
+$ unset OS_SERVICE_TOKEN OS_SERVICE_ENDPOINT
+{% endhighlight %}</p>
+<h3 id="542-以管理员的身份来请求鉴权的标识">5.4.2 以管理员的身份来请求鉴权的标识</h3>
+<p>{% highlight sh %}
+$ keystone &ndash;os-tenant-name admin &ndash;os-username admin &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 token-get</p>
+<p>+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  Property |              Value               |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  expires  |       2015-03-12T05:12:19Z       |
+|     id    | c9fbcb91847749f89848d968f411f571 |
+| tenant_id | 357abecb4def441eb7a36e7cf5d173c4 |
+|  user_id  | c2ba205513e448098f0e0daf80f2f649 |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h3 id="543-查询所有的租户">5.4.3 查询所有的租户</h3>
+<p>以管理员的身份查询所有的租户，看看我们在前面创建的tenant是否创建成功了。
+{% highlight sh %}
+$ keystone &ndash;os-tenant-name admin &ndash;os-username admin &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 tenant-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+|                id                |   name  | enabled |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| 357abecb4def441eb7a36e7cf5d173c4 |  admin  |   True  |
+| 6245a74d882e451c8d7663a46103b8b2 |   demo  |   True  |
+| ef36de18149b4c809c4b26b63b6dda37 | service |   True  |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+{% endhighlight %}</p>
+<h3 id="544-查询所有的用户">5.4.4 查询所有的用户</h3>
+<p>以管理员的身份查询所有的租户，看看我们在前面创建的用户是否都在。
+{% highlight sh %}
+$ keystone &ndash;os-tenant-name admin &ndash;os-username admin &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 user-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|                id                |  name | enabled |       email       |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| c2ba205513e448098f0e0daf80f2f649 | admin |   True  | <a href="mailto:admin@example.com">admin@example.com</a> |
+| 54a55d3f3c1f4797bb82d196e6c02ccd |  demo |   True  |  <a href="mailto:demo@example.com">demo@example.com</a> |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}
+admin和demo这个用户必须都在才对。</p>
+<h3 id="545-查询所有的角色">5.4.5 查询所有的角色</h3>
+<p>以管理员的身份查询所有的租户，看看我们在前面创建的角色是否都在。
+{% highlight sh %}
+$ keystone &ndash;os-tenant-name admin &ndash;os-username admin &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 role-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
+|                id                |   name   |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
+| 9fe2ff9ee4384b1894a90878d3e92bab | <em>member</em> |
+| 92b557ad2c944613a15065d267480802 |  admin   |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;-+</p>
+<p>{% endhighlight %}</p>
+<h3 id="546-获得demo用户鉴权的标识">5.4.6 获得demo用户鉴权的标识</h3>
+<p>{% highlight sh %}
+$ keystone &ndash;os-tenant-name demo &ndash;os-username demo &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 token-get
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  Property |              Value               |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  expires  |       2015-03-12T05:57:19Z       |
+|     id    | 03732cde3a5941bfa7db76515b5422a2 |
+| tenant_id | 6245a74d882e451c8d7663a46103b8b2 |
+|  user_id  | 54a55d3f3c1f4797bb82d196e6c02ccd |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h3 id="547-demo用户尝试查询所有用户">5.4.7 demo用户尝试查询所有用户</h3>
+<p>demo用户没有管理权限，所以应该报403错误。
+{% highlight sh %}
+$ keystone &ndash;os-tenant-name demo &ndash;os-username demo &ndash;os-password openstack <br>
+&ndash;os-auth-url http://controller:35357/v2.0 user-list
+You are not authorized to perform the requested action: admin_required (HTTP 403)
+{% endhighlight %}</p>
+<h2 id="55-创建openstack客户端环境脚本">5.5 创建OpenStack客户端环境脚本</h2>
+<p>上一节我们用环境变量加命令行参数的方式用keystone这个命令来与Identity service来交互。为了提高客户端的操作效率，OpenStack支持<code>简单客户端环境脚本</code>- OpenRC文件。这些脚本包含所有客户端共用的一些选项，当然也可以包含特定选项。
+更多信息请参考<a href="http://docs.openstack.org/user-guide/content/cli_openrc.html">OpenStack用户指南</a>。</p>
+<p>编辑admin-openrc.sh，键入以下内容：
+{% highlight sh %}
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=openstack
+export OS_AUTH_URL=http://controller:35357/v2.0
+{% endhighlight %}</p>
+<p>编辑demo-openrc.sh，键入以下内容：
+{% highlight sh %}
+export OS_TENANT_NAME=demo
+export OS_USERNAME=demo
+export OS_PASSWORD=openstack
+export OS_AUTH_URL=http://controller:5000/v2.0
+{% endhighlight %}</p>
+<p>加载这些脚本,比如你想以管理员的身份来操作，请运行：
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<h1 id="6-安装image服务">6 安装image服务</h1>
+<p>OpenStack Image Service(glance)允许用户发现、注册和检索虚拟机的映像。它提供了一个REST API，你可以用它来查询映像的元信息和检索映像。
+你可以把映像放在安装image service本地文件系统里，也可以选择放在对象存储系统里，如 OpenStack Object Storage。</p>
+<p><em>重要</em> 本文将把Image Service(glance)安装在控制节点上，并使用本地文件保存映像，默认目录为/var/lib/glance/images/,请确保控制节点有足够的存储空间。
+如果想了解Image Service(glance)所使用的后端存储的信息更多信息，请参考<a href="http://docs.openstack.org/trunk/config-reference/content/ch_configuring-openstack-image-service.html">Configuration Reference</a>。</p>
+<h2 id="61-openstack映像服务">6.1 OpenStack映像服务</h2>
+<p>OpenStack映像服务是它的IasS的重要核心组件，它接受磁盘或服务器映像的API请求，向用户或OpenStack的计算组件提供映像的元数据。</p>
+<p>一些运行在OpenStack Image Service上的周期性的进程支持缓存功能。复制服务通过集群来确保一致性和可用性。其它的服务还包含审核服务，更新服务和收割服务。</p>
+<p>OpenStack Image Service包含以下组件：</p>
+<ul>
+<li>
+<p>glance-api
+接受映像发现、检索和存储的API调用。</p>
+</li>
+<li>
+<p>glance-registry
+Stores, processes, and retrieves metadata about images. Metadata includes items such as size and type.
+存储、处理和检索映像的元数据，元数据包含它的大小和类型。</p>
+</li>
+</ul>
+<p><strong>Note</strong>	安全备注<br>
+glance-registry是内部私有服务，只向OpenStack映像服务提供服务，不要把它暴露给用户。</p>
+<ul>
+<li>
+<p>数据库
+用来保存映像的元数据。</p>
+</li>
+<li>
+<p>映像存储仓库
+支持各种存储仓库，包括一般文件系统，对象存储系统，RADOS块设备，HTTP和Amazon S3。</p>
+</li>
+</ul>
+<h2 id="62-安装和配置openstack映像服务">6.2 安装和配置OpenStack映像服务</h2>
+<h3 id="621-安装准备">6.2.1 安装准备</h3>
+<p>在安装前，你必须创建数据库，服务凭证和API端点。</p>
+<ol>
+<li>配置数据库
+数据库安装在控制节点上。</li>
+</ol>
+<p>{% highlight sh %}
+$ mysql -u root -p
+{% endhighlight %}</p>
+<p>创建 glance 数据库
+{% highlight sql %}
+CREATE DATABASE glance;</p>
+<p>GRANT ALL PRIVILEGES ON glance.* TO &lsquo;glance&rsquo;@&rsquo;localhost&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;
+GRANT ALL PRIVILEGES ON glance.* TO &lsquo;glance&rsquo;@&rsquo;%&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;<br>
+{% endhighlight %}</p>
+<ol start="2">
+<li>
+<p>用切换到管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+</li>
+<li>
+<p>创建服务凭证</p>
+</li>
+</ol>
+<p>创建glance用户</p>
+<p>{% highlight sh %}
+$ keystone user-create &ndash;name glance &ndash;pass openstack
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |                                  |
+| enabled  |               True               |
+|    id    | 924b65933a294f0bb5e26945689c2c38 |
+|   name   |              glance              |
+| username |              glance              |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>为glance用户添加admin角色:
+{% highlight sh %}
+$ keystone user-role-add &ndash;user glance &ndash;tenant service &ndash;role admin
+{% endhighlight %}</p>
+<p>创建 glance 服务实体:</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name glance &ndash;type image <br>
+&ndash;description &ldquo;OpenStack Image Service&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |     OpenStack Image Service      |
+|   enabled   |               True               |
+|      id     | 1c95672e6b354cddaf6ce0115b6042ab |
+|     name    |              glance              |
+|     type    |              image               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建Image Service API 端点:
+{% highlight sh %}
+$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ image / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:9292 <br>
+&ndash;internalurl http://controller:9292 <br>
+&ndash;adminurl http://controller:9292 <br>
+&ndash;region regionOne
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   adminurl  |      http://controller:9292      |
+|      id     | ef72bb245bca419399cf4ff304148c31 |
+| internalurl |      http://controller:9292      |
+|  publicurl  |      http://controller:9292      |
+|    region   |            regionOne             |
+|  service_id | 1c95672e6b354cddaf6ce0115b6042ab |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h3 id="622-创建配置image服务组件">6.2.2 创建配置Image服务组件</h3>
+<p>1 安装包</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-glance-python-glanceclient">apt-get install glance python-glanceclient</h1>
+<p>{% endhighlight %}</p>
+<p>2 编辑/etc/glance/glance-api.conf 加入下面的内容</p>
+<p>{% highlight ini %}
+[database]
+connection = mysql://glance:GLANCE_DBPASS@controller/glance
+&hellip;
+[keystone_authtoken]</p>
+<p>#Note：Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = glance
+admin_password = GLANCE_PASS
+&hellip;
+[paste_deploy]
+flavor = keystone
+&hellip;</p>
+<p>[glance_store]
+&hellip;
+default_store = file
+filesystem_store_datadir = /var/lib/glance/images/</p>
+<p>[DEFAULT]
+&hellip;
+notification_driver = noop
+[DEFAULT]
+&hellip;
+verbose = True
+{% endhighlight %}</p>
+<p>在本文中GLANCE_DBPASS和GLANCE_PASS都为<code>openstack</code>.</p>
+<p>3 编辑 /etc/glance/glance-registry.conf 加入下面的内容:</p>
+<p>{% highlight ini %}
+[database]
+&hellip;
+connection = mysql://glance:GLANCE_DBPASS@controller/glance</p>
+<p>[keystone_authtoken]
+&hellip;
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = glance
+admin_password = GLANCE_PASS</p>
+<p>[paste_deploy]
+&hellip;
+flavor = keystone</p>
+<p>[DEFAULT]
+&hellip;
+notification_driver = noop
+verbose = True</p>
+<p>{% endhighlight %}</p>
+<p><strong>Note</strong>: 请注释掉任何auth_host、auth_port和auth_protocol 选项 因为identity_uri替换了它们.</p>
+<p>4 装载Image Service数据库:
+{% highlight sh %}</p>
+<h1 id="su--s-binsh--c-glance-manage-db_sync-glance">su -s /bin/sh -c &ldquo;glance-manage db_sync&rdquo; glance</h1>
+<p>{% endhighlight %}</p>
+<h3 id="623-完成安装">6.2.3 完成安装</h3>
+<p>重启Image服务:</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-glance-registry-restart">service glance-registry restart</h1>
+<h1 id="service-glance-api-restart">service glance-api restart</h1>
+<p>{% endhighlight %}</p>
+<p>默认Ubuntu安装创建了一个SQLite,你可以删除它。
+{% highlight sh %}</p>
+<h1 id="rm--f-varlibglanceglancesqlite">rm -f /var/lib/glance/glance.sqlite</h1>
+<p>{% endhighlight %}</p>
+<h2 id="63-验证安装">6.3 验证安装</h2>
+<p>[1] 创建一个临时目录
+{% highlight sh %}
+$ mkdir /tmp/images
+{% endhighlight %}</p>
+<p>2 下载映像到这个临时目录
+{% highlight sh %}
+$ wget -P /tmp/images <a href="http://cdn.download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img">http://cdn.download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img</a>
+{% endhighlight %}</p>
+<p>3 转成管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>4 上传映像到Image服务
+{% highlight sh %}
+$ glance image-create &ndash;name &ldquo;cirros-0.3.3-x86_64&rdquo; &ndash;file /tmp/images/cirros-0.3.3-x86_64-disk.img <br>
+&ndash;disk-format qcow2 &ndash;container-format bare &ndash;is-public True &ndash;progress</p>
+<p>[=============================&gt;] 100%
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Property         | Value                                |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| checksum         | 133eae9fb1c98f45894a4e60d8736619     |
+| container_format | bare                                 |
+| created_at       | 2015-03-12T08:45:49                  |
+| deleted          | False                                |
+| deleted_at       | None                                 |
+| disk_format      | qcow2                                |
+| id               | b460412b-4566-4d8b-8b9a-27f638f8ca58 |
+| is_public        | True                                 |
+| min_disk         | 0                                    |
+| min_ram          | 0                                    |
+| name             | cirros-0.3.3-x86_64                  |
+| owner            | 357abecb4def441eb7a36e7cf5d173c4     |
+| protected        | False                                |
+| size             | 13200896                             |
+| status           | active                               |
+| updated_at       | 2015-03-12T08:45:49                  |
+| virtual_size     | None                                 |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p><code>glance image-create</code>命令的更多信息请参见：<a href="http://docs.openstack.org/cli-reference/content/glanceclient_commands.html#glanceclient_subcommand_image-create">OpenStack Command-Line Interface Reference</a>.</p>
+<p>关于disk和container格式的更多信息请参考<a href="http://docs.openstack.org/image-guide/content/image-formats.html">OpenStack Virtual Machine Image Guide</a></p>
+<p>5 查询映像以确认数据是否正确</p>
+<p>{% highlight sh %}
+$ glance image-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&ndash;+                      <br>
+| ID                                   | Name                | Disk Format | Container Format | Size     | Status |                      <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&ndash;+                      <br>
+| b460412b-4566-4d8b-8b9a-27f638f8ca58 | cirros-0.3.3-x86_64 | qcow2       | bare             | 13200896 | active |                      <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&ndash;+<br>
+{% endhighlight %}</p>
+<p>6 删除临时目录<br>
+{% highlight sh %}
+$ rm -r /tmp/images
+{% endhighlight %}</p>
+<h1 id="7-安装openstack计算服务">7 安装OpenStack计算服务</h1>
+<p>概念和组件的作用，请参考安装手册</p>
+<h2 id="71-安装配置控制节点">7.1 安装配置控制节点</h2>
+<h3 id="711-准备工作">7.1.1 准备工作</h3>
+<p>1 配置数据库
+数据库安装在控制节点上。</p>
+<p>{% highlight sh %}
+$ mysql -u root -p
+{% endhighlight %}</p>
+<p>创建 glance 数据库
+{% highlight sql %}
+CREATE DATABASE nova;</p>
+<p>GRANT ALL PRIVILEGES ON nova.* TO &rsquo;nova&rsquo;@&rsquo;localhost&rsquo; <br>
+IDENTIFIED BY &lsquo;NOVA_DBPASS&rsquo;;
+GRANT ALL PRIVILEGES ON nova.* TO &rsquo;nova&rsquo;@&rsquo;%&rsquo; <br>
+IDENTIFIED BY &lsquo;NOVA_DBPASS&rsquo;;
+{% endhighlight %}
+NOVA_DBPASS我们使用<code>openstack</code>.</p>
+<p>2 切换到管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>3 To create the service credentials, complete these steps:</p>
+<p>创建 nova 用户:
+{% highlight sh %}
+$ keystone user-create &ndash;name nova &ndash;pass openstack
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |                                  |
+| enabled  |               True               |
+|    id    | 952eae64d8124b06812a5bb595f3690f |
+|   name   |               nova               |
+| username |               nova               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>为nova用户添加admin角色:
+{% highlight sh %}
+$ keystone user-role-add &ndash;user nova &ndash;tenant service &ndash;role admin
+{% endhighlight %}</p>
+<p>创建 nova 服务实体:</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name nova &ndash;type compute <br>
+&ndash;description &ldquo;OpenStack Compute&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |        OpenStack Compute         |
+|   enabled   |               True               |
+|      id     | 45a5a2e53de246f89dedf20a9d23c8f8 |
+|     name    |               nova               |
+|     type    |             compute              |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建计算服务API端点:
+{% highlight sh %}
+$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ compute / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:8774/v2/%(tenant_id)s <br>
+&ndash;internalurl http://controller:8774/v2/%(tenant_id)s <br>
+&ndash;adminurl http://controller:8774/v2/%(tenant_id)s <br>
+&ndash;region regionOne
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   Property  |                  Value                  |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   adminurl  | http://controller:8774/v2/%(tenant_id)s |
+|      id     |     7839d34cdfb641a9884eee7b67680391    |
+| internalurl | http://controller:8774/v2/%(tenant_id)s |
+|  publicurl  | http://controller:8774/v2/%(tenant_id)s |
+|    region   |                regionOne                |
+|  service_id |     45a5a2e53de246f89dedf20a9d23c8f8    |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<h3 id="712-安装配置计算控制组件">7.1.2 安装配置计算控制组件</h3>
+<p>1 安装相关包
+{% highlight sh %}</p>
+<h1 id="apt-get-install-nova-api-nova-cert-nova-conductor-nova-consoleauth-">apt-get install nova-api nova-cert nova-conductor nova-consoleauth \</h1>
+<p>nova-novncproxy nova-scheduler python-novaclient
+{% endhighlight %}</p>
+<p>2 编辑 /etc/nova/nova.conf 加入下面的内容 <br>
+默认安装nova.conf内容好少，你要手动添加下面的内容。
+{% highlight ini %}
+[database]
+&hellip;
+connection = mysql://nova:openstack@controller/nova</p>
+<p>[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack
+auth_strategy = keystone
+#这个IP应该是管理网段的IP
+my_ip = 10.0.0.11
+vncserver_listen = 10.0.0.11
+vncserver_proxyclient_address = 10.0.0.11
+verbose = True
+[keystone_authtoken]
+&hellip;
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = nova
+admin_password = openstack</p>
+<p>[glance]
+&hellip;
+host = controller
+{% endhighlight %}</p>
+<p>3 装载计算服务数据库:
+{% highlight sh %}</p>
+<h1 id="su--s-binsh--c-nova-manage-db-sync-nova">su -s /bin/sh -c &ldquo;nova-manage db sync&rdquo; nova</h1>
+<p>{% endhighlight %}</p>
+<h3 id="713-完成安装">7.1.3 完成安装</h3>
+<p>重启计算服务
+{% highlight sh %}</p>
+<h1 id="service-nova-api-restart">service nova-api restart</h1>
+<h1 id="service-nova-cert-restart">service nova-cert restart</h1>
+<h1 id="service-nova-consoleauth-restart">service nova-consoleauth restart</h1>
+<h1 id="service-nova-scheduler-restart">service nova-scheduler restart</h1>
+<h1 id="service-nova-conductor-restart">service nova-conductor restart</h1>
+<h1 id="service-nova-novncproxy-restart">service nova-novncproxy restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="72-安装配置计算节点">7.2 安装配置计算节点</h2>
+<p>终于到了计算节点了</p>
+<h3 id="721-安装hypervisor">7.2.1 安装hypervisor</h3>
+<p>1 安装包
+{% highlight sh %}</p>
+<h1 id="apt-get-install-nova-compute-sysfsutils">apt-get install nova-compute sysfsutils</h1>
+<p>{% endhighlight %}</p>
+<p>2 编辑 /etc/nova/nova.conf 加入下面的内容 <br>
+默认安装nova.conf内容好少，你要手动添加下面的内容。
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack
+auth_strategy = keystone
+my_ip = 10.0.0.31</p>
+<p>vnc_enabled = True
+vncserver_listen = 0.0.0.0
+vncserver_proxyclient_address = 10.0.0.31
+novncproxy_base_url = http://controller:6080/vnc_auto.html</p>
+<p>verbose = True</p>
+<p>[keystone_authtoken]
+&hellip;
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = nova
+admin_password = openstack</p>
+<p>[glance]
+&hellip;
+host = controller
+{% endhighlight %}</p>
+<h3 id="722-完成安装">7.2.2 完成安装</h3>
+<p>先看看这个节点支不支持硬件虚拟化
+{% highlight sh %}</p>
+<h1 id="egrep--c-vmxsvm-proccpuinfo">egrep -c &lsquo;(vmx|svm)&rsquo; /proc/cpuinfo</h1>
+<p>{% endhighlight %}</p>
+<p>如果返回的结果是0,那你就需要编辑<code>/etc/nova/nova-compute.conf</code>这个文件，把virt_type改成qemu:</p>
+<p>{% highlight sh %}
+[libvirt]
+&hellip;
+virt_type = qemu
+{% endhighlight %}</p>
+<p>重启计算服务
+{% highlight sh %}</p>
+<h1 id="service-nova-compute-restart">service nova-compute restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="73-验证安装">7.3 验证安装</h2>
+<p>请在控制节点上运行下面的命令</p>
+<p>1 切换为管理员
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>2 列出所有的服务组件</p>
+<p>{% highlight sh %}</p>
+<p>$ nova service-list
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                        <br>
+| Id | Binary           | Host      | Zone     | Status  | State | Updated_at                 | Disabled Reason |                        <br>
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                        <br>
+| 1  | nova-cert        | localhost | internal | enabled | up    | 2015-03-12T10:04:04.000000 | -               |                        <br>
+| 2  | nova-scheduler   | localhost | internal | enabled | up    | 2015-03-12T10:04:12.000000 | -               |                        <br>
+| 3  | nova-consoleauth | localhost | internal | enabled | up    | 2015-03-12T10:04:12.000000 | -               |                        <br>
+| 4  | nova-conductor   | localhost | internal | enabled | up    | 2015-03-12T10:04:11.000000 | -               |
+| 5  | nova-compute     | localhost | nova     | enabled | up    | 2015-03-12T10:04:06.000000 | -               |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p>Host那一列都是localhost有问题，我设置了hostname但是没有重启机器。重启以后应该会好。</p>
+<p>3 列出所有映像</p>
+<p>{% highlight sh %}
+$ nova image-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;&mdash;&ndash;+
+| ID                                   | Name                | Status | Server |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;&mdash;&ndash;+
+| b460412b-4566-4d8b-8b9a-27f638f8ca58 | cirros-0.3.3-x86_64 | ACTIVE |        |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<h1 id="8-添加网络服务">8 添加网络服务</h1>
+<p>OpenStack的网络服务是neutron，如果不安装neutron，nova-network也可以提供简单网络功能。neutron的功能更强大，所以我们使用neutron.</p>
+<p>neutron应该是OpenStack最复杂的组件了。N多概念请参考OpenStack文档。我们在这里只验证它的安装过程。</p>
+<h2 id="81-安装配置控制节点">8.1 安装配置控制节点</h2>
+<p>1 配置数据库
+数据库安装在控制节点上。</p>
+<p>{% highlight sh %}
+$ mysql -u root -p
+{% endhighlight %}</p>
+<p>创建 neutron 数据库
+{% highlight sql %}
+CREATE DATABASE neutron;</p>
+<p>/* 用户名和密码都是neutron/openstack <em>/
+GRANT ALL PRIVILEGES ON neutron.</em> TO &rsquo;neutron&rsquo;@&rsquo;localhost&rsquo; IDENTIFIED BY &lsquo;openstack&rsquo;;
+GRANT ALL PRIVILEGES ON neutron.* TO &rsquo;neutron&rsquo;@&rsquo;%&rsquo; IDENTIFIED BY &lsquo;openstack&rsquo;;
+{% endhighlight %}</p>
+<p>2 切换到管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>3 To create the service credentials, complete these steps:</p>
+<p>创建 neutron 用户:
+{% highlight sh %}
+$ keystone user-create &ndash;name neutron &ndash;pass openstack
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |                                  |
+| enabled  |               True               |
+|    id    | d9ea6a6733934f139a42dfad12f1009a |
+|   name   |             neutron              |
+| username |             neutron              |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>为 <code>neutron</code> 用户添加admin角色:
+{% highlight sh %}
+$ keystone user-role-add &ndash;user neutron &ndash;tenant service &ndash;role admin
+{% endhighlight %}</p>
+<p>创建 neutron 服务实体:</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name neutron &ndash;type network <br>
+&ndash;description &ldquo;OpenStack Networking&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |       OpenStack Networking       |
+|   enabled   |               True               |
+|      id     | 8e45b333232e472c9bede063f71ffebb |
+|     name    |             neutron              |
+|     type    |             network              |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建计算服务API端点:
+{% highlight sh %}
+$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ network / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:9696 <br>
+&ndash;adminurl http://controller:9696 <br>
+&ndash;internalurl http://controller:9696 <br>
+&ndash;region regionOne
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   adminurl  |      http://controller:9696      |
+|      id     | 0ec12e64cacf4eadac9421534b1d4028 |
+| internalurl |      http://controller:9696      |
+|  publicurl  |      http://controller:9696      |
+|    region   |            regionOne             |
+|  service_id | 8e45b333232e472c9bede063f71ffebb |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>4 安装 neutron 包</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-neutron-server-neutron-plugin-ml2-python-neutronclient">apt-get install neutron-server neutron-plugin-ml2 python-neutronclient</h1>
+<p>{% endhighlight %}</p>
+<p>5 配置网络服务组件
+编辑  /etc/neutron/neutron.conf  加入下面的内容</p>
+<p>{% highlight ini %}
+[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack
+auth_strategy = keystone</p>
+<p>core_plugin = ml2
+service_plugins = router
+allow_overlapping_ips = True</p>
+<p>notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+nova_url = http://controller:8774/v2
+nova_admin_auth_url = http://controller:35357/v2.0
+nova_region_name = regionOne
+nova_admin_username = nova
+nova_admin_tenant_id = SERVICE_TENANT_ID
+nova_admin_password = openstack</p>
+<p>verbose = True
+[keystone_authtoken]</p>
+<p>#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = neutron
+admin_password = openstack</p>
+<p>[database]
+&hellip;
+connection = mysql://neutron:openstack@controller/neutron
+{% endhighlight %}</p>
+<p>获得上述配置里的<code>SERVICE_TENANT_ID</code>
+{% highlight sh %}
+$ source admin-openrc.sh
+$ keystone tenant-get service
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |          Service Tenant          |
+|   enabled   |               True               |
+|      id     | ef36de18149b4c809c4b26b63b6dda37 |
+|     name    |             service              |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>6 配置 Modular Layer 2 (ML2) 插件</p>
+<p>编辑   /etc/neutron/plugins/ml2/ml2_conf.ini  加入下面的内容</p>
+<p>{% highlight ini %}
+[ml2]
+&hellip;
+type_drivers = flat,gre
+tenant_network_types = gre
+mechanism_drivers = openvswitch</p>
+<p>[ml2_type_gre]
+&hellip;
+tunnel_id_ranges = 1:1000</p>
+<p>[securitygroup]
+&hellip;
+enable_security_group = True
+enable_ipset = True
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+{% endhighlight %}</p>
+<p>7 配置计算来使用网络</p>
+<p>编辑 /etc/nova/nova.conf 加入下面的内容</p>
+<p>{% highlight ini %}
+[DEFAULT]
+&hellip;
+network_api_class = nova.network.neutronv2.api.API
+security_group_api = neutron
+linuxnet_interface_driver = nova.network.linux_net.LinuxOVSInterfaceDriver
+firewall_driver = nova.virt.firewall.NoopFirewallDriver</p>
+<p>[neutron]
+&hellip;
+url = http://controller:9696
+auth_strategy = keystone
+admin_auth_url = http://controller:35357/v2.0
+admin_tenant_name = service
+admin_username = neutron
+admin_password = NEUTRON_PASS</p>
+<p>{% endhighlight %}</p>
+<p>８完成安装</p>
+<p>装载neutron数据库:
+{% highlight sh %}
+su -s /bin/sh -c &ldquo;neutron-db-manage &ndash;config-file /etc/neutron/neutron.conf <br>
+&ndash;config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade juno&rdquo; neutron
+{% endhighlight %}</p>
+<p>重启计算服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-nova-api-restart-1">service nova-api restart</h1>
+<h1 id="service-nova-scheduler-restart-1">service nova-scheduler restart</h1>
+<h1 id="service-nova-conductor-restart-1">service nova-conductor restart</h1>
+<p>{% endhighlight %}</p>
+<p>重启网络服务
+{% highlight sh %}</p>
+<h1 id="service-neutron-server-restart">service neutron-server restart</h1>
+<p>{% endhighlight %}</p>
+<p>9 验证安装</p>
+<p>{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>列出已装载的扩展
+{% highlight sh %}
+$ neutron ext-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| alias                 | name                                          |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| security-group        | security-group                                |
+| l3_agent_scheduler    | L3 Agent Scheduler                            |
+| ext-gw-mode           | Neutron L3 Configurable external gateway mode |
+| binding               | Port Binding                                  |
+| provider              | Provider Network                              |
+| agent                 | agent                                         |
+| quotas                | Quota management support                      |
+| dhcp_agent_scheduler  | DHCP Agent Scheduler                          |
+| l3-ha                 | HA Router extension                           |
+| multi-provider        | Multi Provider Network                        |
+| external-net          | Neutron external network                      |
+| router                | Neutron L3 Router                             |
+| allowed-address-pairs | Allowed Address Pairs                         |
+| extraroute            | Neutron Extra Route                           |
+| extra_dhcp_opt        | Neutron Extra DHCP opts                       |
+| dvr                   | Distributed Virtual Router                    |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>{% endhighlight %}
+如果你运行这个命令是报下面的错误</p>
+<pre tabindex="0"><code>unsupported locale setting
+</code></pre><p>请设置LC_ALL为en_US.UTF-8
+{% highlight sh %}
+export LC_ALL=en_US.UTF-8
+{% endhighlight %}</p>
+<h2 id="8２-安装配置网络节点">8.２ 安装配置网络节点</h2>
+<h3 id="8２1-准备工作">8.２.1 准备工作</h3>
+<p>１　Edit the  /etc/sysctl.conf  file to contain the following parameters:
+{% highlight sh %}
+net.ipv4.ip_forward=1
+net.ipv4.conf.all.rp_filter=0
+net.ipv4.conf.default.rp_filter=0
+{% endhighlight %}</p>
+<p>2 应用它
+{% highlight sh %}</p>
+<h1 id="sysctl--p">sysctl -p</h1>
+<p>{% endhighlight %}</p>
+<h3 id="8２2-安装网络组件">8.２.2 安装网络组件</h3>
+<p>{% highlight sh %}
+＃　apt-get install neutron-plugin-ml2 neutron-plugin-openvswitch-agent <br>
+neutron-l3-agent neutron-dhcp-agent
+{% endhighlight %}</p>
+<h3 id="8２３配置网络公用组件">8.２.３　配置网络公用组件</h3>
+<p>编辑 /etc/neutron/neutron.conf　加入下面的内容</p>
+<ul>
+<li>注释掉所有的数据库连接的选项，因为neutron不直接连接数据库</li>
+</ul>
+<p>{% highlight ini %}
+[DEFAULT]
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack</p>
+<p>auth_strategy = keystone
+core_plugin = ml2
+service_plugins = router
+allow_overlapping_ips = True
+verbose = True</p>
+<p>[keystone_authtoken]
+#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = neutron
+admin_password = openstack</p>
+<p>{% endhighlight %}</p>
+<h3 id="8２３配置modular-layer-2-ml2-插件">8.２.３　配置Modular Layer 2 (ML2) 插件</h3>
+<p>编辑 /etc/neutron/plugins/ml2/ml2_conf.ini　加入下面的内容 <br>
+{% highlight ini %}
+[ml2]
+&hellip;
+type_drivers = flat,gre
+tenant_network_types = gre
+mechanism_drivers = openvswitch</p>
+<p>[ml2_type_flat]
+&hellip;
+flat_networks = external</p>
+<p>[ml2_type_gre]
+&hellip;
+tunnel_id_ranges = 1:1000</p>
+<p>[securitygroup]
+&hellip;
+enable_security_group = True
+enable_ipset = True
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver</p>
+<p>[ovs]
+&hellip;
+local_ip = INSTANCE_TUNNELS_INTERFACE_IP_ADDRESS
+enable_tunneling = True
+bridge_mappings = external:br-ex</p>
+<p>[agent]
+&hellip;
+tunnel_types = gre
+{% endhighlight %}</p>
+<p>INSTANCE_TUNNELS_INTERFACE_IP_ADDRESS　在本文中是　10.0.1.21</p>
+<h3 id="8２４配置layer-3-l3-agent">8.２.４　配置Layer-3 (L3) agent</h3>
+<p>编辑 /etc/neutron/l3_agent.ini 加入下面的内容</p>
+<p>{% highlight sh %}
+[DEFAULT]
+&hellip;
+interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+use_namespaces = True
+external_network_bridge = br-ex
+router_delete_namespaces = True
+&hellip;
+verbose = True
+{% endhighlight %}</p>
+<h3 id="8２５配置dhcp-agent">8.２.５　配置DHCP agent</h3>
+<p>编辑 /etc/neutron/dhcp_agent.ini 加入下面的内容 <br>
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+use_namespaces = True
+dhcp_delete_namespaces = True</p>
+<p>verbose = True</p>
+<p>{% endhighlight %}</p>
+<p>在官方手册里有一个可选的配置MTU的步骤，我们省略了．</p>
+<h3 id="8２６-配置metadata-agent">8.２.６ 配置metadata agent</h3>
+<p>编辑 /etc/neutron/metadata_agent.ini 加入下面的内容 <br>
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+auth_url = http://controller:5000/v2.0
+auth_region = regionOne
+admin_tenant_name = service
+admin_user = neutron
+admin_password = NEUTRON_PASS</p>
+<p>nova_metadata_ip = controller
+metadata_proxy_shared_secret = openstack
+verbose = True</p>
+<p>{% endhighlight %}</p>
+<ul>
+<li><strong>在控制节点上</strong></li>
+</ul>
+<p>请注意下面的操作在控制节点上进行</p>
+<p>编辑  /etc/nova/nova.conf 加入下面的内容 <br>
+{% highlight sh %}
+[DEFAULT]
+service_metadata_proxy = True
+metadata_proxy_shared_secret = openstack
+{% endhighlight %}</p>
+<p>重启计算API服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-nova-api-restart-2">service nova-api restart</h1>
+<p>{% endhighlight %}</p>
+<h3 id="8２7-配置open-vswitch-ovs-服务">8.２.7 配置Open vSwitch (OVS) 服务</h3>
+<p>下面的操作在网络节点上进行</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-openvswitch-switch-restart">service openvswitch-switch restart</h1>
+<h1 id="ovs-vsctl-add-br-br-ex">ovs-vsctl add-br br-ex</h1>
+<h1 id="ovs-vsctl-add-port-br-ex-eth0">ovs-vsctl add-port br-ex eth0</h1>
+<p>{% endhighlight %}</p>
+<p>如果你的network节点只配置了1个NIC,那你就会无法连接到这台network节点上，除非你通过方式如XenServer的console。
+请看<a href="/blog/openstack/xenserver-vm-multi-nic">我的在这一步遇到的问题</a>。</p>
+<h3 id="8２8-完成安装">8.２.8 完成安装</h3>
+<p>重启网络服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-neutron-plugin-openvswitch-agent-restart">service neutron-plugin-openvswitch-agent restart</h1>
+<h1 id="service-neutron-l3-agent-restart">service neutron-l3-agent restart</h1>
+<h1 id="service-neutron-dhcp-agent-restart">service neutron-dhcp-agent restart</h1>
+<h1 id="service-neutron-metadata-agent-restart">service neutron-metadata-agent restart</h1>
+<p>{% endhighlight %}</p>
+<h3 id="828-验证安装">8.2.8 验证安装</h3>
+<p>*<strong>请在控制节点上运行下面的命令</strong></p>
+<p>{% highlight sh %}
+$ source admin-openrc.sh</p>
+<p>#查询所有的代理
+$ neutron agent-list</p>
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| id                                   | agent_type         | host      | alive | admin_state_up | binary                    |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| 02e5b551-197e-4fa3-8489-d19cb40e3171 | DHCP agent         | network   | :-)   | True           | neutron-dhcp-agent        |
+| 6ea0949b-e389-437b-9be7-eb32bc138ef1 | Metadata agent     | network   | :-)   | True           | neutron-metadata-agent    |
+| cd82006e-a82d-4576-a7fa-183f68b4ae73 | L3 agent           | network   | :-)   | True           | neutron-l3-agent          |
+| fbfc1f77-bee0-413f-a38d-eff804cc573f | Open vSwitch agent | network   | :-)   | True           | neutron-openvswitch-agent |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+</p>
+<p>{% endhighlight %}</p>
+<h2 id="83-安装配置计算节点">8.3 安装配置计算节点</h2>
+<p>计算节点处理实例的连接和安全规则组</p>
+<h3 id="831-准备工作">8.3.1 准备工作</h3>
+<p>１　Edit the  /etc/sysctl.conf  file to contain the following parameters:
+{% highlight ini %}
+net.ipv4.conf.all.rp_filter=0
+net.ipv4.conf.default.rp_filter=0
+{% endhighlight %}</p>
+<p>2 应用它
+{% highlight sh %}</p>
+<h1 id="sysctl--p-1">sysctl -p</h1>
+<p>{% endhighlight %}</p>
+<h3 id="832-安装网络组件">8.3.2 安装网络组件</h3>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-neutron-plugin-ml2-neutron-plugin-openvswitch-agent">apt-get install neutron-plugin-ml2 neutron-plugin-openvswitch-agent</h1>
+<p>{% endhighlight %}</p>
+<h3 id="833-配置网络公用组件">8.3.3 配置网络公用组件</h3>
+<p>编辑 /etc/neutron/neutron.conf 这个文件</p>
+<ul>
+<li>
+<p>注释掉所有的数据库连接的选项，因为neutron不直接连接数据库</p>
+</li>
+<li>
+<p>加入下面的内容</p>
+</li>
+</ul>
+<p>{% highlight ini %}
+[DEFAULT]
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack</p>
+<p>auth_strategy = keystone</p>
+<p>core_plugin = ml2
+service_plugins = router
+allow_overlapping_ips = True
+verbose = True</p>
+<p>[keystone_authtoken]
+#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = neutron
+admin_password = openstack</p>
+<p>{% endhighlight %}</p>
+<p>这个文件好像跟网络节点上的一模一样，：）</p>
+<h3 id="834配置modular-layer-2-ml2-插件">8.3.4　配置Modular Layer 2 (ML2) 插件</h3>
+<p>编辑 /etc/neutron/plugins/ml2/ml2_conf.ini　加入下面的内容 <br>
+{% highlight ini %}
+[ml2]
+&hellip;
+type_drivers = flat,gre
+tenant_network_types = gre
+mechanism_drivers = openvswitch</p>
+<p>[ml2_type_gre]
+&hellip;
+tunnel_id_ranges = 1:1000</p>
+<p>[securitygroup]
+&hellip;
+enable_security_group = True
+enable_ipset = True
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver</p>
+<p>[ovs]
+&hellip;
+local_ip = INSTANCE_TUNNELS_INTERFACE_IP_ADDRESS
+enable_tunneling = True
+bridge_mappings = external:br-ex</p>
+<p>[agent]
+&hellip;
+tunnel_types = gre
+{% endhighlight %}</p>
+<p>INSTANCE_TUNNELS_INTERFACE_IP_ADDRESS这个IP应该是计算节点的tunnel IP:10.0.1.31</p>
+<h3 id="835-配置open-vswitch-ovs服务">8.3.5 配置Open vSwitch (OVS)服务</h3>
+<p>{% highlight sh %}</p>
+<h1 id="service-openvswitch-switch-restart-1">service openvswitch-switch restart</h1>
+<p>{% endhighlight %}</p>
+<h3 id="836-配置计算来使用网络">8.3.6 配置计算来使用网络</h3>
+<p>默认安装包使用的是 legacy networking,也就nova-network。你必须重新配置计算节点使用neutron来管理网络。</p>
+<p>编辑 /etc/nova/nova.conf 加入以下内容：</p>
+<p>{% highlight ini %}
+[DEFAULT]</p>
+<h1 id="注意-默认计算组件nova使用了一个内部实现的防火墙服务因为网络组件neutron包含了防火墙服务所以你必须把nova的内部防火墙服务禁用做法是设置firewall_driver--novavirtfirewallnoopfirewalldriver">注意： 默认计算组件nova使用了一个内部实现的防火墙服务，因为网络组件neutron包含了防火墙服务，所以你必须把nova的内部防火墙服务禁用，做法是设置firewall_driver = nova.virt.firewall.NoopFirewallDriver.</h1>
+<p>network_api_class = nova.network.neutronv2.api.API
+security_group_api = neutron
+linuxnet_interface_driver = nova.network.linux_net.LinuxOVSInterfaceDriver
+firewall_driver = nova.virt.firewall.NoopFirewallDriver</p>
+<p>[neutron]
+&hellip;
+url = http://controller:9696
+auth_strategy = keystone
+admin_auth_url = http://controller:35357/v2.0
+admin_tenant_name = service
+admin_username = neutron
+admin_password = openstack
+{% endhighlight %}</p>
+<h3 id="837-完成安装">8.3.7 完成安装</h3>
+<p>{% highlight sh %}</p>
+<h1 id="service-nova-compute-restart-1">service nova-compute restart</h1>
+<h1 id="service-neutron-plugin-openvswitch-agent-restart-1">service neutron-plugin-openvswitch-agent restart</h1>
+<p>{% endhighlight %}</p>
+<h3 id="838-验证安装">8.3.8 验证安装</h3>
+<p>*<strong>请在控制节点上运行下面的命令</strong></p>
+<p>{% highlight sh %}
+$ source admin-openrc.sh
+$ neutron agent-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+           <br>
+| id                                   | agent_type         | host      | alive | admin_state_up | binary                    |           <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+           <br>
+| 02e5b551-197e-4fa3-8489-d19cb40e3171 | DHCP agent         | network   | :-)   | True           | neutron-dhcp-agent        |           <br>
+| 6ea0949b-e389-437b-9be7-eb32bc138ef1 | Metadata agent     | network   | :-)   | True           | neutron-metadata-agent    |           <br>
+| cd82006e-a82d-4576-a7fa-183f68b4ae73 | L3 agent           | network   | :-)   | True           | neutron-l3-agent          |           <br>
+| e3fe92b0-afee-49e3-a783-e5900182fd5b | Open vSwitch agent | compute1  | :-)   | True           | neutron-openvswitch-agent |           <br>
+| fbfc1f77-bee0-413f-a38d-eff804cc573f | Open vSwitch agent | network   | :-)   | True           | neutron-openvswitch-agent |           <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+{% endhighlight %}
+可以看到在host列有compute1，也就是计算节点上的Open vSwitch agent已启动。</p>
+<h2 id="84-创建初始网络">8.4 创建初始网络</h2>
+<p>在启动虚拟机之前，你要先创建虚拟网络基本架构，实例会连接到它上。这个虚拟网络包含一个外部网络和租户网络。
+<img src="/assets/img/blog/installguide-neutron-initialnetworks.png" alt="installguide-neutron-initialnetworks.png"></p>
+<h3 id="841-外部网络">8.4.1 外部网络</h3>
+<p>外部网络向实例提供互联网访问支持。默认它允许实例以Network Address Translation (NAT)方式访问互联网。
+使用浮动IP和适当安全规则组，你可以使单个实例访问Internet。管理员租户会拥有这个网络，因为它向所有的租户提供外部网络。</p>
+<p><strong>注意</strong> 请在控制节点上运行下面的命令</p>
+<p>1 创建外部网络</p>
+<p>{% highlight sh %}</p>
+<h1 id="source-admin-openrcsh">source admin-openrc.sh</h1>
+<p>$ neutron net-create ext-net &ndash;router:external True <br>
+&ndash;provider:physical_network external &ndash;provider:network_type flat</p>
+<p>Created a new network:                                                                                                                   <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                                                                     <br>
+| Field                     | Value                                |                                                                     <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                                                                     <br>
+| admin_state_up            | True                                 |                                                                     <br>
+| id                        | c3b0a6f6-7bed-4058-9a20-1f33396e331f |                                                                     <br>
+| name                      | ext-net                              |                                                                     <br>
+| provider:network_type     | flat                                 |                                                                     <br>
+| provider:physical_network | external                             |
+| provider:segmentation_id  |                                      |
+| router:external           | True                                 |
+| shared                    | False                                |
+| status                    | ACTIVE                               |
+| subnets                   |                                      |
+| tenant_id                 | 357abecb4def441eb7a36e7cf5d173c4     |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>{% endhighlight %}</p>
+<p>我们创建的这个外网，它跟网络节点的那个绑定外网地址的网卡在一个子网，共享网关。
+跟物理网一样，我们需要给它创建一个子网。</p>
+<p>2 在外网上创建子网</p>
+<p>创建的命令如下：
+{% highlight sh %}
+$ neutron subnet-create ext-net &ndash;name ext-subnet <br>
+&ndash;allocation-pool start=FLOATING_IP_START,end=FLOATING_IP_END <br>
+&ndash;disable-dhcp &ndash;gateway EXTERNAL_NETWORK_GATEWAY EXTERNAL_NETWORK_CIDR
+{% endhighlight %}</p>
+<p>本文是外网的网段是192.168.234.0/24 ，我们分配浮动IP段为234.230~234.239</p>
+<p>{% highlight sh %}
+$ neutron subnet-create ext-net &ndash;name ext-subnet <br>
+&ndash;allocation-pool start=192.168.234.230,end=192.168.234.239 <br>
+&ndash;disable-dhcp &ndash;gateway 192.168.234.1 192.168.234.0/24</p>
+<p>Created a new subnet:
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Field             | Value                                                  |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| allocation_pools  | {&ldquo;start&rdquo;: &ldquo;192.168.234.230&rdquo;, &ldquo;end&rdquo;: &ldquo;192.168.234.239&rdquo;} |
+| cidr              | 192.168.234.0/24                                       |
+| dns_nameservers   |                                                        |
+| enable_dhcp       | False                                                  |
+| gateway_ip        | 192.168.234.1                                          |
+| host_routes       |                                                        |
+| id                | 33bc7923-789c-4453-9dd2-7853b4c69c5c                   |
+| ip_version        | 4                                                      |
+| ipv6_address_mode |                                                        |
+| ipv6_ra_mode      |                                                        |
+| name              | ext-subnet                                             |
+| network_id        | c3b0a6f6-7bed-4058-9a20-1f33396e331f                   |
+| tenant_id         | 357abecb4def441eb7a36e7cf5d173c4                       |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<h3 id="842-租户网络">8.4.2 租户网络</h3>
+<p>The tenant network provides internal network access for instances. The architecture isolates this type of network from other tenants. The demo tenant owns this network because it only provides network access for instances within it.</p>
+<p><strong>注意</strong> 请在控制节点上运行下面的命令</p>
+<p>1 创建租户网络</p>
+<p>{% highlight sh %}</p>
+<h1 id="source-demo-openrcsh">source demo-openrc.sh</h1>
+<p>$ neutron net-create demo-net</p>
+<p>Created a new network:
++&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Field           | Value                                |
++&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| admin_state_up  | True                                 |
+| id              | dba2bba4-c2a5-410a-9b6f-da8a1e9b887f |
+| name            | demo-net                             |
+| router:external | False                                |
+| shared          | False                                |
+| status          | ACTIVE                               |
+| subnets         |                                      |
+| tenant_id       | 6245a74d882e451c8d7663a46103b8b2     |
++&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p>2 在租户网络上创建子网</p>
+<p>{% highlight sh %}
+$ neutron subnet-create demo-net &ndash;name demo-subnet <br>
+&ndash;gateway 10.10.1.1 10.10.1.0/24</p>
+<p>Created a new subnet:
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Field             | Value                                        |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| allocation_pools  | {&ldquo;start&rdquo;: &ldquo;10.10.1.2&rdquo;, &ldquo;end&rdquo;: &ldquo;10.10.1.254&rdquo;} |
+| cidr              | 10.10.1.0/24                                 |
+| dns_nameservers   |                                              |
+| enable_dhcp       | True                                         |
+| gateway_ip        | 10.10.1.1                                    |
+| host_routes       |                                              |
+| id                | e07e263f-1cf8-4f60-adbb-424fbd22ed0d         |
+| ip_version        | 4                                            |
+| ipv6_address_mode |                                              |
+| ipv6_ra_mode      |                                              |
+| name              | demo-subnet                                  |
+| network_id        | dba2bba4-c2a5-410a-9b6f-da8a1e9b887f         |
+| tenant_id         | 6245a74d882e451c8d7663a46103b8b2             |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>3 创建路由器
+路由器用来连接租户网络和外部网络</p>
+<p>创建路由器</p>
+<p>{% highlight sh %}
+$ neutron router-create demo-router</p>
+<p>Created a new router:
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Field                 | Value                                |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| admin_state_up        | True                                 |
+| external_gateway_info |                                      |
+| id                    | 979f88e6-65e2-4d97-b468-4b1e95687da4 |
+| name                  | demo-router                          |
+| routes                |                                      |
+| status                | ACTIVE                               |
+| tenant_id             | 6245a74d882e451c8d7663a46103b8b2     |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>{% endhighlight %}</p>
+<p>把它加到租户网络内
+{% highlight sh %}
+$ neutron router-interface-add demo-router demo-subnet
+Added interface 2e55f3dc-763f-4031-8011-b2b2dd9df5fe to router demo-router.
+{% endhighlight %}
+设置路由器的网关使它连接到外网
+{% highlight sh %}
+$ neutron router-gateway-set demo-router ext-net
+Set gateway for router demo-router
+{% endhighlight %}</p>
+<h3 id="85-验证安装">8.5 验证安装</h3>
+<p>如果你的安装没问题，那么租户的路由会占用最低的那个IP：192.168.234.230，你在外网的任何一台机器上应该能ping通它。</p>
+<h1 id="9-安装控制台">9 安装控制台</h1>
+<p>The OpenStack dashboard, also known as <code>Horizon</code>,是它的web管理界面。</p>
+<h2 id="91-安装配置horizon">9.1 安装配置Horizon</h2>
+<p>我们把Horizon安装在控制节点上</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-openstack-dashboard-apache2-libapache2-mod-wsgi-memcached-python-memcache">apt-get install openstack-dashboard apache2 libapache2-mod-wsgi memcached python-memcache</h1>
+<p>{% endhighlight %}</p>
+<p>配置Horizon</p>
+<p>编辑它 /etc/openstack-dashboard/local_settings.py 加入下面的内容。</p>
+<p>{% highlight py %}
+OPENSTACK_HOST = &ldquo;controller&rdquo;
+ALLOWED_HOSTS = [&rsquo;*&rsquo;]
+CACHES = {
+&lsquo;default&rsquo;: {
+&lsquo;BACKEND&rsquo;: &lsquo;django.core.cache.backends.memcached.MemcachedCache&rsquo;,
+&lsquo;LOCATION&rsquo;: &lsquo;127.0.0.1:11211&rsquo;,
+}
+}
+TIME_ZONE = &ldquo;Asia/Shanghai&rdquo;
+{% endhighlight %}</p>
+<p>3 完成安装</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-apache2-restart">service apache2 restart</h1>
+<h1 id="service-memcached-restart">service memcached restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="92-验证安装">9.2 验证安装</h2>
+<p>在浏览器里输入：http://controller/horizon，来访问Horizon。</p>
+<h1 id="10-安装telemetry">10 安装Telemetry</h1>
+<p>Telemetry的组件信息请参考官方文档</p>
+<h2 id="10-1-安装配置控制节点">10. 1 安装配置控制节点</h2>
+<h3 id="1011-配置先决条件">10.1.1 配置先决条件</h3>
+<p>１　安装　MongoDB</p>
+<p>{% highlight aconf %}</p>
+<h1 id="apt-get-install-mongodb-server-mongodb-clients-python-pymongo">apt-get install mongodb-server mongodb-clients python-pymongo</h1>
+<p>{% endhighlight %}</p>
+<p>２　编辑 /etc/mongodb.conf file 完成下列操作：</p>
+<p>{% highlight aconf %}
+bind_ip = 10.0.0.11
+smallfiles = true
+{% endhighlight %}</p>
+<p>执行命令
+{% highlight sh %}</p>
+<h1 id="service-mongodb-stop">service mongodb stop</h1>
+<h1 id="rm-varlibmongodbjournalprealloc">rm /var/lib/mongodb/journal/prealloc.*</h1>
+<h1 id="service-mongodb-start">service mongodb start</h1>
+<p>{% endhighlight %}</p>
+<p>３　创建　ceilometer　数据库</p>
+<p>{% highlight sh %}</p>
+<h1 id="mongo---host-controller---eval-">mongo &ndash;host controller &ndash;eval '</h1>
+<p>db = db.getSiblingDB(&ldquo;ceilometer&rdquo;);
+db.addUser({user: &ldquo;ceilometer&rdquo;,
+pwd: &ldquo;openstack&rdquo;,
+roles: [ &ldquo;readWrite&rdquo;, &ldquo;dbAdmin&rdquo; ]})&rsquo;</p>
+<p>MongoDB shell version: 2.4.9
+connecting to: controller:27017/test
+{
+&ldquo;user&rdquo; : &ldquo;ceilometer&rdquo;,
+&ldquo;pwd&rdquo; : &ldquo;347ed5cbd578cb16ce413fe1d085ce2f&rdquo;,
+&ldquo;roles&rdquo; : [
+&ldquo;readWrite&rdquo;,
+&ldquo;dbAdmin&rdquo;
+],
+&ldquo;_id&rdquo; : ObjectId(&ldquo;550a3f247f38cb43ba640fd7&rdquo;)
+}
+{% endhighlight %}</p>
+<p>4 切换到管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>５　
+创建　ceilometer　用户</p>
+<p>{% highlight sh %}
+$ keystone user-create &ndash;name ceilometer &ndash;pass openstack
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |                                  |
+| enabled  |               True               |
+|    id    | d839485477e44aa8baabbefd19829392 |
+|   name   |            ceilometer            |
+| username |            ceilometer            |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>为　ceilometer　用户添加admin角色:
+{% highlight sh %}
+$ keystone user-role-add &ndash;user ceilometer &ndash;tenant service &ndash;role admin
+{% endhighlight %}</p>
+<p>创建 ceilometer 服务实体:</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name ceilometer &ndash;type metering <br>
+&ndash;description &ldquo;Telemetry&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+                                                                                       <br>
+|   Property  |              Value               |                                                                                       <br>
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+                                                                                       <br>
+| description |            Telemetry             |                                                                                       <br>
+|   enabled   |               True               |                                                                                       <br>
+|      id     | 92a5e6518c1d4b238f66c1358d472196 |                                                                                       <br>
+|     name    |            ceilometer            |                                                                                       <br>
+|     type    |             metering             |                                                                                       <br>
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建　Telemetry　API　endpoints</p>
+<p>{% highlight sh %}
+$　keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ metering / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:8777 <br>
+&ndash;internalurl http://controller:8777 <br>
+&ndash;adminurl http://controller:8777 <br>
+&ndash;region regionOne</p>
+<p>+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+                                                                                       <br>
+|   Property  |              Value               |                                                                                       <br>
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+                                                                                       <br>
+|   adminurl  |      http://controller:8777      |                                                                                       <br>
+|      id     | f513c95f58a54d028c67db8e9d8e1e20 |                                                                                       <br>
+| internalurl |      http://controller:8777      |                                                                                       <br>
+|  publicurl  |      http://controller:8777      |                                                                                       <br>
+|    region   |            regionOne             |
+|  service_id | 92a5e6518c1d4b238f66c1358d472196 |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<h3 id="1012-配置先决条件">10.1.2 配置先决条件</h3>
+<p>1 安装包</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-ceilometer-api-ceilometer-collector-ceilometer-agent-central-">apt-get install ceilometer-api ceilometer-collector ceilometer-agent-central \</h1>
+<p>ceilometer-agent-notification ceilometer-alarm-evaluator ceilometer-alarm-notifier <br>
+python-ceilometerclient
+{% endhighlight %}</p>
+<p>2 生成一个随机密码
+{% highlight sh %}</p>
+<h1 id="openssl-rand--hex-10-1">openssl rand -hex 10</h1>
+<p>177e8037fc8c7916e329
+{% endhighlight %}</p>
+<p>３　编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack
+&hellip;
+auth_strategy = keystone
+verbose = True</p>
+<p>[keystone_authtoken]
+#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = ceilometer
+admin_password = openstack</p>
+<p>[database]
+&hellip;
+connection = mongodb://ceilometer:openstack@controller:27017/ceilometer</p>
+<p>[service_credentials]
+&hellip;
+os_auth_url = http://controller:5000/v2.0
+os_username = ceilometer
+os_tenant_name = service
+os_password = openstack</p>
+<p>[publisher]
+&hellip;
+metering_secret = METERING_SECRET
+{% endhighlight %}</p>
+<p>把METERING_SECRET替换成我们上一步创建的<code>177e8037fc8c7916e329</code></p>
+<p>4 完成安装</p>
+<p>重启服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-ceilometer-agent-central-restart">service ceilometer-agent-central restart</h1>
+<h1 id="service-ceilometer-agent-notification-restart">service ceilometer-agent-notification restart</h1>
+<h1 id="service-ceilometer-api-restart">service ceilometer-api restart</h1>
+<h1 id="service-ceilometer-collector-restart">service ceilometer-collector restart</h1>
+<h1 id="service-ceilometer-alarm-evaluator-restart">service ceilometer-alarm-evaluator restart</h1>
+<h1 id="service-ceilometer-alarm-notifier-restart">service ceilometer-alarm-notifier restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="102-安装配置计算节点">10.2 安装配置计算节点</h2>
+<p>Telemetry 使用通知和代理的组合来收集计算节点的计费信息，请在每个计算节点上执行下列操作．</p>
+<h3 id="1021-安装配置agent">10.2.1 安装配置Agent</h3>
+<p>1
+{% highlight sh %}</p>
+<h1 id="apt-get-install-ceilometer-agent-compute">apt-get install ceilometer-agent-compute</h1>
+<p>{% endhighlight %}</p>
+<p>2 编辑 /etc/ceilometer/ceilometer.conf 完成下列操作：
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+rabbit_host = controller
+rabbit_password = openstack
+verbose = True</p>
+<p>[publisher]
+&hellip;
+metering_secret = METERING_SECRET</p>
+<p>[keystone_authtoken]
+#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = ceilometer
+admin_password = openstack</p>
+<p>[service_credentials]
+&hellip;
+os_auth_url = http://controller:5000/v2.0
+os_username = ceilometer
+os_tenant_name = service
+os_password = openstack
+os_endpoint_type = internalURL
+os_region_name = regionOne</p>
+<p>{% endhighlight %}</p>
+<p>把METERING_SECRET替换成我们上一步创建的<code>177e8037fc8c7916e329</code></p>
+<h3 id="1022-安装配置通知">10.2.2 安装配置通知</h3>
+<p>Edit the /etc/nova/nova.conf file and configure notifications in the [DEFAULT] section:</p>
+<p>编辑　/etc/nova/nova.conf　，配置在  [DEFAULT] 小节配置通知:</p>
+<p>{% highlight ini %}
+[DEFAULT]
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+notification_driver = messagingv2
+{% endhighlight %}</p>
+<h3 id="1023-完成安装">10.2.3 完成安装</h3>
+<p>{% highlight sh %}</p>
+<h1 id="service-ceilometer-agent-compute-restart">service ceilometer-agent-compute restart</h1>
+<h1 id="service-nova-compute-restart-2">service nova-compute restart</h1>
+<p>{% endhighlight %}</p>
+<h2 id="102-安装配置映像服务">10.2 安装配置映像服务</h2>
+<p>请在控制节点上运行下面的命令</p>
+<p>编辑文件 <code>/etc/glance/glance-api.conf</code> 和 <code>/etc/glance/glance-registry.conf</code> 完成下面所提的操作:</p>
+<p>{% highlight sh %}
+[DEFAULT]
+&hellip;
+notification_driver = messagingv2
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack
+{% endhighlight %}</p>
+<p>重启服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-glance-registry-restart-1">service glance-registry restart</h1>
+<h1 id="service-glance-api-restart-1">service glance-api restart</h1>
+<p>{% endhighlight %}</p>
+<h1 id="11-安装过程中遇到的问题">11 安装过程中遇到的问题</h1>
+<h2 id="111-服务状态不对">11.1 服务状态不对</h2>
+<p>安装的时候没有把控制节点的hostname改成controller，改完后发现有状态为<code>down</code>的服务</p>
+<p>{% highlight sh %}
+root@localhost:~# nova service-list
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Id | Binary           | Host       | Zone     | Status  | State | Updated_at                 | Disabled Reason |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| 1  | nova-cert        | localhost  | internal | enabled | down  | 2015-03-17T09:40:43.000000 | -               |
+| 2  | nova-scheduler   | localhost  | internal | enabled | down  | 2015-03-17T09:40:50.000000 | -               |
+| 3  | nova-consoleauth | localhost  | internal | enabled | down  | 2015-03-17T09:40:50.000000 | -               |
+| 4  | nova-conductor   | localhost  | internal | enabled | down  | 2015-03-17T09:41:04.000000 | -               |
+| 6  | nova-compute     | compute1   | nova     | enabled | up    | 2015-03-17T09:42:37.000000 | -               |
+| 7  | nova-cert        | controller | internal | enabled | up    | 2015-03-17T09:42:43.000000 | -               |
+| 8  | nova-scheduler   | controller | internal | enabled | up    | 2015-03-17T09:42:38.000000 | -               |
+| 9  | nova-consoleauth | controller | internal | enabled | up    | 2015-03-17T09:42:38.000000 | -               |
+| 10 | nova-conductor   | controller | internal | enabled | up    | 2015-03-17T09:42:41.000000 | -               |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p>如果运行上述命令是报<code>unsupported locale setting</code>错误，请设置环境变量
+{% highlight sh %}
+export LC_ALL=en_US.UTF-8
+{% endhighlight %}</p>
+<p>把那些状态为<code>down</code>的服务删除。
+{% highlight sh %}
+root@localhost:~# nova service-delete 1
+root@localhost:~# nova service-delete 2
+root@localhost:~# nova service-delete 3
+root@localhost:~# nova service-delete 4
+root@localhost:~# nova service-list <br>
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Id | Binary           | Host       | Zone     | Status  | State | Updated_at                 | Disabled Reason |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| 6  | nova-compute     | compute1   | nova     | enabled | up    | 2015-03-17T09:43:57.000000 | -               |
+| 7  | nova-cert        | controller | internal | enabled | up    | 2015-03-17T09:44:03.000000 | -               |
+| 8  | nova-scheduler   | controller | internal | enabled | up    | 2015-03-17T09:43:58.000000 | -               |
+| 9  | nova-consoleauth | controller | internal | enabled | up    | 2015-03-17T09:43:58.000000 | -               |
+| 10 | nova-conductor   | controller | internal | enabled | up    | 2015-03-17T09:44:02.000000 | -               |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p>因为我在安装的过程中网络节点重装过，所以也出现了类似的情况。
+{% highlight sh %}
+root@localhost:~# neutron agent-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| id                                   | agent_type         | host      | alive | admin_state_up | binary                    |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| 02e5b551-197e-4fa3-8489-d19cb40e3171 | DHCP agent         | network   | :-)   | True           | neutron-dhcp-agent        |
+| 6ea0949b-e389-437b-9be7-eb32bc138ef1 | Metadata agent     | network   | :-)   | True           | neutron-metadata-agent    |
+| 77b4f1ad-4dc4-4a00-881f-6709b63c856a | Open vSwitch agent | localhost | xxx   | True           | neutron-openvswitch-agent |
+| 809776b5-42f0-4c5c-afee-1e8fc1877be9 | DHCP agent         | localhost | xxx   | True           | neutron-dhcp-agent        |
+| aeadc622-155c-46c5-bd2b-f75f715664ca | Metadata agent     | localhost | xxx   | True           | neutron-metadata-agent    |
+| b18cf8ae-3893-436f-beef-315274d837b2 | L3 agent           | localhost | xxx   | True           | neutron-l3-agent          |
+| cd82006e-a82d-4576-a7fa-183f68b4ae73 | L3 agent           | network   | :-)   | True           | neutron-l3-agent          |
+| e3fe92b0-afee-49e3-a783-e5900182fd5b | Open vSwitch agent | compute1  | :-)   | True           | neutron-openvswitch-agent |
+| fbfc1f77-bee0-413f-a38d-eff804cc573f | Open vSwitch agent | network   | :-)   | True           | neutron-openvswitch-agent |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+root@localhost:~# neutron agent-delete 77b4f1ad-4dc4-4a00-881f-6709b63c856a
+Deleted agent: 77b4f1ad-4dc4-4a00-881f-6709b63c856a
+root@localhost:~# neutron agent-delete 809776b5-42f0-4c5c-afee-1e8fc1877be9
+Deleted agent: 809776b5-42f0-4c5c-afee-1e8fc1877be9
+root@localhost:~# neutron agent-delete aeadc622-155c-46c5-bd2b-f75f715664ca
+Deleted agent: aeadc622-155c-46c5-bd2b-f75f715664ca
+root@localhost:~# neutron agent-delete b18cf8ae-3893-436f-beef-315274d837b2
+Deleted agent: b18cf8ae-3893-436f-beef-315274d837b2
+root@localhost:~# neutron agent-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| id                                   | agent_type         | host     | alive | admin_state_up | binary                    |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| 02e5b551-197e-4fa3-8489-d19cb40e3171 | DHCP agent         | network  | :-)   | True           | neutron-dhcp-agent        |
+| 6ea0949b-e389-437b-9be7-eb32bc138ef1 | Metadata agent     | network  | :-)   | True           | neutron-metadata-agent    |
+| cd82006e-a82d-4576-a7fa-183f68b4ae73 | L3 agent           | network  | :-)   | True           | neutron-l3-agent          |
+| e3fe92b0-afee-49e3-a783-e5900182fd5b | Open vSwitch agent | compute1 | :-)   | True           | neutron-openvswitch-agent |
+| fbfc1f77-bee0-413f-a38d-eff804cc573f | Open vSwitch agent | network  | :-)   | True           | neutron-openvswitch-agent |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+</p>
+<p>{% endhighlight %}</p>
+<h2 id="112-启动实例时报错">11.2 启动实例时报错</h2>
+<p>{% highlight sh %}
+Build of instance 84c2c847-bcc7-4fad-8e81-4430b156cc46 aborted: Failed to allocate the network(s), not rescheduling.
+{% endhighlight %}</p>
+<p>查看网络节点的日志，发现报错：
+{% highlight sh %}
+neutron ImportError: No module named rabbit
+{% endhighlight %}</p>
+<p>网上说这是OpenStack上一个版本Icehouse的问题,我忽然意识到我在安装新的网络节点时，没有导入新的源，Ubuntu 14.04的官方源里还真就是Icehouse版本。
+{% highlight sh %}</p>
+<h1 id="apt-get-install-ubuntu-cloud-keyring-1">apt-get install ubuntu-cloud-keyring</h1>
+<h1 id="echo-deb-httpubuntu-cloudarchivecanonicalcomubuntu--1">echo &ldquo;deb <a href="http://ubuntu-cloud.archive.canonical.com/ubuntu%22">http://ubuntu-cloud.archive.canonical.com/ubuntu&quot;</a> \</h1>
+<p>&ldquo;trusty-updates/juno main&rdquo; &gt; /etc/apt/sources.list.d/cloudarchive-juno.list
+{% endhighlight %}
+导入上面的源重新安装了包，启动服务后，不报这个错误了。</p>
+<p>不过主机还是没启动起来。。。。 还是报<code>Failed to allocate the network(s), not rescheduling.</code>错误。</p>
+<p>查看计算节点compute1上的/var/log/neutron/openvswitch-agent.log，发现如下错误：
+{% highlight sh %}
+Bridge br-ex for physical network external does not exist. Agent terminated!
+{% endhighlight %}</p>
+<p>仔细查看计算节点上的/etc/neutron/plugins/ml2/ml2_conf.ini 时发现里面有这个<code>bridge_mappings = external:br-ex</code>选项，官方安装文档里没有提这个选项，禁用它试试。</p>
+<p>{% highlight ini %}
+#bridge_mappings = external:br-ex
+{% endhighlight %}
+嗯，不报上面的错误了。</p>
+<p>不过云主机还是启动不起来，还是报Failed to allocate the network(s), not rescheduling。</p>
+<p>查看计算节点compute1上的/var/log/nova/nova-compute.log发现这个错误
+{% highlight sh %}
+VirtualInterfaceCreateException: Virtual Interface creation failed
+{% endhighlight %}</p>
+<p><a href="https://ask.openstack.org/en/question/26938/virtualinterfacecreateexception-virtual-interface-creation-failed/">这个帖子</a>解决了我的问题,在计算节点的nova.conf里加入</p>
+<p>{% highlight ini %}
+[DEFAULT]
+#加入下面两行
+vif_plugging_is_fatal: false
+vif_plugging_timeout: 0
+{% endhighlight %}</p>
+<p>实例终于启动起来了。</p>
+<p>在我启动控制节点后，
+{% highlight sh %}</p>
+<h1 id="nova-service-list">nova service-list</h1>
+<p>+&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| Id | Binary           | Host       | Zone     | Status  | State | Updated_at                 | Disabled Reason |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| 6  | nova-compute     | compute1   | nova     | enabled | down  | 2015-03-18T09:33:33.000000 | -               |
+| 7  | nova-cert        | controller | internal | enabled | down  | 2015-03-18T09:33:26.000000 | -               |
+| 8  | nova-scheduler   | controller | internal | enabled | down  | 2015-03-18T09:33:28.000000 | -               |
+| 9  | nova-consoleauth | controller | internal | enabled | down  | 2015-03-18T09:33:28.000000 | -               |
+| 10 | nova-conductor   | controller | internal | enabled | down  | 2015-03-18T09:33:28.000000 | -               |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}
+这几个服务的日志报的都是这个错误：
+{% highlight sh %}
+AMQP server controller:5672 closed the connection. Check login credentials: Socket closed
+{% endhighlight %}</p>
+<p>我傻乎乎的重启了N遍服务，还怀疑是iptables的问题。其它错误里说得挺清楚的：Check login credentials。不过我真没想到重启会让guest的密码失效。重新设置一下这个密码就OK了。
+{% highlight sh %}
+rabbitmqctl change_password guest openstack
+{% endhighlight %}</p>
+<ul>
+<li>如何设置ceilometer的轮询间隔</li>
+</ul>
+<p><a href="https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/">https://ask.openstack.org/en/question/5882/how-to-change-the-polling-period-of-ceilometer/</a></p>
+<h2 id="启动实例的">启动实例的</h2>
+<p>apache的错误日志显示：</p>
+<p>{% highlight sh %}
+[Tue Mar 24 17:31:32.200854 2015] [:error] [pid 23314:tid 140209584568064] Internal Server Error: /horizon/project/instances/launch
+[Tue Mar 24 17:31:32.200922 2015] [:error] [pid 23314:tid 140209584568064] Traceback (most recent call last):
+[Tue Mar 24 17:31:32.200931 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/core/handlers/base.py&rdquo;, line 112, in get_response
+[Tue Mar 24 17:31:32.200939 2015] [:error] [pid 23314:tid 140209584568064]     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+[Tue Mar 24 17:31:32.200945 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/decorators.py&rdquo;, line 36, in dec
+[Tue Mar 24 17:31:32.200952 2015] [:error] [pid 23314:tid 140209584568064]     return view_func(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.200958 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/decorators.py&rdquo;, line 52, in dec
+[Tue Mar 24 17:31:32.200964 2015] [:error] [pid 23314:tid 140209584568064]     return view_func(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.200970 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/decorators.py&rdquo;, line 36, in dec
+[Tue Mar 24 17:31:32.200977 2015] [:error] [pid 23314:tid 140209584568064]     return view_func(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.200983 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/decorators.py&rdquo;, line 84, in dec
+[Tue Mar 24 17:31:32.200989 2015] [:error] [pid 23314:tid 140209584568064]     return view_func(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.200995 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&rdquo;, line 69, in view
+[Tue Mar 24 17:31:32.201002 2015] [:error] [pid 23314:tid 140209584568064]     return self.dispatch(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.201008 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/views/generic/base.py&rdquo;, line 87, in dispatch
+[Tue Mar 24 17:31:32.201014 2015] [:error] [pid 23314:tid 140209584568064]     return handler(request, *args, **kwargs)
+[Tue Mar 24 17:31:32.201020 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&rdquo;, line 165, in post
+[Tue Mar 24 17:31:32.201027 2015] [:error] [pid 23314:tid 140209584568064]     context = self.get_context_data(**kwargs)
+[Tue Mar 24 17:31:32.201033 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&rdquo;, line 89, in get_context_data
+[Tue Mar 24 17:31:32.201039 2015] [:error] [pid 23314:tid 140209584568064]     workflow = self.get_workflow()
+[Tue Mar 24 17:31:32.201045 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/workflows/views.py&rdquo;, line 79, in get_workflow
+[Tue Mar 24 17:31:32.201051 2015] [:error] [pid 23314:tid 140209584568064]     entry_point=entry_point)
+[Tue Mar 24 17:31:32.201069 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/workflows/base.py&rdquo;, line 648, in <strong>init</strong>
+[Tue Mar 24 17:31:32.201075 2015] [:error] [pid 23314:tid 140209584568064]     valid = step.action.is_valid()
+[Tue Mar 24 17:31:32.201081 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/forms/forms.py&rdquo;, line 129, in is_valid
+[Tue Mar 24 17:31:32.201086 2015] [:error] [pid 23314:tid 140209584568064]     return self.is_bound and not bool(self.errors)
+[Tue Mar 24 17:31:32.201092 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/forms/forms.py&rdquo;, line 121, in errors
+[Tue Mar 24 17:31:32.201097 2015] [:error] [pid 23314:tid 140209584568064]     self.full_clean()
+[Tue Mar 24 17:31:32.201103 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/forms/forms.py&rdquo;, line 274, in full_clean
+[Tue Mar 24 17:31:32.201108 2015] [:error] [pid 23314:tid 140209584568064]     self._clean_form()
+[Tue Mar 24 17:31:32.201113 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/django/forms/forms.py&rdquo;, line 300, in _clean_form
+[Tue Mar 24 17:31:32.201119 2015] [:error] [pid 23314:tid 140209584568064]     self.cleaned_data = self.clean()
+[Tue Mar 24 17:31:32.201124 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/dashboards/project/instances/workflows/create_instance.py&rdquo;, line 167, in clean
+[Tue Mar 24 17:31:32.201131 2015] [:error] [pid 23314:tid 140209584568064]     usages = quotas.tenant_quota_usages(self.request)
+[Tue Mar 24 17:31:32.201136 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/horizon/utils/memoized.py&rdquo;, line 90, in wrapped
+[Tue Mar 24 17:31:32.201142 2015] [:error] [pid 23314:tid 140209584568064]     value = cache[key] = func(*args, **kwargs)
+[Tue Mar 24 17:31:32.201148 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&rdquo;, line 224, in tenant_quota_usages
+[Tue Mar 24 17:31:32.201153 2015] [:error] [pid 23314:tid 140209584568064]     disabled_quotas=disabled_quotas):
+[Tue Mar 24 17:31:32.201159 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&rdquo;, line 165, in get_tenant_quota_data
+[Tue Mar 24 17:31:32.201165 2015] [:error] [pid 23314:tid 140209584568064]     tenant_id=tenant_id)
+[Tue Mar 24 17:31:32.201171 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/usage/quotas.py&rdquo;, line 147, in _get_quota_data
+[Tue Mar 24 17:31:32.201177 2015] [:error] [pid 23314:tid 140209584568064]     quotasets.append(getattr(cinder, method_name)(request, tenant_id))
+[Tue Mar 24 17:31:32.201182 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/api/cinder.py&rdquo;, line 363, in tenant_quota_get
+[Tue Mar 24 17:31:32.201188 2015] [:error] [pid 23314:tid 140209584568064]     return base.QuotaSet(c_client.quotas.get(tenant_id))
+[Tue Mar 24 17:31:32.201193 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/cinderclient/v1/quotas.py&rdquo;, line 39, in get
+[Tue Mar 24 17:31:32.201199 2015] [:error] [pid 23314:tid 140209584568064]     &ldquo;quota_set&rdquo;)
+[Tue Mar 24 17:31:32.201204 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/cinderclient/base.py&rdquo;, line 151, in _get
+[Tue Mar 24 17:31:32.201209 2015] [:error] [pid 23314:tid 140209584568064]     return self.resource_class(self, body[response_key], loaded=True)
+[Tue Mar 24 17:31:32.201215 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&rdquo;, line 429, in <strong>init</strong>
+[Tue Mar 24 17:31:32.201227 2015] [:error] [pid 23314:tid 140209584568064]     self._add_details(info)
+[Tue Mar 24 17:31:32.201233 2015] [:error] [pid 23314:tid 140209584568064]   File &ldquo;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&rdquo;, line 450, in _add_details
+[Tue Mar 24 17:31:32.201238 2015] [:error] [pid 23314:tid 140209584568064]     setattr(self, k, v)
+[Tue Mar 24 17:31:32.201244 2015] [:error] [pid 23314:tid 140209584568064] UnicodeEncodeError: &lsquo;ascii&rsquo; codec can&rsquo;t encode characters in position 10-11: ordinal not in range(128)
+{% endhighlight %}</p>
+<p>在看了python对unicode的支持后，修改了源代码　　　
+&ldquo;/usr/lib/python2.7/dist-packages/cinderclient/openstack/common/apiclient/base.py&rdquo;
+{% highlight python %}
+setattr(self, k.encode(&lsquo;UTF-8&rsquo;), v.encode(&lsquo;UTF-8&rsquo;))
+#setattr(self, k, v)
+{% endhighlight %}
+可以了．</p>
+<h1 id="12-安装块存储设备">12 安装块存储设备</h1>
+<h2 id="121-安装配置控制节点">12.1 安装配置控制节点</h2>
+<h3 id="1211-安装准备">12.1.1 安装准备</h3>
+<ol>
+<li>配置数据库
+数据库安装在控制节点上。</li>
+</ol>
+<p>{% highlight sh %}
+$ mysql -u root -p
+{% endhighlight %}</p>
+<p>创建 cinder 数据库
+{% highlight sql %}
+CREATE DATABASE cinder;</p>
+<p>GRANT ALL PRIVILEGES ON cinder.* TO &lsquo;cinder&rsquo;@&rsquo;localhost&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;
+GRANT ALL PRIVILEGES ON cinder.* TO &lsquo;cinder&rsquo;@&rsquo;%&rsquo; <br>
+IDENTIFIED BY &lsquo;openstack&rsquo;;
+{% endhighlight %}</p>
+<ol start="2">
+<li>
+<p>用切换到管理员身份
+{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+</li>
+<li>
+<p>创建服务凭证</p>
+</li>
+</ol>
+<p>创建 cinder 用户</p>
+<p>{% highlight sh %}
+$ keystone user-create &ndash;name cinder &ndash;pass openstack
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| Property |              Value               |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  email   |                                  |
+| enabled  |               True               |
+|    id    | fd7b1e90d1144b669d20040b9c334d88 |
+|   name   |              cinder              |
+| username |              cinder              |
++&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+<p>{% endhighlight %}</p>
+<p>为 cinder 用户添加admin角色:
+{% highlight sh %}
+$ keystone user-role-add &ndash;user cinder &ndash;tenant service &ndash;role admin
+{% endhighlight %}</p>
+<p>创建 cinder 服务实体:</p>
+<p><strong>注意</strong>
+块存储服务需要两个不同的实体以支持v1和v2版本的API．</p>
+<p>{% highlight sh %}
+$ keystone service-create &ndash;name cinder &ndash;type volume <br>
+&ndash;description &ldquo;OpenStack Block Storage&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |     OpenStack Block Storage      |
+|   enabled   |               True               |
+|      id     | c6a863efddac421cbb6e1585ae0c026d |
+|     name    |              cinder              |
+|     type    |              volume              |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+<p>$ keystone service-create &ndash;name cinderv2 &ndash;type volumev2 <br>
+&ndash;description &ldquo;OpenStack Block Storage&rdquo;
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |     OpenStack Block Storage      |
+|   enabled   |               True               |
+|      id     | 61c641af06544f8eb74a99f4c30b65ee |
+|     name    |             cinderv2             |
+|     type    |             volumev2             |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>创建块存储服务 API 端点:</p>
+<p>当然也是两个</p>
+<p>{% highlight sh %}</p>
+<p>$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ volume / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:8776/v1/%(tenant_id)s <br>
+&ndash;internalurl http://controller:8776/v1/%(tenant_id)s <br>
+&ndash;adminurl http://controller:8776/v1/%(tenant_id)s <br>
+&ndash;region regionOne
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   Property  |                  Value                  |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   adminurl  | http://controller:8776/v1/%(tenant_id)s |
+|      id     |     1dadfd1345034f5bbec0a37fbb362e9c    |
+| internalurl | http://controller:8776/v1/%(tenant_id)s |
+|  publicurl  | http://controller:8776/v1/%(tenant_id)s |
+|    region   |                regionOne                |
+|  service_id |     c6a863efddac421cbb6e1585ae0c026d    |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>$ keystone endpoint-create <br>
+&ndash;service-id $(keystone service-list | awk &lsquo;/ volumev2 / {print $2}&rsquo;) <br>
+&ndash;publicurl http://controller:8776/v2/%(tenant_id)s <br>
+&ndash;internalurl http://controller:8776/v2/%(tenant_id)s <br>
+&ndash;adminurl http://controller:8776/v2/%(tenant_id)s <br>
+&ndash;region regionOne
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   Property  |                  Value                  |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   adminurl  | http://controller:8776/v2/%(tenant_id)s |
+|      id     |     8e40819ec3174b52a0d553d5fdec5a98    |
+| internalurl | http://controller:8776/v2/%(tenant_id)s |
+|  publicurl  | http://controller:8776/v2/%(tenant_id)s |
+|    region   |                regionOne                |
+|  service_id |     61c641af06544f8eb74a99f4c30b65ee    |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>{% endhighlight %}</p>
+<h3 id="1212-安装配置存储控制组件">12.1.2 安装配置存储控制组件</h3>
+<p>1 安装包</p>
+<p>{% highlight sh %}</p>
+<h1 id="apt-get-install-cinder-api-cinder-scheduler-python-cinderclient">apt-get install cinder-api cinder-scheduler python-cinderclient</h1>
+<p>{% endhighlight %}</p>
+<p>2　编辑 /etc/cinder/cinder.conf 完成下列操作：
+{% highlight ini %}
+[database]
+&hellip;
+connection = mysql://cinder:openstack@controller/cinder</p>
+<p>[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack</p>
+<p>my_ip = 10.0.0.11</p>
+<p>verbose = True</p>
+<p>&hellip;
+auth_strategy = keystone</p>
+<p>[keystone_authtoken]
+&hellip;
+#Comment out any auth_host, auth_port, and auth_protocol options because the identity_uri option replaces them.</p>
+<p>auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = cinder
+admin_password = openstack</p>
+<p>{% endhighlight %}</p>
+<p>3 组装数据库</p>
+<p>{% highlight sh %}</p>
+<h1 id="su--s-binsh--c-cinder-manage-db-sync-cinder">su -s /bin/sh -c &ldquo;cinder-manage db sync&rdquo; cinder</h1>
+<p>{% endhighlight %}</p>
+<h3 id="1213-完成安装">12.1.3 完成安装</h3>
+<p>重启服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-cinder-scheduler-restart">service cinder-scheduler restart</h1>
+<h1 id="service-cinder-api-restart">service cinder-api restart</h1>
+<p>{% endhighlight %}</p>
+<p>删除没用的sqlite文件.
+{% highlight sh %}</p>
+<h1 id="rm--f-varlibcindercindersqlite">rm -f /var/lib/cinder/cinder.sqlite</h1>
+<p>{% endhighlight %}</p>
+<h2 id="122-安装配置一个存储节点">12.2 安装配置一个存储节点</h2>
+<h3 id="1221-to-configure-prerequisites">12.2.1 To configure prerequisites</h3>
+<p>需要一台新的虚拟机，当然你要配置安装Ubuntu Cloud的keyring和仓库，配置时间同步，请参考 <strong>基础环境</strong> 那一节</p>
+<p>设置hostname为<code>block1</code></p>
+<p>配置管理IP</p>
+<p>{% highlight sh %}</p>
+<h1 id="the-primary-network-interface-2">The primary network interface</h1>
+<p>auto eth0
+iface eth0 inet static
+address 192.168.234.206
+netmask 255.255.255.0
+gateway 192.168.234.1</p>
+<h1 id="management-interface">management interface</h1>
+<p>auto eth0:1
+iface eth0:1 inet static
+address 10.0.0.41
+netmask 255.255.255.0
+{% endhighlight %}</p>
+<p>配置 /etc/hosts 加入下面内容</p>
+<p>{% highlight sh %}</p>
+<h1 id="block1">block1</h1>
+<p>10.0.0.41       block1
+{% endhighlight %}</p>
+<p>其它的三个节点的hosts文件里也要加入这一行．</p>
+<p>安装lvm包</p>
+<p>{% highlight sh %}</p>
+<h1 id="aptitude-install-lvm2--y">aptitude install lvm2 -y</h1>
+<p>{% endhighlight %}</p>
+<p>我为这个存储节点添加了一块新的虚拟硬盘，可以用fdisk查看一下
+{% highlight sh %}</p>
+<h1 id="fdisk--l">fdisk -l</h1>
+<p>Disk /dev/xvda: 10.7 GB, 10737418240 bytes
+255 heads, 63 sectors/track, 1305 cylinders, total 20971520 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000db5b8</p>
+<pre><code>Device Boot      Start         End      Blocks   Id  System
+</code></pre>
+<p>/dev/xvda1            2048      499711      248832   83  Linux
+/dev/xvda2          501758    20969471    10233857    5  Extended
+/dev/xvda5          501760    20969471    10233856   8e  Linux LVM</p>
+<p>Disk /dev/xvdb: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000</p>
+<p>Disk /dev/xvdb doesn&rsquo;t contain a valid partition table</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-root: 9944 MB, 9944694784 bytes
+255 heads, 63 sectors/track, 1209 cylinders, total 19423232 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-root doesn&rsquo;t contain a valid partition table</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-swap_1: 532 MB, 532676608 bytes
+255 heads, 63 sectors/track, 64 cylinders, total 1040384 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-swap_1 doesn&rsquo;t contain a valid partition table</p>
+<p>{% endhighlight %}</p>
+<p>可以看到新加的disk没有分区，我们来把它分成lvm的分区,具体请参考<a href="/blog/other/config-lvm/">我的这篇blog</a>.
+分区完成后我们再看看分区表</p>
+<p>{% highlight sh %}</p>
+<h1 id="fdisk--l-1">fdisk -l</h1>
+<p>Disk /dev/xvda: 10.7 GB, 10737418240 bytes
+255 heads, 63 sectors/track, 1305 cylinders, total 20971520 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000db5b8</p>
+<pre><code>Device Boot      Start         End      Blocks   Id  System
+</code></pre>
+<p>/dev/xvda1            2048      499711      248832   83  Linux
+/dev/xvda2          501758    20969471    10233857    5  Extended
+/dev/xvda5          501760    20969471    10233856   8e  Linux LVM</p>
+<p>Disk /dev/xvdb: 21.5 GB, 21474836480 bytes
+213 heads, 34 sectors/track, 5791 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x38c87633</p>
+<pre><code>Device Boot      Start         End      Blocks   Id  System
+</code></pre>
+<p>/dev/xvdb1            2048    41943039    20970496   8e  Linux LVM</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-root: 9944 MB, 9944694784 bytes
+255 heads, 63 sectors/track, 1209 cylinders, total 19423232 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-root doesn&rsquo;t contain a valid partition table</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-swap_1: 532 MB, 532676608 bytes
+255 heads, 63 sectors/track, 64 cylinders, total 1040384 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000</p>
+<p>Disk /dev/mapper/ubuntu1404server&ndash;vg-swap_1 doesn&rsquo;t contain a valid partition table</p>
+<p>{% endhighlight %}</p>
+<p>/dev/xvdb1 已经是lvm的了,用它创建一个物理卷.</p>
+<p>{% highlight sh %}</p>
+<h1 id="pvcreate-devxvdb1">pvcreate /dev/xvdb1</h1>
+<p>Physical volume &ldquo;/dev/xvdb1&rdquo; successfully created
+{% endhighlight %}
+这样我们就创建了一个物理卷，名叫<code>/dev/xvdb1</code>,跟它的设备名是一样的．</p>
+<p>创建一个卷组(Volume Group),这个物理加到这个卷组中．
+{% highlight sh %}</p>
+<h1 id="vgcreate-cinder-volumes-devxvdb1">vgcreate cinder-volumes /dev/xvdb1</h1>
+<p>Volume group &ldquo;cinder-volumes&rdquo; successfully created
+{% endhighlight %}</p>
+<p><code>cinder-volumes</code>是cinder默认使用的卷组，如果你的卷组不叫这个也没关系，可以在cinder.conf中修改．
+创建完卷组就OK了，创建逻辑卷的工作就交给OpenStack了．</p>
+<p>有一项非常重要的工作要做．
+默认的lvm卷扫描工具会扫描 <code>/dev</code>目录来查看包含逻辑卷的设备，如果tenant创建了一个lvm的卷的话，那存储节点上的lvm会发现并缓存他们，会导致存储节点和tenant的主机都有问题．所以我们要限制lvm只扫描包含&quot;cinder-volumes&quot;的设备</p>
+<p>编辑　 /etc/lvm/lvm.conf</p>
+<p>{% highlight ini %}
+devices {
+&hellip;
+filter = [ &ldquo;a/xvda/&rdquo;,&ldquo;a/xvdb/&rdquo;, &ldquo;r/.*/&rdquo;]
+{% endhighlight %}
+我为什么会把&quot;a/xvda/&ldquo;这个加到过滤器里，是因为我的节点的操作系统ubuntu是装在lvm上的，所以我必须允许lvm扫描这个设备.
+你可以使用<code>vgs -vvvv</code>来测试你的过滤器．</p>
+<p>如果你的计算节点也使用了lvm，你也要同时设置扫描过滤器．</p>
+<h3 id="1222-安装包">12.2.2 安装包</h3>
+<p>１　
+{% highlight sh %}</p>
+<h1 id="apt-get-install-cinder-volume-python-mysqldb">apt-get install cinder-volume python-mysqldb</h1>
+<p>{% endhighlight %}</p>
+<p>编辑　/etc/cinder/cinder.conf　完成下列操作：
+{% highlight ini %}
+[DEFAULT]
+&hellip;
+rpc_backend = rabbit
+rabbit_host = controller
+rabbit_password = openstack</p>
+<p>my_ip = 10.0.0.41
+glance_host = controller
+verbose = True
+auth_strategy = keystone</p>
+<p>[keystone_authtoken]
+&hellip;
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = cinder
+admin_password = openstack</p>
+<p>[database]
+&hellip;
+connection = mysql://cinder:openstack@controller/cinder</p>
+<p>{% endhighlight %}</p>
+<h3 id="1223-完成安装">12.2.3 完成安装</h3>
+<p>{% highlight sh %}</p>
+<h1 id="service-tgt-restart">service tgt restart</h1>
+<h1 id="service-cinder-volume-restart">service cinder-volume restart</h1>
+<h1 id="rm--f-varlibcindercindersqlite-1">rm -f /var/lib/cinder/cinder.sqlite</h1>
+<p>{% endhighlight %}</p>
+<h2 id="123-验证安装">12.3 验证安装</h2>
+<p><strong>请在控制节点上运行下面的命令</strong></p>
+<p>{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>{% highlight sh %}</p>
+<h1 id="cinder-service-list">cinder service-list</h1>
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                                <br>
+|      Binary      |    Host    | Zone |  Status | State |         Updated_at         | Disabled Reason |                                <br>
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+                                <br>
+| cinder-scheduler | controller | nova | enabled |   up  | 2015-03-20T03:46:57.000000 |       None      |
+|  cinder-volume   |   block1   | nova | enabled |   up  | 2015-03-20T03:46:53.000000 |       None      |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}</p>
+<p>切换成demo租户
+{% highlight sh %}
+$ source demo-openrc.sh
+{% endhighlight %}</p>
+<p>创建一个卷
+{% highlight sh %}
+$ cinder create &ndash;display-name demo-volume1 1
+{% endhighlight %}</p>
+<p>查看这个新建的卷</p>
+<p>{% highlight sh %}
+$ cinder list
+{% endhighlight %}</p>
+<h1 id="13-启用ec2兼容api">13 启用EC2兼容API</h1>
+<p><strong>请在控制节点上运行下面的命令</strong></p>
+<p>{% highlight sh %}
+$ source admin-openrc.sh
+{% endhighlight %}</p>
+<p>１　创建EC2的服务
+{% highlight sh %}
+＃　keystone service-create &ndash;name=ec2 <br>
+&ndash;type=ec2 <br>
+&ndash;description=&ldquo;EC2 Compatibility Layer&rdquo;</p>
+<p>+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   Property  |              Value               |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| description |     EC2 Compatibility Layer      |
+|   enabled   |               True               |
+|      id     | a18a1b887b484ed6a1130174ccb8eb5f |
+|     name    |               ec2                |
+|     type    |               ec2                |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>２　创建EC2 API端点
+{% highlight sh %}</p>
+<h1 id="keystone-endpoint-create---region-regionone---service-id--keystone-service-list--awk--ec2--print-2-">keystone endpoint-create &ndash;region regionOne &ndash;service-id  $(keystone service-list | awk &lsquo;/ ec2 / {print $2}&rsquo;) \</h1>
+<pre><code>    --publicurl &quot;http://$CONTROLLER_PUBLIC_ADDRESS:8773/services/Cloud&quot; \
+    --adminurl &quot;http://$CONTROLLER_ADMIN_ADDRESS:8773/services/Admin&quot; \
+    --internalurl &quot;http://$CONTROLLER_INTERNAL_ADDRESS:8773/services/Cloud&quot;
+</code></pre>
+<p>+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   Property  |                   Value                    |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|   adminurl  |   http://controller:8773/services/Admin    |
+|      id     |      b903c22bab8d412b96ff6839f5131f24      |
+| internalurl |   http://controller:8773/services/Cloud    |
+|  publicurl  | http://192.168.234.202:8773/services/Cloud |
+|    region   |                 RegionOne                  |
+|  service_id |      a18a1b887b484ed6a1130174ccb8eb5f      |
++&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+{% endhighlight %}
+$EC2_SERVICE就是上一条命令创建的<code>a18a1b887b484ed6a1130174ccb8eb5f</code>  <br>
+本文中$CONTROLLER_PUBLIC_ADDRESS为：192.168.234.202,$CONTROLLER_ADMIN_ADDRESS为:10.0.0.11</p>
+<p>重启服务</p>
+<p>{% highlight sh %}</p>
+<h1 id="service-nova-cert-restart-1">service nova-cert restart</h1>
+<h1 id="service-nova-api-restart-3">service nova-api restart</h1>
+<p>{% endhighlight %}</p>
+<p>３　验证安装</p>
+<p>首先要为用户生成AK(access key)和SK(secret key),我们来为demo这个用户来生成AK和SK．</p>
+<p>{% highlight sh %}
+$　keystone tenant-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+|                id                |   name  | enabled |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| 357abecb4def441eb7a36e7cf5d173c4 |  admin  |   True  |
+| 6245a74d882e451c8d7663a46103b8b2 |   demo  |   True  |
+| 0357b13cb33941bda442094eda169625 |   lxl   |   True  |
+| ef36de18149b4c809c4b26b63b6dda37 | service |   True  |
+| 04015ed1fdb94efb80bab7916fbf1660 |   zlq   |   True  |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+</p>
+<p>$　keystone user-list
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+|                id                |             name            | enabled |            email            |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
+| c2ba205513e448098f0e0daf80f2f649 |            admin            |   True  |      <a href="mailto:admin@example.com">admin@example.com</a>      |
+| d839485477e44aa8baabbefd19829392 |          ceilometer         |   True  |                             |
+| fd7b1e90d1144b669d20040b9c334d88 |            cinder           |   True  |                             |
+| 54a55d3f3c1f4797bb82d196e6c02ccd |             demo            |   True  |       <a href="mailto:demo@example.com">demo@example.com</a>      |
+| 924b65933a294f0bb5e26945689c2c38 |            glance           |   True  |                             |
+| 0c138994a2304fe5b38eb2a709d6e3fd | <a href="mailto:liqiang.zhang@ecloud.com.cn">liqiang.zhang@ecloud.com.cn</a> |   True  | <a href="mailto:liqiang.zhang@ecloud.com.cn">liqiang.zhang@ecloud.com.cn</a> |
+| f0d885f2c2e9498189b61ebb28475f35 |             lxl             |   True  |      <a href="mailto:xiaoreqing@126.com">xiaoreqing@126.com</a>     |
+| d9ea6a6733934f139a42dfad12f1009a |           neutron           |   True  |                             |
+| 952eae64d8124b06812a5bb595f3690f |             nova            |   True  |                             |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+</p>
+<p>$ keystone ec2-credentials-create &ndash;tenant-id=357abecb4def441eb7a36e7cf5d173c4 &ndash;user-id=c2ba205513e448098f0e0daf80f2f649
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|  Property |              Value               |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+|   access  | 6ccf7c40bebe4984964e1ada23680941 |
+|   secret  | 6cdaaa769e3c4fb58aeac0de49b01658 |
+| tenant_id | 357abecb4def441eb7a36e7cf5d173c4 |
+|  trust_id |                                  |
+|  user_id  | c2ba205513e448098f0e0daf80f2f649 |
++&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-+
+{% endhighlight %}</p>
+<p>把下面的变量加入admin-openrc.sh</p>
+<p>{% highlight sh %}
+export EC2_ACCESS_KEY=6ccf7c40bebe4984964e1ada23680941
+export EC2_SECRET_KEY=6cdaaa769e3c4fb58aeac0de49b01658
+export EC2_URL=http://controller:8773/services/Cloud
+{% endhighlight %}</p>
+<p>参考：　
+<a href="https://github.com/openstack/keystone/blob/master/tools/sample_data.sh">https://github.com/openstack/keystone/blob/master/tools/sample_data.sh</a>   <br>
+<a href="https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst">https://github.com/gc3-uzh-ch/gridka-school/blob/master/tutorial/nova_api.rst</a></p>
+
+    
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="http://example.org/categories/blog">blog</a>
+  
+  <a class="article-category-link" href="http://example.org/categories/openstack">OpenStack</a>
+  
+</div>
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/" data-title="在Ubuntu 14.04上部署OpenStack Juno" data-tsina="123" class="share clearfix">
+    </div>
+  </div><script src="https://giscus.app/client.js"
+      data-repo="renhuailin/renhuailin.github.io"
+      data-repo-id="R_kgDOIuU-oQ"
+      data-category="Announcements"
+      data-category-id="DIC_kwDOIuU-oc4CTa92"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata=""
+      data-input-position="bottom"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      data-swup-reload-script
+      async
+  >
+  </script></footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="http://example.org/categories/blog" title="blog">blog<sup>15</sup></a></li>
+    
+    <li><a href="http://example.org/categories/docker" title="docker">docker<sup>5</sup></a></li>
+    
+    <li><a href="http://example.org/categories/gitlab" title="gitlab">gitlab<sup>1</sup></a></li>
+    
+    <li><a href="http://example.org/categories/java" title="java">java<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/linux" title="linux">linux<sup>7</sup></a></li>
+    
+    <li><a href="http://example.org/categories/openstack" title="openstack">openstack<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/other" title="other">other<sup>2</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="http://example.org/tags/decomplier" title="decomplier">decomplier<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/gitlab" title="gitlab">gitlab<sup>3</sup></a></li>
+      
+			<li><a href="http://example.org/tags/java" title="java">java<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/jenkins" title="jenkins">jenkins<sup>2</sup></a></li>
+      
+			<li><a href="http://example.org/tags/linux" title="linux">linux<sup>4</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2021-08">2021年08月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-12">2020年12月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-06">2020年06月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-03">2020年03月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2019-11">2019年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-08">2017年08月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-05">2017年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-02">2017年02月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-11">2016年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-05">2016年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-01">2016年01月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-12">2015年12月</a><span class="archive-list-count">4</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-11">2015年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-04">2015年04月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-03">2015年03月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-01">2015年01月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2014-11">2014年11月</a><span class="archive-list-count">2</span>
+      </li>
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="http://example.org/tags/decomplier" style="font-size: 12px;">decomplier</a>
+    
+    <a href="http://example.org/tags/gitlab" style="font-size: 12px;">gitlab</a>
+    
+    <a href="http://example.org/tags/java" style="font-size: 12px;">java</a>
+    
+    <a href="http://example.org/tags/jenkins" style="font-size: 12px;">jenkins</a>
+    
+    <a href="http://example.org/tags/linux" style="font-size: 12px;">linux</a>
+    
+  </div>
+</div>
+
+
+
+  
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  <section class="info">
+    <p></p>
+  </section>
+  <div class="social-font clearfix">
+    <a href='http://weibo.com/coderzh' target="_blank" title="weibo"></a>
+    <a href='https://twitter.com/coderzh' target="_blank" title="twitter"></a>
+    <a href='https://github.com/coderzh' target="_blank" title="github"></a>
+    <a href='https://www.facebook.com/coderzh' target="_blank" title="facebook"></a>
+    <a href='https://www.linkedin.com/coderzh' target="_blank" title="linkedin"></a>
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2024
+    
+    <a href="http://example.org/" title="念西堂">念西堂</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="http://example.org/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:http:\/\/example.org\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://b.bshare.cn/barCode?site=weixin&url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-71158870-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+
+</body>
+</html>

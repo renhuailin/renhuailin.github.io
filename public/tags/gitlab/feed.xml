@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gitlab on 念西堂</title>
+    <link>http://example.org/tags/gitlab/</link>
+    <description>Recent content in gitlab on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Aug 2021 12:38:38 +0000</lastBuildDate>
+    <atom:link href="http://example.org/tags/gitlab/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在Jenkins中访问Gitlab</title>
+      <link>http://example.org/posts/2021/08/21/gitlab-jenkins/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:38 +0000</pubDate>
+      <guid>http://example.org/posts/2021/08/21/gitlab-jenkins/</guid>
+      <description>1.1 Gitlab Credentials 生成访问Gitlab所需Token 首先要在Gitlab里创建一个名为Jenkins的账号，Jenkins系统使用此账号访问Gitlab</description>
+    </item>
+    <item>
+      <title>Gitlab启用双因子认证</title>
+      <link>http://example.org/posts/2021/08/21/gitlab-enable-two-factor-authentication/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2021/08/21/gitlab-enable-two-factor-authentication/</guid>
+      <description>1. 下载Microsoft Authenticator 这是一个手机app，iPhone请在App Store里搜索Microsoft Authenticator确认开发者为</description>
+    </item>
+    <item>
+      <title>Jenkins &#43; gitlab做持续集成</title>
+      <link>http://example.org/posts/2015/12/17/jenkins-gitlab-ci/</link>
+      <pubDate>Thu, 17 Dec 2015 10:43:06 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/17/jenkins-gitlab-ci/</guid>
+      <description>jenkins 2核 2G 系统 ubuntu 14.04 registry chef server 1 核 2G gitlab 1核 2G node1 最终部署节点 1 核 2G 安装Jenkins 配置jdk 安装 ant,maven 配置Jenkins的安全策略 #插件管理 在填好了gi</description>
+    </item>
+  </channel>
+</rss>

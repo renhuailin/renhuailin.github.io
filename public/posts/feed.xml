@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 念西堂</title>
+    <link>http://example.org/posts/</link>
+    <description>Recent content in Posts on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Aug 2021 12:38:38 +0000</lastBuildDate>
+    <atom:link href="http://example.org/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在Jenkins中访问Gitlab</title>
+      <link>http://example.org/posts/2021/08/21/gitlab-jenkins/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:38 +0000</pubDate>
+      <guid>http://example.org/posts/2021/08/21/gitlab-jenkins/</guid>
+      <description>1.1 Gitlab Credentials 生成访问Gitlab所需Token 首先要在Gitlab里创建一个名为Jenkins的账号，Jenkins系统使用此账号访问Gitlab</description>
+    </item>
+    <item>
+      <title>Gitlab启用双因子认证</title>
+      <link>http://example.org/posts/2021/08/21/gitlab-enable-two-factor-authentication/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2021/08/21/gitlab-enable-two-factor-authentication/</guid>
+      <description>1. 下载Microsoft Authenticator 这是一个手机app，iPhone请在App Store里搜索Microsoft Authenticator确认开发者为</description>
+    </item>
+    <item>
+      <title>搭建一个邮件服务器(Mail Server)</title>
+      <link>http://example.org/posts/2020/12/23/setup-a-mail-server/</link>
+      <pubDate>Wed, 23 Dec 2020 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/12/23/setup-a-mail-server/</guid>
+      <description>最近在安装公司的API Connect，安装完成后，在注册新用户时，需要发送激活邮件。需要在apic里配置一个smtp的服务。而目前所有的国内</description>
+    </item>
+    <item>
+      <title>使用PowerDNS admin来管理PowerDNS</title>
+      <link>http://example.org/posts/2020/12/08/install-powerdns-admin/</link>
+      <pubDate>Tue, 08 Dec 2020 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/12/08/install-powerdns-admin/</guid>
+      <description>最近需要使用PowerDNS,因为之前安装过，所以很快就安装好了。之前我也用过PowerDNS admin,不过没有记录下来，这次记录下来，希</description>
+    </item>
+    <item>
+      <title>修复Nexus数据库</title>
+      <link>http://example.org/posts/2020/06/05/nexus-repair-orientdb/</link>
+      <pubDate>Fri, 05 Jun 2020 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/06/05/nexus-repair-orientdb/</guid>
+      <description>昨天nexus所在主机的磁盘完全占满了，nexus无法正常运行了，也无法重启。 我的nexus是运行在docker里的，快一年了，日志很大，我</description>
+    </item>
+    <item>
+      <title>用iptable做IP转发</title>
+      <link>http://example.org/posts/2020/03/05/iptables-port-forward/</link>
+      <pubDate>Thu, 05 Mar 2020 10:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/03/05/iptables-port-forward/</guid>
+      <description>#!/bin/bash sysctl -w net.ipv4.ip_forward=1 iptables -P INPUT ACCEPT iptables -P FORWARD ACCEPT iptables -F iptables -t nat -F # 把某台server上的Port映射到本机的端口上，以便使用本机的所有的IP访问。 # $1 本机的网卡 # $2 本机</description>
+    </item>
+    <item>
+      <title>为nginx配置Let&#39;s Encrypt证书</title>
+      <link>http://example.org/posts/2019/11/25/config-lets-encrypt/</link>
+      <pubDate>Mon, 25 Nov 2019 10:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2019/11/25/config-lets-encrypt/</guid>
+      <description>1. 安装certbot 2. Add Certbot PPA You&amp;rsquo;ll need to add the Certbot PPA to your list of repositories. To do so, run the following commands on the command line on the machine: $ sudo apt-get update $ sudo apt-get install software-properties-common $ sudo add-apt-repository universe $ sudo add-apt-repository ppa:certbot/certbot $ sudo apt-get update 3. Install Certbot Run this command on the command</description>
+    </item>
+    <item>
+      <title>DCEVM&#43;HotSwapAgent实现java类热加载</title>
+      <link>http://example.org/posts/2017/08/16/dcevm-hotswapagent-idea/</link>
+      <pubDate>Wed, 16 Aug 2017 10:00:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/08/16/dcevm-hotswapagent-idea/</guid>
+      <description>1. 安装DCEVM DCEVM主页: https://dcevm.github.io/ 写此文时，支持的JDK 1.8的版本是：Java 8 update 112, build 9 因为这个版本已经不是最新版jdk，所以需要去Ora</description>
+    </item>
+    <item>
+      <title>在Ubuntu 16.04上安装PowerDNS并配置主从复制</title>
+      <link>http://example.org/posts/2017/05/09/install-powerdns-on-ubuntu-16.04/</link>
+      <pubDate>Tue, 09 May 2017 17:26:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/05/09/install-powerdns-on-ubuntu-16.04/</guid>
+      <description>1. DNS的基本知识 1.1 理解 SOA and GLUE Record 首先要明白什么是SOA，NS,请参见[1]和[2]： 如果用户注册了一个域名,把这个域名的name server</description>
+    </item>
+    <item>
+      <title>Linux下用shadowsocks和Privoxy实现翻墙</title>
+      <link>http://example.org/posts/2017/02/03/use-shadowsocks-and-privoxy/</link>
+      <pubDate>Fri, 03 Feb 2017 15:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/02/03/use-shadowsocks-and-privoxy/</guid>
+      <description>安装Shadowsocks： Debian / Ubuntu: # apt-get install python-pip # pip install shadowsocks 编辑文件/etc/shadowsocks.json，填写代理信息： { &amp;#34;server</description>
+    </item>
+    <item>
+      <title>Cent OS 7 VirtualBox 5.0和phpVirtualBox</title>
+      <link>http://example.org/posts/2016/11/18/install-virtualbox-and-phpvirtualbox-on-centos7/</link>
+      <pubDate>Fri, 18 Nov 2016 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2016/11/18/install-virtualbox-and-phpvirtualbox-on-centos7/</guid>
+      <description>在研发环境的CentOS 7上安装VirtualBox以便安装虚拟机使用。 参考： http://tecadmin.net/install-oracle-virtualbox-on-centos-redhat-and-fedora/# 上面的文章里的service vboxdrv setup不能运行，应该用下面</description>
+    </item>
+    <item>
+      <title>实现SSH无密码登录远程主机</title>
+      <link>http://example.org/posts/2016/05/02/ssh-login-without-password/</link>
+      <pubDate>Mon, 02 May 2016 15:35:21 +0000</pubDate>
+      <guid>http://example.org/posts/2016/05/02/ssh-login-without-password/</guid>
+      <description>两台主机,运行ubuntu 14.04 192.168.56.1 本机 182.168.56.102 远程主机 远程主机的登录用户为ubuntu,我们希望用这个用户登录182.168.56.102时，不提示密</description>
+    </item>
+    <item>
+      <title>为docker私有registry配置nginx反向代理</title>
+      <link>http://example.org/posts/2016/01/05/2016-01-05-docker-private-registry-behind-nginx-reverse-proxy/</link>
+      <pubDate>Tue, 05 Jan 2016 11:30:21 +0000</pubDate>
+      <guid>http://example.org/posts/2016/01/05/2016-01-05-docker-private-registry-behind-nginx-reverse-proxy/</guid>
+      <description>公司的docker私有registry已经搭建好了，用官方的registry image很容易就搭建好了。现在就是要用nginx的反向代理把它</description>
+    </item>
+    <item>
+      <title>Docker容器用戶映射</title>
+      <link>http://example.org/posts/2015/12/30/docker-user-mapping/</link>
+      <pubDate>Wed, 30 Dec 2015 15:02:21 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/30/docker-user-mapping/</guid>
+      <description>root(id = 0) 是容器的默認用戶。Docker image的製作者可以添加新的用戶。 比如jenkins image的Dockerfile是這樣的： FROM java:8-jdk RUN apt-get</description>
+    </item>
+    <item>
+      <title>Linux uid备忘</title>
+      <link>http://example.org/posts/2015/12/30/linux-ubuntu-uid-1000/</link>
+      <pubDate>Wed, 30 Dec 2015 12:02:06 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/30/linux-ubuntu-uid-1000/</guid>
+      <description>最近在運行Jenkins容器時出現了權限問題，其原因是我掛載的volume的owner uid與容器裏的jenkins uid不一致,導致無法向</description>
+    </item>
+    <item>
+      <title>Jenkins &#43; gitlab做持续集成</title>
+      <link>http://example.org/posts/2015/12/17/jenkins-gitlab-ci/</link>
+      <pubDate>Thu, 17 Dec 2015 10:43:06 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/17/jenkins-gitlab-ci/</guid>
+      <description>jenkins 2核 2G 系统 ubuntu 14.04 registry chef server 1 核 2G gitlab 1核 2G node1 最终部署节点 1 核 2G 安装Jenkins 配置jdk 安装 ant,maven 配置Jenkins的安全策略 #插件管理 在填好了gi</description>
+    </item>
+    <item>
+      <title>Nginx自签名https和反向代理</title>
+      <link>http://example.org/posts/2015/12/10/nginx-ssl-reverse-proxy/</link>
+      <pubDate>Thu, 10 Dec 2015 17:58:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/10/nginx-ssl-reverse-proxy/</guid>
+      <description>场景 公司的wiki服务器和docker private registry都在公司的桌面云里，由于公网IP资源紧张，无法为这些服务器每个都配上公网IP， 只能通</description>
+    </item>
+    <item>
+      <title>升級gitlab从7.9.4到8.2.2</title>
+      <link>http://example.org/posts/2015/11/25/backup-restore-gitlab/</link>
+      <pubDate>Wed, 25 Nov 2015 14:16:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/11/25/backup-restore-gitlab/</guid>
+      <description>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到doc</description>
+    </item>
+    <item>
+      <title>把Gitlab迁移到Docker容器里</title>
+      <link>http://example.org/posts/2015/04/09/move-gitlab-to-docker-container/</link>
+      <pubDate>Thu, 09 Apr 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/04/09/move-gitlab-to-docker-container/</guid>
+      <description>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到doc</description>
+    </item>
+    <item>
+      <title>XenServer的虚拟机里安装配置两块网卡</title>
+      <link>http://example.org/posts/2015/03/17/xenserver-vm-multi-nic/</link>
+      <pubDate>Wed, 11 Mar 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/03/17/xenserver-vm-multi-nic/</guid>
+      <description>在安装OpenStack时，我的network节点只配置了一个nic，所以当配置Open vSwitch (OVS) 服务时，在运行完命令 {% highlight sh %} service openvswitch-switch restart ovs-vsctl add-br br-ex ovs-vsctl add-port br-ex eth0</description>
+    </item>
+    <item>
+      <title>在Ubuntu 14.04上部署OpenStack Juno</title>
+      <link>http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/</link>
+      <pubDate>Wed, 11 Mar 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/</guid>
+      <description>1 规划 192.168.234.202 Openstack controller node 192.168.234.205 Openstack network node 192.168.234.204 Openstack compute node networ node必须有三个NIC(network interface card),也就是网卡． 管理网段：10.0.0.0/24 2 基础环境</description>
+    </item>
+    <item>
+      <title>配置LVM</title>
+      <link>http://example.org/posts/2015/01/30/config-lvm/</link>
+      <pubDate>Fri, 30 Jan 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/01/30/config-lvm/</guid>
+      <description>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。 {% highlight sh %} root@localhost:~# fdisk /dev/xvdb Command (m for help): m Command action a toggle a bootable flag b edit bsd disklabel c toggle the dos compatibility flag d delete a partition l list known partition types m</description>
+    </item>
+    <item>
+      <title>从宿主机访问VirtualBox里的虚机</title>
+      <link>http://example.org/posts/2015/01/06/vm-communicate-with-my-laptop/</link>
+      <pubDate>Tue, 06 Jan 2015 14:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/01/06/vm-communicate-with-my-laptop/</guid>
+      <description>我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的I</description>
+    </item>
+    <item>
+      <title>Java 反编译器</title>
+      <link>http://example.org/posts/2014/11/08/java-decompilers/</link>
+      <pubDate>Sun, 02 Nov 2014 10:50:00 +0000</pubDate>
+      <guid>http://example.org/posts/2014/11/08/java-decompilers/</guid>
+      <description>&lt;p&gt;前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>我的第一篇博客</title>
+      <link>http://example.org/posts/2014/11/02/my-first-blog-with-jekyll/</link>
+      <pubDate>Sun, 02 Nov 2014 10:50:00 +0000</pubDate>
+      <guid>http://example.org/posts/2014/11/02/my-first-blog-with-jekyll/</guid>
+      <description>2016-04-14: 更新jekyll到3.1.2版本，因为Github决定使用单一markdown引擎 方法高亮使用：Rouge,它支持的语法列表。 加上了首行缩</description>
+    </item>
+  </channel>
+</rss>

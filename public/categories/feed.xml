@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on 念西堂</title>
+    <link>http://example.org/categories/</link>
+    <description>Recent content in Categories on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Jun 2020 12:38:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>linux</title>
+      <link>http://example.org/categories/linux/</link>
+      <pubDate>Fri, 05 Jun 2020 12:38:00 +0000</pubDate>
+      <guid>http://example.org/categories/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Java</title>
+      <link>http://example.org/categories/java/</link>
+      <pubDate>Wed, 16 Aug 2017 10:00:00 +0000</pubDate>
+      <guid>http://example.org/categories/java/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>blog</title>
+      <link>http://example.org/categories/blog/</link>
+      <pubDate>Tue, 09 May 2017 17:26:00 +0000</pubDate>
+      <guid>http://example.org/categories/blog/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>docker</title>
+      <link>http://example.org/categories/docker/</link>
+      <pubDate>Mon, 02 May 2016 15:35:21 +0000</pubDate>
+      <guid>http://example.org/categories/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>gitlab</title>
+      <link>http://example.org/categories/gitlab/</link>
+      <pubDate>Wed, 25 Nov 2015 14:16:00 +0000</pubDate>
+      <guid>http://example.org/categories/gitlab/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>OpenStack</title>
+      <link>http://example.org/categories/openstack/</link>
+      <pubDate>Wed, 11 Mar 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/categories/openstack/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>other</title>
+      <link>http://example.org/categories/other/</link>
+      <pubDate>Fri, 30 Jan 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/categories/other/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on 念西堂</title>
+    <link>http://example.org/tags/</link>
+    <description>Recent content in Tags on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Aug 2021 12:38:38 +0000</lastBuildDate>
+    <atom:link href="http://example.org/tags/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>gitlab</title>
+      <link>http://example.org/tags/gitlab/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:38 +0000</pubDate>
+      <guid>http://example.org/tags/gitlab/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>jenkins</title>
+      <link>http://example.org/tags/jenkins/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:38 +0000</pubDate>
+      <guid>http://example.org/tags/jenkins/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>linux</title>
+      <link>http://example.org/tags/linux/</link>
+      <pubDate>Sat, 21 Aug 2021 12:38:38 +0000</pubDate>
+      <guid>http://example.org/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>decomplier</title>
+      <link>http://example.org/tags/decomplier/</link>
+      <pubDate>Sun, 02 Nov 2014 10:50:00 +0000</pubDate>
+      <guid>http://example.org/tags/decomplier/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>java</title>
+      <link>http://example.org/tags/java/</link>
+      <pubDate>Sun, 02 Nov 2014 10:50:00 +0000</pubDate>
+      <guid>http://example.org/tags/java/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

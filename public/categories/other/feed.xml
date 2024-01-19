@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>other on 念西堂</title>
+    <link>http://example.org/categories/other/</link>
+    <description>Recent content in other on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 30 Jan 2015 12:30:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/other/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>配置LVM</title>
+      <link>http://example.org/posts/2015/01/30/config-lvm/</link>
+      <pubDate>Fri, 30 Jan 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/01/30/config-lvm/</guid>
+      <description>1 为虚拟机新加一块disk，用fdisk把它分成lvm的分区。 {% highlight sh %} root@localhost:~# fdisk /dev/xvdb Command (m for help): m Command action a toggle a bootable flag b edit bsd disklabel c toggle the dos compatibility flag d delete a partition l list known partition types m</description>
+    </item>
+    <item>
+      <title>从宿主机访问VirtualBox里的虚机</title>
+      <link>http://example.org/posts/2015/01/06/vm-communicate-with-my-laptop/</link>
+      <pubDate>Tue, 06 Jan 2015 14:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/01/06/vm-communicate-with-my-laptop/</guid>
+      <description>我在VirtualBox里安装了OpenStack all in one，IP静态配置为192.168.234.160,公司银丰办公区使用192网段的I</description>
+    </item>
+  </channel>
+</rss>

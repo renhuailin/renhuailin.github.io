@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Java on 念西堂</title>
+    <link>http://example.org/categories/java/</link>
+    <description>Recent content in Java on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 16 Aug 2017 10:00:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/java/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DCEVM&#43;HotSwapAgent实现java类热加载</title>
+      <link>http://example.org/posts/2017/08/16/dcevm-hotswapagent-idea/</link>
+      <pubDate>Wed, 16 Aug 2017 10:00:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/08/16/dcevm-hotswapagent-idea/</guid>
+      <description>1. 安装DCEVM DCEVM主页: https://dcevm.github.io/ 写此文时，支持的JDK 1.8的版本是：Java 8 update 112, build 9 因为这个版本已经不是最新版jdk，所以需要去Ora</description>
+    </item>
+    <item>
+      <title>Java 反编译器</title>
+      <link>http://example.org/posts/2014/11/08/java-decompilers/</link>
+      <pubDate>Sun, 02 Nov 2014 10:50:00 +0000</pubDate>
+      <guid>http://example.org/posts/2014/11/08/java-decompilers/</guid>
+      <description>&lt;p&gt;前一段时间我因为项目的原因要用到反编译工具，就下了jd-gui，结果反编译出来的代码错误很多。想来是这些反编译器不思进取，对一些java的新语法支持的不好。于是在网找新的反编译工具，被我找到两个比较不错的，今天把它备录在这里。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

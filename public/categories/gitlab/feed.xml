@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gitlab on 念西堂</title>
+    <link>http://example.org/categories/gitlab/</link>
+    <description>Recent content in gitlab on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 25 Nov 2015 14:16:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/gitlab/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>升級gitlab从7.9.4到8.2.2</title>
+      <link>http://example.org/posts/2015/11/25/backup-restore-gitlab/</link>
+      <pubDate>Wed, 25 Nov 2015 14:16:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/11/25/backup-restore-gitlab/</guid>
+      <description>公司的gitlab一直是运行在ovm的虚拟机里的，版本还是6.7.5。版本有点老了，最近在研究docker，于是想把gitlab迁移到doc</description>
+    </item>
+  </channel>
+</rss>

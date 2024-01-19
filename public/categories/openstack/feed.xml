@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenStack on 念西堂</title>
+    <link>http://example.org/categories/openstack/</link>
+    <description>Recent content in OpenStack on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 11 Mar 2015 12:30:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/openstack/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>XenServer的虚拟机里安装配置两块网卡</title>
+      <link>http://example.org/posts/2015/03/17/xenserver-vm-multi-nic/</link>
+      <pubDate>Wed, 11 Mar 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/03/17/xenserver-vm-multi-nic/</guid>
+      <description>在安装OpenStack时，我的network节点只配置了一个nic，所以当配置Open vSwitch (OVS) 服务时，在运行完命令 {% highlight sh %} service openvswitch-switch restart ovs-vsctl add-br br-ex ovs-vsctl add-port br-ex eth0</description>
+    </item>
+    <item>
+      <title>在Ubuntu 14.04上部署OpenStack Juno</title>
+      <link>http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/</link>
+      <pubDate>Wed, 11 Mar 2015 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2015/03/11/deploy-openstack-on-ubuntu-14.04/</guid>
+      <description>1 规划 192.168.234.202 Openstack controller node 192.168.234.205 Openstack network node 192.168.234.204 Openstack compute node networ node必须有三个NIC(network interface card),也就是网卡． 管理网段：10.0.0.0/24 2 基础环境</description>
+    </item>
+  </channel>
+</rss>

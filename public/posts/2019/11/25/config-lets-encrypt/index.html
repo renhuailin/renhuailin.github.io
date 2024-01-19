@@ -1,0 +1,526 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>为nginx配置Let&#39;s Encrypt证书 - 念西堂</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description"
+    content="1. 安装certbot 2. Add Certbot PPA You&rsquo;ll need to add the Certbot PPA to your list of repositories. To do so, run the following commands on the command line on the machine: $ sudo apt-get update $ sudo apt-get install software-properties-common $ sudo add-apt-repository universe $ sudo add-apt-repository ppa:certbot/certbot $ sudo apt-get update 3. Install Certbot Run this command on the command">
+  
+  <meta itemprop="name" content="为nginx配置Let&#39;s Encrypt证书 - 念西堂">
+  <meta itemprop="description"
+    content="1. 安装certbot 2. Add Certbot PPA You&rsquo;ll need to add the Certbot PPA to your list of repositories. To do so, run the following commands on the command line on the machine: $ sudo apt-get update $ sudo apt-get install software-properties-common $ sudo add-apt-repository universe $ sudo add-apt-repository ppa:certbot/certbot $ sudo apt-get update 3. Install Certbot Run this command on the command">
+  <meta itemprop="image" content="http://example.org/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+
+  
+  <link rel="shortcut icon" href="http://example.org/img/favicon.ico" />
+  <link rel="apple-touch-icon" href="http://example.org/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://example.org/apple-touch-icon.png" />
+  <link rel="stylesheet" href="http://example.org/highlight/styles/github.css">
+  <script src="http://example.org/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-21F3GS6PC0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+  
+  <link rel="stylesheet" href="http://example.org/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="http://example.org/css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+  <div id="imglogo">
+    <a href="http://example.org/"><img src='http://example.org/img/logo.svg' alt="念西堂" title="念西堂"/></a>
+  </div>
+  <div id="textlogo">
+    <h1 class="site-name"><a href="http://example.org/" title="念西堂">念西堂</a></h1>
+    <h2 class="blog-motto">一个热爱写程序的平凡人的博客</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+      
+      <li>
+        <form class="search" method="get" action="https://www.google.com/search">
+          <div>
+            <input type="text" id="search" name="q" placeholder='搜索'>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="http://example.org/posts/2019/11/25/config-lets-encrypt/" title="为nginx配置Let&#39;s Encrypt证书" itemprop="url">为nginx配置Let&#39;s Encrypt证书</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="/about" title="任怀林">任怀林</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2019-11-25 10:38:00 &#43;0000 UTC" itemprop="datePublished">2019年11月25日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+    <h1 id="1-安装certbothttpscertbotefforg">1. 安装<a href="https://certbot.eff.org">certbot</a></h1>
+<h1 id="2-add-certbot-ppa">2. Add Certbot PPA</h1>
+<p>You&rsquo;ll need to add the Certbot PPA to your list of repositories. To do so, run the following commands on the command line on the machine:</p>
+<pre tabindex="0"><code>$ sudo apt-get update
+$ sudo apt-get install software-properties-common
+$ sudo add-apt-repository universe
+$ sudo add-apt-repository ppa:certbot/certbot
+$ sudo apt-get update
+</code></pre><h1 id="3-install-certbot">3. Install Certbot</h1>
+<p>Run this command on the command line on the machine to install Certbot.</p>
+<pre tabindex="0"><code>$ sudo apt-get install certbot python-certbot-nginx
+</code></pre><h2 id="4-choose-how-youd-like-to-run-certbot">4. Choose how you&rsquo;d like to run Certbot</h2>
+<ul>
+<li>
+<p>Either get and install your certificates&hellip;</p>
+<p>Run this command to get a certificate and have Certbot edit your Nginx configuration automatically to serve it, turning on HTTPS access in a single step.</p>
+<pre tabindex="0"><code>$ sudo certbot --nginx
+Plugins selected: Authenticator nginx, Installer nginx
+Enter email address (used for urgent renewal and security notices) (Enter &#39;c&#39; to
+cancel): harley@acme.com  #在这里输入一个邮箱，用来提醒证书刷新。
+</code></pre><hr>
+<p>Please read the Terms of Service at
+<a href="https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf">https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf</a>. You must
+agree in order to register with the ACME server at
+<a href="https://acme-v02.api.letsencrypt.org/directory">https://acme-v02.api.letsencrypt.org/directory</a></p>
+<hr>
+<p>(A)gree/(C)ancel: A  # 只能同意</p>
+<hr>
+<p>Would you be willing to share your email address with the Electronic Frontier
+Foundation, a founding partner of the Let&rsquo;s Encrypt project and the non-profit
+organization that develops Certbot? We&rsquo;d like to send you email about our work
+encrypting the web, EFF news, campaigns, and ways to support digital freedom.</p>
+<hr>
+<p>(Y)es/(N)o: N   #不要分享我的邮箱</p>
+<p>Which names would you like to activate HTTPS for?</p>
+<hr>
+<p>1: test.acme.com</p>
+<hr>
+<p>Select the appropriate numbers separated by commas and/or spaces, or leave input
+blank to select all options shown (Enter &lsquo;c&rsquo; to cancel):
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for wx.jcydjf.com
+Waiting for verification&hellip;
+Cleaning up challenges
+Deploying Certificate to VirtualHost /etc/nginx/sites-enabled/test.acme.com</p>
+<p>Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</p>
+<hr>
+<p>1: No redirect - Make no further changes to the webserver configuration.
+2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for
+new sites, or if you&rsquo;re confident your site works on HTTPS. You can undo this
+change by editing your web server&rsquo;s configuration.</p>
+<hr>
+<p>Select the appropriate number [1-2] then [enter] (press &lsquo;c&rsquo; to cancel): 2  #把http的请求转到https上。
+Redirecting all traffic on port 80 to ssl in /etc/nginx/sites-enabled/test.acme.com</p>
+<hr>
+<p>Congratulations! You have successfully enabled <a href="https://test.acme.com">https://test.acme.com</a></p>
+<p>You should test your configuration at:
+<a href="https://www.ssllabs.com/ssltest/analyze.html?d=test.acme.com">https://www.ssllabs.com/ssltest/analyze.html?d=test.acme.com</a></p>
+<hr>
+<p>IMPORTANT NOTES:</p>
+</li>
+<li>
+<p>Congratulations! Your certificate and chain have been saved at:
+/etc/letsencrypt/live/test.acme.com/fullchain.pem
+Your key file has been saved at:
+/etc/letsencrypt/live/test.acme.com/privkey.pem
+Your cert will expire on 2020-02-23. To obtain a new or tweaked
+version of this certificate in the future, simply run certbot again
+with the &ldquo;certonly&rdquo; option. To non-interactively renew <em>all</em> of
+your certificates, run &ldquo;certbot renew&rdquo;</p>
+</li>
+<li>
+<p>Your account credentials have been saved in your Certbot
+configuration directory at /etc/letsencrypt. You should make a
+secure backup of this folder now. This configuration directory will
+also contain certificates and private keys obtained by Certbot so
+making regular backups of this folder is ideal.</p>
+</li>
+<li>
+<p>If you like Certbot, please consider supporting our work by:</p>
+<p>Donating to ISRG / Let&rsquo;s Encrypt:   <a href="https://letsencrypt.org/donate">https://letsencrypt.org/donate</a>
+Donating to EFF:                    <a href="https://eff.org/donate-le">https://eff.org/donate-le</a></p>
+</li>
+<li>
+<p>Or, just get a certificate</p>
+<p>If you&rsquo;re feeling more conservative and would like to make the changes to your Nginx configuration by hand, run this command.</p>
+</li>
+</ul>
+<pre tabindex="0"><code>  $ sudo certbot certonly --nginx
+</code></pre><h2 id="5-test-automatic-renewal">5. Test automatic renewal</h2>
+<p>The Certbot packages on your system come with a cron job or systemd timer that will renew your certificates automatically before they expire. You will not need to run Certbot again, unless you change your configuration. You can test automatic renewal for your certificates by running this command:</p>
+<pre tabindex="0"><code>$ sudo certbot renew --dry-run
+</code></pre><p>The command to renew certbot is installed in one of the following locations:</p>
+<ul>
+<li>/etc/crontab/</li>
+<li>/etc/cron.<em>/</em></li>
+<li>systemctl list-timers</li>
+</ul>
+
+    
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="http://example.org/categories/linux">linux</a>
+  
+</div>
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="http://example.org/posts/2019/11/25/config-lets-encrypt/" data-title="为nginx配置Let&#39;s Encrypt证书" data-tsina="123" class="share clearfix">
+    </div>
+  </div><script src="https://giscus.app/client.js"
+      data-repo="renhuailin/renhuailin.github.io"
+      data-repo-id="R_kgDOIuU-oQ"
+      data-category="Announcements"
+      data-category-id="DIC_kwDOIuU-oc4CTa92"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata=""
+      data-input-position="bottom"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      data-swup-reload-script
+      async
+  >
+  </script></footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="http://example.org/categories/blog" title="blog">blog<sup>15</sup></a></li>
+    
+    <li><a href="http://example.org/categories/docker" title="docker">docker<sup>5</sup></a></li>
+    
+    <li><a href="http://example.org/categories/gitlab" title="gitlab">gitlab<sup>1</sup></a></li>
+    
+    <li><a href="http://example.org/categories/java" title="java">java<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/linux" title="linux">linux<sup>7</sup></a></li>
+    
+    <li><a href="http://example.org/categories/openstack" title="openstack">openstack<sup>2</sup></a></li>
+    
+    <li><a href="http://example.org/categories/other" title="other">other<sup>2</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="http://example.org/tags/decomplier" title="decomplier">decomplier<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/gitlab" title="gitlab">gitlab<sup>3</sup></a></li>
+      
+			<li><a href="http://example.org/tags/java" title="java">java<sup>1</sup></a></li>
+      
+			<li><a href="http://example.org/tags/jenkins" title="jenkins">jenkins<sup>2</sup></a></li>
+      
+			<li><a href="http://example.org/tags/linux" title="linux">linux<sup>4</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2021-08">2021年08月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-12">2020年12月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-06">2020年06月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2020-03">2020年03月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2019-11">2019年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-08">2017年08月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-05">2017年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2017-02">2017年02月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-11">2016年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-05">2016年05月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2016-01">2016年01月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-12">2015年12月</a><span class="archive-list-count">4</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-11">2015年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-04">2015年04月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-03">2015年03月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2015-01">2015年01月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://example.org/posts/#2014-11">2014年11月</a><span class="archive-list-count">2</span>
+      </li>
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="http://example.org/tags/decomplier" style="font-size: 12px;">decomplier</a>
+    
+    <a href="http://example.org/tags/gitlab" style="font-size: 12px;">gitlab</a>
+    
+    <a href="http://example.org/tags/java" style="font-size: 12px;">java</a>
+    
+    <a href="http://example.org/tags/jenkins" style="font-size: 12px;">jenkins</a>
+    
+    <a href="http://example.org/tags/linux" style="font-size: 12px;">linux</a>
+    
+  </div>
+</div>
+
+
+
+  
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  <section class="info">
+    <p></p>
+  </section>
+  <div class="social-font clearfix">
+    <a href='http://weibo.com/coderzh' target="_blank" title="weibo"></a>
+    <a href='https://twitter.com/coderzh' target="_blank" title="twitter"></a>
+    <a href='https://github.com/coderzh' target="_blank" title="github"></a>
+    <a href='https://www.facebook.com/coderzh' target="_blank" title="facebook"></a>
+    <a href='https://www.linkedin.com/coderzh' target="_blank" title="linkedin"></a>
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2024
+    
+    <a href="http://example.org/" title="念西堂">念西堂</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="http://example.org/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:http:\/\/example.org\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://b.bshare.cn/barCode?site=weixin&url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-71158870-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-21F3GS6PC0');
+</script>
+
+
+
+</body>
+</html>

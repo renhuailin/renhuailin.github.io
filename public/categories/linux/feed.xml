@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on 念西堂</title>
+    <link>http://example.org/categories/linux/</link>
+    <description>Recent content in linux on 念西堂</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Jun 2020 12:38:00 +0000</lastBuildDate>
+    <atom:link href="http://example.org/categories/linux/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>修复Nexus数据库</title>
+      <link>http://example.org/posts/2020/06/05/nexus-repair-orientdb/</link>
+      <pubDate>Fri, 05 Jun 2020 12:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/06/05/nexus-repair-orientdb/</guid>
+      <description>昨天nexus所在主机的磁盘完全占满了，nexus无法正常运行了，也无法重启。 我的nexus是运行在docker里的，快一年了，日志很大，我</description>
+    </item>
+    <item>
+      <title>用iptable做IP转发</title>
+      <link>http://example.org/posts/2020/03/05/iptables-port-forward/</link>
+      <pubDate>Thu, 05 Mar 2020 10:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2020/03/05/iptables-port-forward/</guid>
+      <description>#!/bin/bash sysctl -w net.ipv4.ip_forward=1 iptables -P INPUT ACCEPT iptables -P FORWARD ACCEPT iptables -F iptables -t nat -F # 把某台server上的Port映射到本机的端口上，以便使用本机的所有的IP访问。 # $1 本机的网卡 # $2 本机</description>
+    </item>
+    <item>
+      <title>为nginx配置Let&#39;s Encrypt证书</title>
+      <link>http://example.org/posts/2019/11/25/config-lets-encrypt/</link>
+      <pubDate>Mon, 25 Nov 2019 10:38:00 +0000</pubDate>
+      <guid>http://example.org/posts/2019/11/25/config-lets-encrypt/</guid>
+      <description>1. 安装certbot 2. Add Certbot PPA You&amp;rsquo;ll need to add the Certbot PPA to your list of repositories. To do so, run the following commands on the command line on the machine: $ sudo apt-get update $ sudo apt-get install software-properties-common $ sudo add-apt-repository universe $ sudo add-apt-repository ppa:certbot/certbot $ sudo apt-get update 3. Install Certbot Run this command on the command</description>
+    </item>
+    <item>
+      <title>在Ubuntu 16.04上安装PowerDNS并配置主从复制</title>
+      <link>http://example.org/posts/2017/05/09/install-powerdns-on-ubuntu-16.04/</link>
+      <pubDate>Tue, 09 May 2017 17:26:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/05/09/install-powerdns-on-ubuntu-16.04/</guid>
+      <description>1. DNS的基本知识 1.1 理解 SOA and GLUE Record 首先要明白什么是SOA，NS,请参见[1]和[2]： 如果用户注册了一个域名,把这个域名的name server</description>
+    </item>
+    <item>
+      <title>Linux下用shadowsocks和Privoxy实现翻墙</title>
+      <link>http://example.org/posts/2017/02/03/use-shadowsocks-and-privoxy/</link>
+      <pubDate>Fri, 03 Feb 2017 15:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2017/02/03/use-shadowsocks-and-privoxy/</guid>
+      <description>安装Shadowsocks： Debian / Ubuntu: # apt-get install python-pip # pip install shadowsocks 编辑文件/etc/shadowsocks.json，填写代理信息： { &amp;#34;server</description>
+    </item>
+    <item>
+      <title>Cent OS 7 VirtualBox 5.0和phpVirtualBox</title>
+      <link>http://example.org/posts/2016/11/18/install-virtualbox-and-phpvirtualbox-on-centos7/</link>
+      <pubDate>Fri, 18 Nov 2016 12:30:00 +0000</pubDate>
+      <guid>http://example.org/posts/2016/11/18/install-virtualbox-and-phpvirtualbox-on-centos7/</guid>
+      <description>在研发环境的CentOS 7上安装VirtualBox以便安装虚拟机使用。 参考： http://tecadmin.net/install-oracle-virtualbox-on-centos-redhat-and-fedora/# 上面的文章里的service vboxdrv setup不能运行，应该用下面</description>
+    </item>
+    <item>
+      <title>Linux uid备忘</title>
+      <link>http://example.org/posts/2015/12/30/linux-ubuntu-uid-1000/</link>
+      <pubDate>Wed, 30 Dec 2015 12:02:06 +0000</pubDate>
+      <guid>http://example.org/posts/2015/12/30/linux-ubuntu-uid-1000/</guid>
+      <description>最近在運行Jenkins容器時出現了權限問題，其原因是我掛載的volume的owner uid與容器裏的jenkins uid不一致,導致無法向</description>
+    </item>
+  </channel>
+</rss>
