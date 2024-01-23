@@ -1,14 +1,14 @@
 ---
-layout: article
-title: 搞懂Rust模块中函数的可见性
-date: 2024-01-19 09:09:09
-author: 任怀林
+title: "搞懂Rust模块中函数的可见性"
+date: 2024-01-19T10:48:16+08:00
+summary: "今天在看Sea ORM的例子时，看到一段代码：pub(super) async fn set_up_db() -> Result<DatabaseConnection, DbErr> ,我不懂pub(super) 的意思，看了Rust圣经后，弄清楚它的含义。请点击标题以看详情。"
+slug: "Visibility-of-functions-in-Rust-modules"
+categories:
+- Rust
 tags:
 - Rust
-thumb: linux.png
-comment: true
-isCJKLanguage: true
 ---
+
 今天在看Sea ORM的例子时，看到一段代码：
 ```rust
 use sea_orm::*;
@@ -52,7 +52,7 @@ use sea_orm::*;
  }
 ```
 
-我对函数前面的` pub(super) `有点不明白，猜想可能跟java的`public`差不多，于是去查Rust Book，结果里面没有。
+我对函数前面的` pub(super) `有点不明白，猜想可能跟java的`public`差不多，于是去查Rust Book，结果里面没有讲。
 
 在`Rust语言圣经`里找到了相关的章节说明，[受限可见性](https://course.rs/basic/crate-module/use.html#%E5%8F%97%E9%99%90%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7) 
 
@@ -100,12 +100,20 @@ mod parent_module {
         }
     }
 
-    mod parent_module2 {
-        // use super::parent_module::child_module::say_hi;
-        // #[test]
-        // fn test1() {
-        //     say_hi();
-        // }
-    }
+mod uncle_module {
+    // 下面的代码会编译出错
+	use super::parent_module::child_module::say_hi;
+	 #[test]
+	 fn test1() {
+		 say_hi();
+	 }
 }
+
 ```
+
+我在`child_module`里定义了一个函数`say_hi`，并限定为`pub(super)`,下面是测试结论。
+1.  在`child2_module`，也就是`child_module`同级（兄弟）模块里，可以调用`say_hi`。
+2.  在`parent_module`，也就是`child_module`父模块里，可以调用`say_hi`。
+3.  在`uncle_module`，也就是`child_module`叔叔模块里，不可以调用`say_hi`。
+
+可以` pub(super) `修饰的函数，在当前模块的父模块范围内都可以引用并调用，超出范围就不可见了。
