@@ -1,7 +1,7 @@
 ---
 title: "在Rust代码中使用保留字做为标识符"
 date: 2024-01-23T11:41:13+08:00
-summary: "今天在看Rocket的例子时，看到一个struct里有这样一段代码：r#type: &'r str, 我不懂r# 的意思，这就是  请点击标题以看详情。"
+summary: "今天在看Rocket的例子时，看到一个struct里有这样一段代码：r#type: &'r str, 我不懂r# 的意思，原来是叫原生标识符的东西。"
 slug: rust_use_reserved_keywords_as_identifiers
 categories:
 - Rust
