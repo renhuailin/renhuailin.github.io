@@ -2,7 +2,7 @@
 title: Rust必须引入trait才能编译的原因
 date: 2024-01-25T12:13:31+08:00
 summary: 为什么在rust里，有时必须引入相关的trait代码才能编译，具体原因请看正文。
-slug: rust_have_to_use_traits_in_order_to_compile?
+slug: rust_have_to_use_traits_in_order_to_compile
 categories:
   - Rust
 tags:
@@ -109,6 +109,6 @@ mod module4 {
 
 为什么会如此呢？还是因为**Rust允许在任何时候为任何类型实现任何Trait**。
 
-在Rust里，一个Type(如struct)的实现代码可能分布在不同的地方。这跟Java、python是不一样的，Java、python里类型的实现代码都在同一个地方，是不可能出现在一个类里面包含两个完全一样的方法的。而在Rust里就完全可能，因此为了明确方法的出错，必须引入相关的trait。
+在Rust里，一个Type(如struct)的实现代码可能分布在不同的地方。这跟Java、python是不一样的，Java、python里类型的实现代码都在同一个地方，是不可能出现在一个类里面包含两个完全一样的方法的。而在Rust里就完全可能，因此为了明确方法的出处，必须引入相关的trait。
 
 
