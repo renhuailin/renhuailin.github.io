@@ -159,7 +159,7 @@ impl Fairing for CORS {
     }
 
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-        let allow_origins = ["https://renhl.com", "https://renhl.com"];
+        let allow_origins = ["http://renhl.com", "https://renhl.com"];
 
         let origin = _request.headers().get_one("origin").unwrap();
 
