@@ -2,15 +2,13 @@
 title: Rust中derive宏的作用及常用trait
 date: 2024-02-20T22:42:15+08:00
 summary: 在Rust代码中经常可以看到在struct的上面会有#[derive(Clone, Debug)]这样的代码，本文会解释这段代码的作用及与derive宏配合使用的常见trait。
-slug: rust-dervice-trait
+slug: rust-derivable-traits
 categories:
   - Rust
 tags:
   - Rust
 ---
-在Rust代码是经常可以看到在struct的上面，会有一行类似`#[derive(Clone, Debug)]`这样的代码。`dervice`是Rust的内置宏，可以自动为struct或是enum实现某些的trait.
-
-##  Debug trait
+在Rust代码经常可以看到在struct的上面，有一行`#[derive(Clone, Debug)]`这样的代码。`dervice`是Rust的内置宏，可以自动为struct或是enum实现某些的trait。
 在下面的代码中，Book struct 通过derive宏自动实现了Debug、Clone和PartialEq这三个trait。
 ```rust
 /// Defines a Column for an Entity
@@ -23,13 +21,21 @@ pub struct Book {
 }
 ```
 所谓自动实现，就是不用您自己写实现代码。
-我们以Debug这个trait为例，它包含一个方法`fmt`，是使用指定的Formatter来格式struct或enum中的值。
+
+本文会介绍在Rust中常见的几个trait。
+
+##  Debug trait
+`Debug` trait为例，它应该是rust中最常用的trait了，包含一个方法`fmt`，是使用指定的Formatter来格式struct或enum中的值。
 ```rust
 fn fmt(&self, f: &mut Formatter<'_>) -> Result;
 ```
 当使用derive自动`Debug`实现时，Rust的编译器会自动生成实现`Debug`trait的代码，可以减少代码编写的工作量。
 
-与`Debug`trait相似，Rust还为标准库中常用的trait定义了相关的宏，这些宏都可以与`dervice`配合使用，简化代码，下面一一介绍这几个常用的trait。
+我们经常要在代码加入一些debug的日志，比如要打印Book实例的具体内容。
+```rust
+println!("{:#?}",book);
+```
+在这里println宏会调用Book的fmt方法，得到格式化后的结果，然后输出给stdout。如果Book没有实现`Debug`trait，这里就会编译错误。
 
 
 ##  Clone trait
@@ -38,12 +44,34 @@ fn fmt(&self, f: &mut Formatter<'_>) -> Result;
 1.  **显式控制** ：Rust强调显式性和安全性。所以默认并没有为所有的类型实现这个trati，它确保开发人员知道并明确允许克隆行为。这有助于防止由于不加选择地克隆而导致的意外性能问题或意外行为。
     
 2. **避免借用**：在Rust中，通过引用（borrowing）传递值是避免不必要复制并维护所有权语义的默认方式，然而，在需要创建具有自己所有权的新实例的情况下，`Clone`提供了一种无需借用的方法。这种情况在新手刚使用Rust的时候经常会碰到，常会碰到编译器提示，所有权已经在某处move了，提示需要clone这个实例。
+```rust
+#[derive(Clone)]
+struct Person {
+    name: String,
+    age: u32,
+}
+
+fn main() {
+    let person = Person {
+        name: String::from("Alice"),
+        age: 25,
+    };
+	
+    let cloned_person = person.clone(); //这一行如果不调用clone，则会发生所有权的转移。那么下一行的代码就会无法编译。
+
+    // 原始对象仍然有效
+    println!("Original: {}, {}", person.name, person.age);
+
+    // 克隆对象可用
+    println!("Clone: {}, {}", cloned_person.name, cloned_person.age);
+}
+```
     
 3. **深拷贝**：如果定义的结构体中不仅包含基本类型，还包含其它结构体，则在Clone的时候 ，通常希望创建深拷贝，这意味着不仅复制顶层结构，还要复制所有嵌套数据。`Clone` trait提供了一种类型定义如何克隆的方法，允许它们实现自定义的深度复制行为。
     
 4. **定制克隆**：有时候我们Clone的时候，并不希望Clone原实例的所有的值，可能只希望部分数值被Clone到新实例（具体场景当用到的时候自然就会知道）。
     
-上面的4种场景，除了场景4其它都可以直接用devive宏来实现。
+上面的4种场景，除了场景4其它都可以直接用devive宏来实现，第4种场景就需要手动实现Clone trait，实现Clone的逻辑。
 
 
 ## PartialEq  trait
@@ -137,4 +165,4 @@ where
 ```
  `lt`、`le`、 `gt` 和 `ge`可能分别通过 `<`、`<=`、 `>`,和 `>=` 这些操作符来调用。可见Rust是通过trait来支持操作符重载的。
 
-总结一下，上述的traits在rust里被称为`Derivable Traits`，中文叫`可派生的 trait`。这些trait是标准库中定义的，可以通过derive在类型上实现。这些trait具有默认行为，因此可以通过简单的derive语法来自动生成对应的实现代码。Derivable Traits允许程序员轻松地为他们的类型自动生成一些常见trait的实现代码，提高了开发效率并确保了一致性。
+总结一下，上述的traits在rust里被称为`Derivable Traits`，中文叫`可派生的 trait`。这些trait是标准库中定义的，可以通过derive在类型上实现。这些trait具有默认行为，因此可以通过简单的`derive`宏来自动生成对应的实现代码。`Derivable Traits`允许程序员轻松地为他们的类型自动生成一些常见trait的实现代码，提高了开发效率并确保了一致性。
