@@ -2,7 +2,6 @@
 title: "在M芯片Mac下安装mame模拟器"
 date: 2024-11-21T08:40:32+08:00
 summary: 最近老刷到街机游戏的短视频，突然想起自从换了Mac的笔记本还没安装过街机模拟器。还好我之前收藏过开源街机模拟器，还知道软件的名字，所以收藏是个好习惯,开干！
-draft: true
 slug: installing-mame-on-m1-mac
 categories:
   - mac
