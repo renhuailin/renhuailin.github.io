@@ -1,13 +1,11 @@
 ---
 title: 反向代理下 Next.js 页面“假死”：一次 webpack-hmr WebSocket 故障排查
 date: 2026-06-04T22:28:57+08:00
-draft: true
-
+draft: false
 layout: post
 author: 任怀林
 thumb: docker.png
 isCJKLanguage: true
-
 slug: nextjs-nginx-reverse-proxy-hmr-websocket-troubleshooting
 categories:
   - 开发
